@@ -1,0 +1,19 @@
+<resources>
+    <string name="title_activity_sign_up">Sign up</string>
+
+    <!-- Strings related to sign up -->
+    <string name="sign_up_prompt_email">Email</string>
+    <string name="sign_up_prompt_user_name">Username</string>
+    <string name="sign_up_prompt_full_name">Full Name</string>
+    <string name="sign_up_prompt_password">Password</string>
+    <string name="sign_up_prompt_confirm_password">Confirm Password</string>
+    <string name="sign_up_prompt_role">Role</string>
+
+    <string name="error_unavailable_user_name">This username is already being used</string>
+    <string name="error_unavailable_email">This email is already being used</string>
+    <string name="error_invalid_email">This email address is invalid</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_not_matching_passwords">The passwords do not match</string>
+    <string name="error_field_required">This field is required</string>
+</resources>

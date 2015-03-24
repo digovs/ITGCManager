@@ -1,0 +1,32 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:background="@android:color/transparent"
+    tools:context="com.vieira.rodrigo.itgcmanager.ErrorMessageDialogActivity"
+    android:padding="10dp">
+
+    <RelativeLayout android:id="@+id/fullscreen_content_controls" style="?metaButtonBarStyle"
+        android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@color/black_overlay"
+        tools:ignore="UselessParent"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:id="@+id/error_message_dialog_text"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="5dp"/>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/error_message_dialog_button_text"
+            android:id="@+id/error_message_dialog_button"
+            android:layout_gravity="center_horizontal"
+            android:layout_below="@+id/error_message_dialog_text"/>
+
+    </RelativeLayout>
+
+</FrameLayout>
