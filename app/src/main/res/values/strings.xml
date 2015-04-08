@@ -11,6 +11,7 @@
     <!-- General Error messages -->
     <string name="connection_failed">Connection failed, please check your internet connection and try again later.</string>
     <string name="connection_timeout">The server is taking too long to respond, please try again later.</string>
+    <string name="login_failed">Username or Password invalid.</string>
 
     <!-- Reset Password Activity -->
     <string name="title_activity_reset_password">Reset Password</string>
@@ -19,9 +20,17 @@
     <string name="reset_password_email_not_found">Email not found in our servers</string>
     <string name="reset_password_successful">Password reset successful, a message has been sent to your email.</string>
 
+
+    <!-- Create Project Activity -->
+    <string name="title_activity_create_project">Create Project</string>
+    <string name="create_project_name_hint">Project name</string>
+    <string name="create_project_button_text">Create</string>
+
+
     <string name="title_activity_home">HomeActivity</string>
 
-    <string name="title_section1">Section 1</string>
+    <!-- Home Activity -->
+    <string name="title_home_section">Home</string>
     <string name="title_section2">Section 2</string>
     <string name="title_section3">Section 3</string>
 
@@ -34,5 +43,9 @@
 
 
     <string name="hello_world">Hello world!</string>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
 
 </resources>

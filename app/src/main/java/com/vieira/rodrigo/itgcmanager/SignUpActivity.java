@@ -18,7 +18,7 @@ import com.parse.ParseException;
 import com.parse.ParseUser;
 import com.parse.SignUpCallback;
 
-import models.User;
+import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.User;
 
 
 /**

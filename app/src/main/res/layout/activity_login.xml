@@ -11,42 +11,60 @@
     <ScrollView android:id="@+id/login_form" android:layout_width="match_parent"
         android:layout_height="match_parent" android:visibility="visible">
 
-        <LinearLayout android:id="@+id/email_login_form" android:layout_width="match_parent"
-            android:layout_height="wrap_content" android:orientation="vertical"
-           android:layout_gravity="center">
 
-            <AutoCompleteTextView android:id="@+id/login_username" android:layout_width="match_parent"
+
+        <RelativeLayout android:id="@+id/email_login_form" android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center">
+
+            <AutoCompleteTextView android:id="@+id/login_form_username" android:layout_width="match_parent"
                 android:layout_height="wrap_content" android:hint="@string/prompt_username"
-                android:maxLines="1" android:singleLine="true" />
+                android:maxLines="1" android:singleLine="true" android:imeOptions="actionNext"
+                android:layout_marginBottom="5dp"/>
 
-            <EditText android:id="@+id/login_password" android:layout_width="match_parent"
+            <EditText android:id="@+id/login_form_password" android:layout_width="match_parent"
                 android:layout_height="wrap_content" android:hint="@string/prompt_password"
                 android:imeOptions="actionUnspecified" android:inputType="textPassword"
-                android:maxLines="1" android:singleLine="true" />
+                android:maxLines="1" android:singleLine="true"
+                android:layout_below="@+id/login_form_username"/>
 
-            <Button android:id="@+id/login_form_sign_in_button" style="?android:textAppearanceSmall"
-                android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:layout_marginTop="16dp" android:text="@string/action_sign_in"
-                android:textStyle="bold" />
+            <LinearLayout
+                android:id="@+id/login_form_buttons_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/login_form_password"
+                android:orientation="horizontal">
+
+                <Button android:id="@+id/login_form_sign_in_button" style="?android:textAppearanceSmall"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="@string/action_log_in"
+                    android:textStyle="bold" android:layout_weight="1" />
+
+                <Button android:id="@+id/login_form_sign_up_button" style="?android:textAppearanceSmall"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="@string/action_sign_up"
+                    android:textStyle="bold" android:layout_weight="1"/>
+
+            </LinearLayout>
 
             <Button style="?android:textAppearanceSmall"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/reset_password_button"
                 android:id="@+id/login_form_reset_password_button"
-                android:layout_gravity="right" />
+                android:layout_below="@+id/login_form_buttons_view"
+                android:layout_centerHorizontal="true" />
 
-            <Button android:id="@+id/login_form_sign_up_button" style="?android:textAppearanceSmall"
-                android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:layout_marginTop="12dp" android:text="@string/action_sign_up"
-                android:textStyle="bold" />
 
-        </LinearLayout>
+
+        </RelativeLayout>
     </ScrollView>
 
     <ProgressBar android:id="@+id/login_progress" style="?android:attr/progressBarStyleLarge"
         android:layout_width="wrap_content" android:layout_height="wrap_content"
         android:visibility="gone" android:layout_centerInParent="true"/>
+
+
 
 </RelativeLayout>
 

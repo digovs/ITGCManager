@@ -42,7 +42,12 @@
         </activity>
         <activity
             android:name=".ResetPasswordActivity"
+            android:windowSoftInputMode="adjustResize|stateVisible"
             android:label="@string/title_activity_reset_password" >
+        </activity>
+        <activity
+            android:name=".CreateProjectActivity"
+            android:label="@string/title_activity_create_project" >
         </activity>
     </application>
 

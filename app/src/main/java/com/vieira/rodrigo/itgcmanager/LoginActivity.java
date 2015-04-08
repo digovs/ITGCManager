@@ -17,7 +17,7 @@ import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
 
-import models.User;
+import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.User;
 
 /**
  * A login screen that offers login via email/password.
@@ -36,9 +36,9 @@ public class LoginActivity extends Activity {
         setContentView(R.layout.activity_login);
 
         // Set up the login form.
-        userNameView = (EditText) findViewById(R.id.login_username);
+        userNameView = (EditText) findViewById(R.id.login_form_username);
 
-        passwordView = (EditText) findViewById(R.id.login_password);
+        passwordView = (EditText) findViewById(R.id.login_form_password);
 
         Button signInButton = (Button) findViewById(R.id.login_form_sign_in_button);
         signInButton.setOnClickListener(new OnClickListener() {
@@ -90,8 +90,11 @@ public class LoginActivity extends Activity {
         passwordView.setError(null);
 
         // Store values at the time of the login attempt.
-        String userName = userNameView.getText().toString();
-        String password = passwordView.getText().toString();
+        //String userName = userNameView.getText().toString();
+        //String password = passwordView.getText().toString();
+
+        String userName = "digovs";
+        String password = "678413";
 
         boolean cancel = false;
         View focusView = null;
@@ -157,6 +160,11 @@ public class LoginActivity extends Activity {
             case ParseException.TIMEOUT:
                 callErrorDialogWithMessage(getString(R.string.connection_timeout));
                 break;
+
+            case ParseException.OBJECT_NOT_FOUND:
+                callErrorDialogWithMessage(getString(R.string.login_failed));
+                break;
+
         }
     }
 

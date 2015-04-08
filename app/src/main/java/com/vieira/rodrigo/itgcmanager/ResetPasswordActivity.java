@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.os.Build;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -33,16 +34,21 @@ public class ResetPasswordActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reset_password);
 
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setHomeButtonEnabled(true);
+        actionBar.setDisplayHomeAsUpEnabled(true);
+
         resetPasswordFormView = (LinearLayout) findViewById(R.id.reset_password_form);
         progressView = (ProgressBar) findViewById(R.id.reset_password_progress_bar);
 
         emailView = (EditText) findViewById(R.id.reset_password_form_email);
-        email = emailView.getText().toString();
+
 
         Button resetBtn = (Button) findViewById(R.id.reset_password_button);
         resetBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                email = emailView.getText().toString();
                 if (!email.isEmpty()) {
                     showProgress(true);
                     ParseUser.requestPasswordResetInBackground(email, new RequestPasswordResetCallback() {
@@ -122,12 +128,18 @@ public class ResetPasswordActivity extends ActionBarActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.menu_reset_password, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 }
