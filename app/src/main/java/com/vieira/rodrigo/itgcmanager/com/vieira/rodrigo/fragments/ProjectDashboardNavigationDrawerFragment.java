@@ -29,7 +29,7 @@ import com.vieira.rodrigo.itgcmanager.R;
  * See the <a href="https://developer.android.com/design/patterns/navigation-drawer.html#Interaction">
  * design guidelines</a> for a complete explanation of the behaviors implemented here.
  */
-public class NavigationDrawerFragment extends Fragment {
+public class ProjectDashboardNavigationDrawerFragment extends Fragment {
 
     /**
      * Remember the position of the selected item.
@@ -60,7 +60,7 @@ public class NavigationDrawerFragment extends Fragment {
     private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
 
-    public NavigationDrawerFragment() {
+    public ProjectDashboardNavigationDrawerFragment() {
     }
 
     @Override
@@ -92,7 +92,7 @@ public class NavigationDrawerFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         mDrawerListView = (ListView) inflater.inflate(
-                R.layout.fragment_navigation_drawer, container, false);
+                R.layout.project_dashboard_navigation_drawer, container, false);
         mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -104,7 +104,7 @@ public class NavigationDrawerFragment extends Fragment {
                 android.R.layout.simple_list_item_activated_1,
                 android.R.id.text1,
                 new String[]{
-                        getString(R.string.title_home_section),
+                        getString(R.string.title_section1),
                         getString(R.string.title_section2),
                         getString(R.string.title_section3),
                 }));

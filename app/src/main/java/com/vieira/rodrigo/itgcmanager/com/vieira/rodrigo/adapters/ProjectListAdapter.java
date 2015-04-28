@@ -25,6 +25,10 @@ public class ProjectListAdapter  extends BaseAdapter {
         inflater = LayoutInflater.from(activity);
     }
 
+    public ProjectListAdapter() {
+
+    }
+
     @Override
     public int getCount() {
         return projects.size();
@@ -32,7 +36,7 @@ public class ProjectListAdapter  extends BaseAdapter {
 
     @Override
     public Object getItem(int position) {
-        return null;
+        return projects.get(position);
     }
 
     @Override

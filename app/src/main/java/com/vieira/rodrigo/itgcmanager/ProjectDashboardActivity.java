@@ -13,19 +13,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 
-import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments.HomeNavigationDrawerFragment;
-import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments.ProjectFragment;
+import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments.ProjectDashboardNavigationDrawerFragment;
 
-
-public class HomeActivity extends ActionBarActivity
-        implements HomeNavigationDrawerFragment.NavigationDrawerCallbacks {
-
-    private static final int HOME_SECTION = 1;
+public class ProjectDashboardActivity extends ActionBarActivity
+        implements ProjectDashboardNavigationDrawerFragment.NavigationDrawerCallbacks {
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
-    private HomeNavigationDrawerFragment mHomeNavigationDrawerFragment;
+    private ProjectDashboardNavigationDrawerFragment mProjectDashboardNavigationDrawerFragment;
 
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
@@ -35,14 +31,14 @@ public class HomeActivity extends ActionBarActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home);
+        setContentView(R.layout.activity_project_dashboard);
 
-        mHomeNavigationDrawerFragment = (HomeNavigationDrawerFragment)
+        mProjectDashboardNavigationDrawerFragment = (ProjectDashboardNavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
 
         // Set up the drawer.
-        mHomeNavigationDrawerFragment.setUp(
+        mProjectDashboardNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
     }
@@ -51,22 +47,15 @@ public class HomeActivity extends ActionBarActivity
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getSupportFragmentManager();
-        if ((position + 1) == HOME_SECTION) {
-            ProjectFragment projectListFragment = new ProjectFragment();
-            fragmentManager.beginTransaction()
-                    .replace(R.id.container, projectListFragment)
-                    .commit();
-        } else {
-            fragmentManager.beginTransaction()
-                    .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
-                    .commit();
-        }
+        fragmentManager.beginTransaction()
+                .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
+                .commit();
     }
 
     public void onSectionAttached(int number) {
         switch (number) {
-            case HOME_SECTION:
-                mTitle = getString(R.string.title_home_section);
+            case 1:
+                mTitle = getString(R.string.title_section1);
                 break;
             case 2:
                 mTitle = getString(R.string.title_section2);
@@ -86,11 +75,11 @@ public class HomeActivity extends ActionBarActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if (!mHomeNavigationDrawerFragment.isDrawerOpen()) {
+        if (!mProjectDashboardNavigationDrawerFragment.isDrawerOpen()) {
             // Only show items in the action bar relevant to this screen
             // if the drawer is not showing. Otherwise, let the drawer
             // decide what to show in the action bar.
-            getMenuInflater().inflate(R.menu.home, menu);
+            getMenuInflater().inflate(R.menu.project_dashboard, menu);
             restoreActionBar();
             return true;
         }
@@ -140,13 +129,14 @@ public class HomeActivity extends ActionBarActivity
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            return inflater.inflate(R.layout.fragment_home, container, false);
+            View rootView = inflater.inflate(R.layout.fragment_project_dashboard, container, false);
+            return rootView;
         }
 
         @Override
         public void onAttach(Activity activity) {
             super.onAttach(activity);
-            ((HomeActivity) activity).onSectionAttached(
+            ((ProjectDashboardActivity) activity).onSectionAttached(
                     getArguments().getInt(ARG_SECTION_NUMBER));
         }
     }

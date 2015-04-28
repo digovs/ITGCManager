@@ -15,11 +15,20 @@ public class Project {
     public static final String KEY_PROJECT_ID = "projectId";
     public static final String KEY_USER_ID = "userId";
 
+    private String id;
     String name;
     ArrayList<User> adminUsers;
 
     public Project() {
 
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public Project(String name) {

@@ -7,7 +7,7 @@ import com.parse.Parse;
 /**
  * Created by 305988 on 24/03/2015.
  */
-public class ITGCManager extends Application{
+public class ITGCManagerApplication extends Application{
 
     private final String parseApplicationId = "rpRdywhlhIR3zAH11dx9YosMKx0NbUXZcSgVwKEy";
     private final String parseClientId = "Kb0bRqkDlTxkx92d19mNwqTDxdDLIi7UFA2Vonvb";

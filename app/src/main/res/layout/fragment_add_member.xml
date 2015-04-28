@@ -1,0 +1,61 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments.AddMemberFragment"
+    android:padding="@dimen/activity_horizontal_margin">
+
+    <RelativeLayout
+        android:layout_height="match_parent"
+        android:layout_width="match_parent">
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/add_member_edit_text"
+            android:hint="@string/add_member_search_hint"
+            android:maxLines="1"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
+
+
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/add_member_edit_text">
+
+            <ListView
+                android:id="@android:id/list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+            </ListView>
+
+
+        </ScrollView>
+
+        <ProgressBar
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/add_member_progress_bar"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            android:visibility="gone"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:id="@+id/add_member_not_found_message"
+            android:text="@string/add_member_not_found_message"
+            android:layout_marginTop="10dp"
+            android:layout_below="@+id/add_member_edit_text"
+            android:layout_centerHorizontal="true"
+            android:visibility="gone"/>
+
+    </RelativeLayout>
+
+    </FrameLayout>

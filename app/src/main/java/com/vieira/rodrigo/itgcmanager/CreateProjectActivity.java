@@ -52,7 +52,7 @@ public class CreateProjectActivity extends ActionBarActivity {
                 String projectName = projectNameView.getText().toString();
                 if (!projectName.isEmpty())
                     attemptSaveProject(projectName);
-                else{
+                else {
                     projectNameView.setError(getString(R.string.error_field_required));
                 }
             }
@@ -89,7 +89,8 @@ public class CreateProjectActivity extends ActionBarActivity {
             public void done(ParseException e) {
                 if (e == null) {
                     showProgress(false);
-                    // TODO IR PARA SEGUNDA PARTE DO FLUXO DE PLANNING
+
+                    startActivity(new Intent(getApplicationContext(), AddMemberActivity.class));
                 } else {
                     handleParseException(e);
                 }
@@ -105,6 +106,11 @@ public class CreateProjectActivity extends ActionBarActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+        }
         return super.onOptionsItemSelected(item);
     }
 
