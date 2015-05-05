@@ -1,9 +1,13 @@
 package com.vieira.rodrigo.itgcmanager;
 
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.Utils.ParseUtils;
+import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.Project;
 
 
 public class AddMemberActivity extends ActionBarActivity {
@@ -12,6 +16,9 @@ public class AddMemberActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_member);
+
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setTitle(ParseUtils.getStringFromSession(getApplicationContext(), Project.KEY_PROJECT_NAME));
     }
 
 

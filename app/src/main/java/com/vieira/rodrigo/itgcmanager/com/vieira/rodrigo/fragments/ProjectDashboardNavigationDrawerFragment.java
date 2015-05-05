@@ -23,6 +23,8 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.vieira.rodrigo.itgcmanager.R;
+import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.Utils.ParseUtils;
+import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.Project;
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer.
@@ -104,8 +106,8 @@ public class ProjectDashboardNavigationDrawerFragment extends Fragment {
                 android.R.layout.simple_list_item_activated_1,
                 android.R.id.text1,
                 new String[]{
-                        getString(R.string.title_section1),
-                        getString(R.string.title_section2),
+                        getString(R.string.title_home_section),
+                        getString(R.string.title_team_section),
                         getString(R.string.title_section3),
                 }));
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
@@ -248,12 +250,6 @@ public class ProjectDashboardNavigationDrawerFragment extends Fragment {
         if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
-
-        if (item.getItemId() == R.id.action_example) {
-            Toast.makeText(getActivity(), "Example action.", Toast.LENGTH_SHORT).show();
-            return true;
-        }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -264,8 +260,9 @@ public class ProjectDashboardNavigationDrawerFragment extends Fragment {
     private void showGlobalContextActionBar() {
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-        actionBar.setTitle(R.string.app_name);
+
+        String currentProjectName = ParseUtils.getStringFromSession(getActivity(), Project.KEY_PROJECT_NAME);
+        actionBar.setTitle(currentProjectName);
     }
 
     private ActionBar getActionBar() {

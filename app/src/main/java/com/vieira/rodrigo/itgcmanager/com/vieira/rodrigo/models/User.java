@@ -9,9 +9,14 @@ public class User {
     public static final String KEY_USER_FULL_NAME = "fullName";
     public static final String KEY_USER_ROLE = "role";
     public static final String KEY_USER_EMAIL = "email";
+    public static final String KEY_USER_ID = "id";
+    public static final String KEY_USER_OBJECT_ID = "objectId";
 
     public static final String KEY_USER_NAME = "username";
     public static final String KEY_USER_PASSWORD = "password";
+
+    public static final String KEY_SELECTED_USER_ID = "selectedUserId";
+    public static final String KEY_SELECTED_USER_NAME = "selectedUserName";
 
     private String id;
     private String fullName;

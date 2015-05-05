@@ -14,7 +14,7 @@ import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments.HomeNavigationDrawerFragment;
-import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments.ProjectFragment;
+import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments.ProjectListFragment;
 
 
 public class HomeActivity extends ActionBarActivity
@@ -52,7 +52,7 @@ public class HomeActivity extends ActionBarActivity
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getSupportFragmentManager();
         if ((position + 1) == HOME_SECTION) {
-            ProjectFragment projectListFragment = new ProjectFragment();
+            ProjectListFragment projectListFragment = new ProjectListFragment();
             fragmentManager.beginTransaction()
                     .replace(R.id.container, projectListFragment)
                     .commit();

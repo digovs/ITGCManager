@@ -1,0 +1,46 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:background="@android:color/transparent"
+    tools:context="com.vieira.rodrigo.itgcmanager.ConfirmationDialogActivity"
+    android:padding="10dp">
+
+    <RelativeLayout android:id="@+id/fullscreen_content_controls" style="?metaButtonBarStyle"
+        android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@color/wallet_highlighted_text_holo_light"
+        tools:ignore="UselessParent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:gravity="center"
+            android:id="@+id/confirmation_dialog_text"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="5dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_below="@+id/confirmation_dialog_text">
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/confirmation_dialog_yes"
+                android:id="@+id/confirmation_dialog_yes_button"/>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/confirmation_dialog_no"
+                android:id="@+id/confirmation_dialog_no_button"/>
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</FrameLayout>

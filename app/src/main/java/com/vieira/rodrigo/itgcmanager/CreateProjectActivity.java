@@ -16,15 +16,26 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
+import com.parse.FindCallback;
+import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
+import com.parse.ParseRelation;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
+import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.Utils.ParseUtils;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.Project;
+import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.User;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class CreateProjectActivity extends ActionBarActivity {
+
+    ArrayList<String> userProjectNameList = new ArrayList<>();
 
     EditText projectNameView;
     Button createProjectBtn;
@@ -50,49 +61,78 @@ public class CreateProjectActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 String projectName = projectNameView.getText().toString();
-                if (!projectName.isEmpty())
-                    attemptSaveProject(projectName);
-                else {
+                if (projectName.isEmpty()) {
                     projectNameView.setError(getString(R.string.error_field_required));
+
+                } else if (userProjectNameList != null && userProjectNameList.contains(projectName)) {
+                    projectNameView.setError(getString(R.string.create_project_not_available_name_message));
+                } else {
+                    projectNameView.setError(null);
+                    attemptSaveProject(projectName);
                 }
             }
         });
 
+        loadListWIthUserProjects();
     }
 
     private void attemptSaveProject(String projectName) {
         showProgress(true);
-        final ParseObject project = new ParseObject(Project.TABLE_PROJECT);
-        project.put(Project.KEY_PROJECT_NAME, projectName);
-        project.saveInBackground(new SaveCallback() {
+        final ParseObject newProjectObject = new ParseObject(Project.TABLE_PROJECT);
+        newProjectObject.put(Project.KEY_PROJECT_NAME, projectName);
+        newProjectObject.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
                 if (e == null) {
-                    linkUserToProject(ParseUser.getCurrentUser(), project);
+                    ParseUtils.saveStringToSession(getApplicationContext(), Project.KEY_PROJECT_ID, newProjectObject.getObjectId());
+                    ParseUtils.saveStringToSession(getApplicationContext(), Project.KEY_PROJECT_NAME, newProjectObject.getString(Project.KEY_PROJECT_NAME));
+
+                    attemptSaveProjectUserRelationship(newProjectObject);
                 } else {
                     showProgress(false);
                     handleParseException(e);
                 }
             }
         });
+
+
+
     }
 
-    private void linkUserToProject(ParseUser user, ParseObject project) {
-        String userId = user.getObjectId();
-        String projectId = project.getObjectId();
+    private void attemptSaveProjectUserRelationship(ParseObject newProjectObject) {
+        ParseRelation<ParseObject> relation = newProjectObject.getRelation(Project.KEY_PROJECT_USER_RELATION);
+        relation.add(ParseUser.getCurrentUser());
 
-        ParseObject projectUser = new ParseObject(Project.TABLE_PROJECT_USER);
-        projectUser.put(Project.KEY_PROJECT_ID, projectId);
-        projectUser.put(Project.KEY_USER_ID, userId);
-        projectUser.saveInBackground(new SaveCallback() {
+        newProjectObject.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
+                showProgress(false);
                 if (e == null) {
-                    showProgress(false);
-
                     startActivity(new Intent(getApplicationContext(), AddMemberActivity.class));
                 } else {
                     handleParseException(e);
+                }
+            }
+        });
+    }
+
+    private void loadListWIthUserProjects() {
+        showProgress(true);
+
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(Project.TABLE_PROJECT);
+        query.whereEqualTo(Project.KEY_PROJECT_USER_RELATION, ParseUser.getCurrentUser());
+
+        query.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> list, ParseException e) {
+                showProgress(false);
+                if (e == null) {
+                    for (ParseObject project : list) {
+                        userProjectNameList.add(project.getString(Project.KEY_PROJECT_NAME));
+                    }
+                } else {
+                    userProjectNameList = new ArrayList<>();
+                    ParseUtils.handleParseException(getApplicationContext(), e);
                 }
             }
         });

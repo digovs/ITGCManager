@@ -25,6 +25,7 @@
     <string name="title_activity_create_project">Create Project</string>
     <string name="create_project_name_hint">Project name</string>
     <string name="create_project_button_text">Create</string>
+    <string name="create_project_not_available_name_message">Duplicated Project Name</string>
 
 
     <string name="title_activity_home">Home</string>
@@ -33,6 +34,13 @@
     <string name="title_home_section">Home</string>
     <string name="title_section2">Section 2</string>
     <string name="title_section3">Section 3</string>
+
+    <!-- Home Fragment -->
+    <string name="project_list_empty_string">You have no projects, to create one click at the button "Create project"</string>
+
+
+    <!-- Team Member List Fragment -->
+    <string name="team_member_list_empty_string">You have no members added yet, to add one to the project, click at the button "Add Member"</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -51,10 +59,20 @@
     <string name="title_activity_add_member">Add Member</string>
     <string name="title_activity_project_dashboard">Dashboard</string>
 
-    <string name="title_section1">Section 1</string>
 
-    <string name="add_member_search_hint">Search User</string>
+    <!-- Dashboard Activity -->
+    <string name="title_team_section">Team</string>
+
+    <string name="add_member_search_hint">Search User by login or name</string>
     <string name="add_member_not_found_message">Your search returned no results.</string>
+    <string name="title_activity_confirmation_dialog">ConfirmationDialogActivity</string>
 
+    <!-- COnfirmation dialog activity -->
+    <string name="confirmation_dialog_yes">YES</string>
+    <string name="confirmation_dialog_no">NO</string>
+    <string name="confirmation_dialog_add_member_message">Are you sure you want to add XXX at your project?</string>
+
+    <string name="action_title_add_member">Add member</string>
+    <string name="team_member_fragment_title">Team members</string>
 
 </resources>

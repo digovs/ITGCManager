@@ -2,12 +2,17 @@ package com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.Utils;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 
 import com.parse.ParseException;
+import com.parse.ParseObject;
 import com.vieira.rodrigo.itgcmanager.ErrorMessageDialogActivity;
 import com.vieira.rodrigo.itgcmanager.R;
+import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.Project;
 
 public abstract class ParseUtils {
+
+    public static final String PREFS_NAME = "MyPrefsFile";
 
     public static void handleParseException(Context context, ParseException exception) {
         int exceptionCode = exception.getCode();
@@ -32,4 +37,18 @@ public abstract class ParseUtils {
         i.putExtra(ErrorMessageDialogActivity.KEY_MESSAGE_TEXT, message);
         context.startActivity(i);
     }
+
+    public static void saveStringToSession(Context context, String key, String value) {
+        SharedPreferences session = context.getSharedPreferences(PREFS_NAME, 0);
+        SharedPreferences.Editor editor = session.edit();
+        editor.putString(key, value);
+        editor.commit();
+    }
+
+    public static String getStringFromSession(Context context, String key) {
+        SharedPreferences session = context.getSharedPreferences(PREFS_NAME, 0);
+        return session.getString(key, "");
+    }
+
+
 }

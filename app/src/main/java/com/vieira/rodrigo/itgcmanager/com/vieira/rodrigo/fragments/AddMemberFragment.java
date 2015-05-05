@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
@@ -19,14 +20,22 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.parse.FindCallback;
+import com.parse.GetCallback;
+import com.parse.Parse;
 import com.parse.ParseException;
+import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.ParseRelation;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
+import com.vieira.rodrigo.itgcmanager.ConfirmationDialogActivity;
 import com.vieira.rodrigo.itgcmanager.R;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.Utils.ParseUtils;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.adapters.MemberListAdapter;
+import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.Project;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.User;
 
 import java.util.ArrayList;
@@ -35,12 +44,19 @@ import java.util.List;
 
 public class AddMemberFragment extends ListFragment {
 
+    public static final int ADD_MEMBER_ID = 0;
+
     private ArrayList<User> userList = new ArrayList<>();
+    private ArrayList<User> alreadyAddedUserList = new ArrayList<>();
     private MemberListAdapter adapter;
+
     private EditText searchView;
     private ListView listView;
     private ProgressBar progressBar;
     private TextView emptyResultMessage;
+
+    private String selectedUserId;
+    private String currentProjectId;
 
     public AddMemberFragment() {
     }
@@ -50,9 +66,12 @@ public class AddMemberFragment extends ListFragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_add_member, container, false);
 
-        searchView = (EditText) view.findViewById(R.id.add_member_edit_text);
+        currentProjectId = ParseUtils.getStringFromSession(getActivity(), Project.KEY_PROJECT_ID);
+
         listView = (ListView) view.findViewById(android.R.id.list);
         progressBar = (ProgressBar) view.findViewById(R.id.add_member_progress_bar);
+
+        searchView = (EditText) view.findViewById(R.id.add_member_edit_text);
         emptyResultMessage = (TextView) view.findViewById(R.id.add_member_not_found_message);
 
         searchView.addTextChangedListener(new TextWatcher() {
@@ -69,14 +88,52 @@ public class AddMemberFragment extends ListFragment {
             @Override
             public void afterTextChanged(Editable s) {
                 String userName = searchView.getText().toString();
-                if (userName.length() > 3) {
+                if (userName.length() >= 3) {
                     searchForUser(userName);
                 } else
                     resetList();
             }
         });
 
+        loadAlreadyAddedUserList();
         return view;
+    }
+
+    private void loadAlreadyAddedUserList() {
+        showProgress(true);
+        searchView.setVisibility(View.GONE);
+
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(Project.TABLE_PROJECT);
+        query.getInBackground(currentProjectId, new GetCallback<ParseObject>() {
+            @Override
+            public void done(ParseObject projectObject, ParseException e) {
+                if (e == null) {
+                    ParseRelation relation = projectObject.getRelation(Project.KEY_PROJECT_USER_RELATION);
+                    ParseQuery query = relation.getQuery();
+                    query.findInBackground(new FindCallback() {
+                        @Override
+                        public void done(List list, ParseException e) {
+                            showProgress(false);
+                            searchView.setVisibility(View.VISIBLE);
+                        }
+
+                        @Override
+                        public void done(Object o, Throwable throwable) {
+                            showProgress(false);
+                            searchView.setVisibility(View.VISIBLE);
+                            ArrayList<ParseUser> result = (ArrayList) o;
+                            for (ParseUser user : result) {
+                                User tempUser = new User(user);
+                                alreadyAddedUserList.add(tempUser);
+                            }
+                        }
+                    });
+                } else{
+                    ParseUtils.handleParseException(getActivity(), e);
+                }
+            }
+        });
+
     }
 
     private void searchForUser(String query) {
@@ -102,7 +159,7 @@ public class AddMemberFragment extends ListFragment {
                     userList = new ArrayList<>();
                     for (ParseUser object : list) {
                         User tempUser = new User(object);
-                        if (!tempUser.getId().equals(ParseUser.getCurrentUser().getObjectId()))
+                        if (!alreadyAddedUserList.contains(tempUser))
                             userList.add(tempUser);
                     }
                     if (adapter != null) {
@@ -120,6 +177,7 @@ public class AddMemberFragment extends ListFragment {
             }
         });
     }
+
 
     private void resetList() {
         if (adapter != null) {
@@ -143,11 +201,68 @@ public class AddMemberFragment extends ListFragment {
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
+
+        selectedUserId = userList.get(position).getId();
+        String selectedUserName = userList.get(position).getUserName();
+        String message = getString(R.string.confirmation_dialog_add_member_message);
+        message = message.replace("XXX", selectedUserName);
+
+        Intent intent = new Intent(getActivity(), ConfirmationDialogActivity.class);
+        intent.putExtra(User.KEY_USER_ID, selectedUserId);
+        intent.putExtra(ConfirmationDialogActivity.KEY_MESSAGE, message);
+
+        startActivityForResult(intent, ADD_MEMBER_ID);
     }
 
 
-
     @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (resultCode) {
+            case ConfirmationDialogActivity.RESULT_OK:
+                attemptSaveMemberToProject();
+                break;
+
+            case ConfirmationDialogActivity.RESULT_CANCELED:
+                break;
+        }
+    }
+
+    private void attemptSaveMemberToProject() {
+        searchView.setVisibility(View.GONE);
+        showProgress(true);
+        if (selectedUserId != null) {
+            final ParseObject projectObject = ParseObject.createWithoutData(Project.TABLE_PROJECT, currentProjectId);
+
+            ParseQuery<ParseUser> query = ParseUser.getQuery();
+            query.getInBackground(selectedUserId, new GetCallback<ParseUser>() {
+                @Override
+                public void done(ParseUser parseUser, ParseException e) {
+                    searchView.setVisibility(View.VISIBLE);
+                    showProgress(false);
+                    if (e == null){
+                        ParseRelation<ParseObject> relation = projectObject.getRelation(Project.KEY_PROJECT_USER_RELATION);
+                        relation.add(parseUser);
+
+                        try {
+                            projectObject.save();
+                        } catch (Exception exception) {
+                            String message = exception.getMessage();
+                            Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
+                        }
+
+                        Toast.makeText(getActivity(), "successful!", Toast.LENGTH_LONG).show();
+                        User tempUser = new User(parseUser);
+                        alreadyAddedUserList.add(tempUser);
+                        resetList();
+                    } else {
+                        ParseUtils.handleParseException(getActivity(), e);
+                    }
+                }
+            });
+        }
+    }
+
+        @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
     }

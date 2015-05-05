@@ -14,9 +14,14 @@ import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments.ProjectDashboardNavigationDrawerFragment;
+import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments.ProjectDetailsFragment;
+import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments.TeamMemberListFragment;
 
 public class ProjectDashboardActivity extends ActionBarActivity
         implements ProjectDashboardNavigationDrawerFragment.NavigationDrawerCallbacks {
+
+    public static final int HOME_SECTION = 1;
+    public static final int TEAM_SECTION = 2;
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -45,20 +50,32 @@ public class ProjectDashboardActivity extends ActionBarActivity
 
     @Override
     public void onNavigationDrawerItemSelected(int position) {
-        // update the main content by replacing fragments
         FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
-                .commit();
+        switch (position+1) {
+            case HOME_SECTION:
+                ProjectDetailsFragment detailsFragment = new ProjectDetailsFragment();
+                fragmentManager.beginTransaction()
+                        .replace(R.id.container, detailsFragment)
+                        .commit();
+                break;
+
+            case TEAM_SECTION:
+                TeamMemberListFragment teamMemberListFragment = new TeamMemberListFragment();
+                fragmentManager.beginTransaction()
+                        .replace(R.id.container, teamMemberListFragment)
+                        .commit();
+                break;
+        }
+
     }
 
     public void onSectionAttached(int number) {
         switch (number) {
-            case 1:
-                mTitle = getString(R.string.title_section1);
+            case HOME_SECTION:
+                mTitle = getString(R.string.title_home_section);
                 break;
-            case 2:
-                mTitle = getString(R.string.title_section2);
+            case TEAM_SECTION:
+                mTitle = getString(R.string.title_team_section);
                 break;
             case 3:
                 mTitle = getString(R.string.title_section3);

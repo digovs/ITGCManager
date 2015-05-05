@@ -26,6 +26,7 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.vieira.rodrigo.itgcmanager.AddMemberActivity;
 import com.vieira.rodrigo.itgcmanager.CreateProjectActivity;
+import com.vieira.rodrigo.itgcmanager.ProjectDashboardActivity;
 import com.vieira.rodrigo.itgcmanager.R;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.Utils.ParseUtils;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.adapters.ProjectListAdapter;
@@ -34,16 +35,16 @@ import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.Project;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProjectFragment extends ListFragment{
+public class ProjectListFragment extends ListFragment{
 
-    private ParseUser currentUser;
     private ProjectListAdapter adapter;
 
     private ListView listView;
     private ProgressBar progressBar;
+    private TextView emptyTextView;
     private ArrayList<Project> projects = new ArrayList<>();
 
-    public ProjectFragment() {
+    public ProjectListFragment() {
     }
 
     @Override
@@ -53,12 +54,39 @@ public class ProjectFragment extends ListFragment{
         loadProjectList();
     }
 
+    private void loadProjectList() {
+        showProgress(true);
+
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(Project.TABLE_PROJECT);
+        query.whereEqualTo(Project.KEY_PROJECT_USER_RELATION, ParseUser.getCurrentUser());
+
+        query.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> list, ParseException e) {
+                showProgress(false);
+                if (e == null) {
+                    for (ParseObject project : list) {
+                        Project tempProject = new Project(project);
+                        projects.add(tempProject);
+                    }
+                    adapter = new ProjectListAdapter(getActivity(), projects);
+                    setListAdapter(adapter);
+                    if (projects.isEmpty())
+                        setEmptyText(true);
+                } else {
+                    projects = new ArrayList<>();
+                    ParseUtils.handleParseException(getActivity(), e);
+                }
+            }
+        });
+    }
+
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         if (adapter != null) {
-            Intent intent = new Intent(getActivity(), AddMemberActivity.class);
-            intent.putExtra(Project.KEY_PROJECT_ID, ((Project) adapter.getItem(position)).getId());
-            startActivity(intent);
+            ParseUtils.saveStringToSession(getActivity(), Project.KEY_PROJECT_ID, projects.get(position).getId());
+            ParseUtils.saveStringToSession(getActivity(), Project.KEY_PROJECT_NAME, projects.get(position).getName());
+            startActivity(new Intent(getActivity(), ProjectDashboardActivity.class));
         }
     }
 
@@ -67,7 +95,6 @@ public class ProjectFragment extends ListFragment{
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
     }
-
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -82,8 +109,8 @@ public class ProjectFragment extends ListFragment{
             item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                 @Override
                 public boolean onMenuItemClick(MenuItem item) {
-                    startActivity(new Intent(getActivity(), CreateProjectActivity.class));
-                    return true;
+                startActivity(new Intent(getActivity(), CreateProjectActivity.class));
+                return true;
                 }
             });
         }
@@ -95,6 +122,7 @@ public class ProjectFragment extends ListFragment{
         View view = inflater.inflate(R.layout.fragment_project, container, false);
         listView = (ListView) view.findViewById(android.R.id.list);
         progressBar = (ProgressBar) view.findViewById(R.id.project_list_progress_bar);
+        emptyTextView = (TextView) view.findViewById(R.id.project_list_empty_message);
         return view;
     }
 
@@ -119,66 +147,16 @@ public class ProjectFragment extends ListFragment{
         super.onDetach();
     }
 
-    private void loadProjectList() {
-        showProgress(true);
-        currentUser = ParseUser.getCurrentUser();
-        final ArrayList<String> projectIds = new ArrayList<>();
-
-        ParseQuery<ParseObject> query = ParseQuery.getQuery(Project.TABLE_PROJECT_USER);
-        query.whereEqualTo(Project.KEY_USER_ID, currentUser.getObjectId());
-        query.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> projectUser, ParseException e) {
-                if (isAdded()) {
-                    if (e == null) {
-                        for (ParseObject item : projectUser) {
-                            projectIds.add(item.getString(Project.KEY_PROJECT_ID));
-                        }
-                        loadProjectListContents(projectIds);
-                    } else {
-                        showProgress(false);
-                        ParseUtils.handleParseException(getActivity(), e);
-                    }
-                }
-            }
-        });
-    }
-
-    private void loadProjectListContents(final ArrayList<String> projectIds) {
-        ParseQuery<ParseObject> query = ParseQuery.getQuery(Project.TABLE_PROJECT);
-        query.whereContainedIn(Project.KEY_PROJECT_OBJECT_ID, projectIds);
-        query.orderByAscending(Project.KEY_PROJECT_NAME);
-
-        query.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> list, ParseException e) {
-                if (isAdded()) {
-                    showProgress(false);
-                    if (e == null) {
-                        for (ParseObject object : list) {
-                            Project tempProject = new Project(object);
-                            projects.add(tempProject);
-                        }
-                        adapter = new ProjectListAdapter(getActivity(), projects);
-                        setListAdapter(adapter);
-                    } else
-                        ParseUtils.handleParseException(getActivity(), e);
-                }
-            }
-        });
-    }
-
-    public void setEmptyText(CharSequence emptyText) {
-        View emptyView = listView.getEmptyView();
-
-        if (emptyView instanceof TextView) {
-            ((TextView) emptyView).setText(emptyText);
-        }
+    public void setEmptyText(boolean show) {
+        emptyTextView.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     public void showProgress(final boolean show) {
         if (isAdded()) {
+            if (emptyTextView != null)
+                setEmptyText(show);
+
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
                 int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
 

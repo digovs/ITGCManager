@@ -8,12 +8,10 @@ import java.util.ArrayList;
 public class Project {
 
     public static final String TABLE_PROJECT = "Project";
+    public static final String KEY_PROJECT_ID = "projectId";
     public static final String KEY_PROJECT_NAME = "projectName";
     public static final String KEY_PROJECT_OBJECT_ID = "objectId";
-
-    public static final String TABLE_PROJECT_USER = "ProjectUser";
-    public static final String KEY_PROJECT_ID = "projectId";
-    public static final String KEY_USER_ID = "userId";
+    public static final String KEY_PROJECT_USER_RELATION = "users";
 
     private String id;
     String name;
@@ -37,6 +35,7 @@ public class Project {
 
     public Project(ParseObject parseObject) {
         this.name = parseObject.getString(KEY_PROJECT_NAME);
+        this.id = parseObject.getObjectId();
     }
     public String getName() {
         return name;
