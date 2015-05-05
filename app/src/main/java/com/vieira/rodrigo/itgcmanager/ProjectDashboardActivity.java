@@ -1,6 +1,7 @@
 package com.vieira.rodrigo.itgcmanager;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -22,6 +23,7 @@ public class ProjectDashboardActivity extends ActionBarActivity
 
     public static final int HOME_SECTION = 1;
     public static final int TEAM_SECTION = 2;
+    public static final int SCOPE_SECTION = 3;
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -65,6 +67,10 @@ public class ProjectDashboardActivity extends ActionBarActivity
                         .replace(R.id.container, teamMemberListFragment)
                         .commit();
                 break;
+
+            case SCOPE_SECTION:
+                startActivity(new Intent(this, AddCompanyScopeActivity.class));
+                break;
         }
 
     }
@@ -77,7 +83,7 @@ public class ProjectDashboardActivity extends ActionBarActivity
             case TEAM_SECTION:
                 mTitle = getString(R.string.title_team_section);
                 break;
-            case 3:
+            case SCOPE_SECTION:
                 mTitle = getString(R.string.title_section3);
                 break;
         }

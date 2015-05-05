@@ -59,9 +59,17 @@
         </activity>
         <activity
             android:name=".ConfirmationDialogActivity"
-            android:label="@string/title_activity_confirmation_dialog"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:theme="@style/Theme.AppCompat.Light.Dialog">
+            android:label="@string/title_activity_confirmation_dialog"
+            android:theme="@style/Theme.AppCompat.Light.Dialog" >
+        </activity>
+        <activity
+            android:name=".AddSystemScopeActivity"
+            android:label="@string/title_activity_add_system_scope" >
+        </activity>
+        <activity
+            android:name=".AddCompanyScopeActivity"
+            android:label="@string/title_activity_add_company_scope" >
         </activity>
     </application>
 

@@ -129,15 +129,16 @@ public class LoginActivity extends Activity {
         ParseUser.logInInBackground(userName, password, new LogInCallback() {
             @Override
             public void done(ParseUser parseUser, ParseException e) {
-                showProgress(false);
                 if (e == null) {
                     if (parseUser != null) {
                         startActivity(new Intent(getApplicationContext(), HomeActivity.class));
                         finish();
                     } else {
+                        showProgress(false);
                         callErrorDialogWithMessage(getString(R.string.incorrect_login_or_password));
                     }
                 } else{
+                    showProgress(false);
                     handleParseException(e);
                 }
             }

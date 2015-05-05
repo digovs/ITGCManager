@@ -153,7 +153,7 @@ public class TeamMemberListFragment extends ListFragment {
         if (adapter != null) {
             ParseUtils.saveStringToSession(getActivity(), User.KEY_SELECTED_USER_ID, members.get(position).getId());
             ParseUtils.saveStringToSession(getActivity(), User.KEY_SELECTED_USER_NAME, members.get(position).getUserName());
-            // TODO dashboard de atividades de usuários
+            // TODO dashboard de atividades de usuarios
             startActivity(new Intent(getActivity(), ProjectDashboardActivity.class));
         }
     }

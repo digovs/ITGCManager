@@ -75,4 +75,13 @@
     <string name="action_title_add_member">Add member</string>
     <string name="team_member_fragment_title">Team members</string>
 
+    <string name="title_activity_add_system_scope">Add System Scope</string>
+    <string name="add_system_scope_name_hint">System Name</string>
+    <string name="add_system_scope_button_text">Save</string>
+    <string name="add_system_duplicated_name_error">Duplicated System Name</string>
+
+    <string name="title_activity_add_company_scope">Add Company Scope</string>
+    <string name="add_company_scope_name_hint">Company Name</string>
+    <string name="add_company_scope_button_text">Save</string>
+    <string name="add_company_duplicated_name_error">Duplicated Company Name</string>
 </resources>
