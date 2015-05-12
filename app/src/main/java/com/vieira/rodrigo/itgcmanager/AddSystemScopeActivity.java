@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.os.Build;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -22,7 +23,6 @@ import com.parse.ParseQuery;
 import com.parse.SaveCallback;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.Utils.ParseUtils;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.*;
-import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.System;
 
 import java.util.ArrayList;
 
@@ -42,6 +42,10 @@ public class AddSystemScopeActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_system_scope);
+
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setHomeButtonEnabled(true);
+        actionBar.setDisplayHomeAsUpEnabled(true);
 
         currentProjectId = ParseUtils.getStringFromSession(getApplicationContext(), Project.KEY_PROJECT_ID);
 
@@ -91,7 +95,7 @@ public class AddSystemScopeActivity extends ActionBarActivity {
         if (alreadyAddedSystemList == null)
             return true;
         for (ParseObject systemObject : alreadyAddedSystemList) {
-            if (systemObject.getString(System.KEY_SYSTEM_NAME).equals(name))
+            if (systemObject.getString(SystemApp.KEY_SYSTEM_NAME).equals(name))
                 return false;
         }
         return true;
@@ -99,8 +103,8 @@ public class AddSystemScopeActivity extends ActionBarActivity {
 
     private void attemptSaveSystem(String name) {
         showProgress(true);
-        final ParseObject newSystem = new ParseObject(System.TABLE_SYSTEM);
-        newSystem.put(System.KEY_SYSTEM_NAME, name);
+        final ParseObject newSystem = new ParseObject(SystemApp.TABLE_SYSTEM);
+        newSystem.put(SystemApp.KEY_SYSTEM_NAME, name);
 
         newSystem.saveInBackground(new SaveCallback() {
             @Override
@@ -116,6 +120,7 @@ public class AddSystemScopeActivity extends ActionBarActivity {
                         public void done(ParseException e) {
                             showProgress(false);
                             if (e == null){
+                                // TODO Mensagem de salvamento de Sistema
                                 Toast.makeText(getApplicationContext(), "Saved successfuly!", Toast.LENGTH_LONG).show();
                             } else {
                                 ParseUtils.handleParseException(getApplicationContext(), e);
@@ -139,16 +144,11 @@ public class AddSystemScopeActivity extends ActionBarActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
         }
-
         return super.onOptionsItemSelected(item);
     }
 

@@ -108,7 +108,8 @@ public class ProjectDashboardNavigationDrawerFragment extends Fragment {
                 new String[]{
                         getString(R.string.title_home_section),
                         getString(R.string.title_team_section),
-                        getString(R.string.title_section3),
+                        getString(R.string.title_system_section),
+                        getString(R.string.title_company_section)
                 }));
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
         return mDrawerListView;

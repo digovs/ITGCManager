@@ -18,64 +18,60 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-
-import com.parse.FindCallback;
+import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
-import com.parse.ParseUser;
-import com.vieira.rodrigo.itgcmanager.CreateProjectActivity;
+import com.vieira.rodrigo.itgcmanager.AddCompanyScopeActivity;
 import com.vieira.rodrigo.itgcmanager.ProjectDashboardActivity;
 import com.vieira.rodrigo.itgcmanager.R;
+
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.Utils.ParseUtils;
-import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.adapters.ProjectListAdapter;
+import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.adapters.CompanyListAdapter;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.Project;
 
 import java.util.ArrayList;
-import java.util.List;
 
-public class ProjectListFragment extends ListFragment{
+public class CompanyListFragment extends ListFragment {
 
-    private ProjectListAdapter adapter;
+    public CompanyListFragment() {
+    }
+    private CompanyListAdapter adapter;
 
+    private String currentProjectId;
     private ListView listView;
     private ProgressBar progressBar;
     private TextView emptyTextView;
-    private ArrayList<Project> projectList = new ArrayList<>();
+    private ArrayList<ParseObject> companyList = new ArrayList<>();
 
-    public ProjectListFragment() {
-    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        loadProjectList();
+        currentProjectId = ParseUtils.getStringFromSession(getActivity(), Project.KEY_PROJECT_ID);
+
+        loadCompanyList();
     }
 
-    private void loadProjectList() {
+    private void loadCompanyList() {
         showProgress(true);
-
-        ParseQuery<ParseObject> query = ParseQuery.getQuery(Project.TABLE_PROJECT);
-        query.whereEqualTo(Project.KEY_PROJECT_USER_RELATION, ParseUser.getCurrentUser());
-
-        query.findInBackground(new FindCallback<ParseObject>() {
+        ParseQuery<ParseObject> getProject = ParseQuery.getQuery(Project.TABLE_PROJECT);
+        getProject.include(Project.KEY_COMPANY_SCOPE_LIST);
+        getProject.getInBackground(currentProjectId, new GetCallback<ParseObject>() {
             @Override
-            public void done(List<ParseObject> list, ParseException e) {
+            public void done(ParseObject parseObject, ParseException e) {
                 showProgress(false);
                 if (e == null) {
-                    for (ParseObject project : list) {
-                        Project tempProject = new Project(project);
-                        projectList.add(tempProject);
-                    }
-                    adapter = new ProjectListAdapter(getActivity(), projectList);
+                    companyList = (ArrayList) parseObject.getList(Project.KEY_COMPANY_SCOPE_LIST);
+                    adapter = new CompanyListAdapter(getActivity(), companyList);
                     setListAdapter(adapter);
-                    if (projectList.isEmpty())
+                    if (companyList.isEmpty())
                         setEmptyText(true);
                     else
                         setEmptyText(false);
                 } else {
-                    projectList = new ArrayList<>();
+                    companyList = new ArrayList<>();
                     ParseUtils.handleParseException(getActivity(), e);
                 }
             }
@@ -85,9 +81,6 @@ public class ProjectListFragment extends ListFragment{
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         if (adapter != null) {
-            ParseUtils.saveStringToSession(getActivity(), Project.KEY_PROJECT_ID, projectList.get(position).getId());
-            ParseUtils.saveStringToSession(getActivity(), Project.KEY_PROJECT_NAME, projectList.get(position).getName());
-            startActivity(new Intent(getActivity(), ProjectDashboardActivity.class));
         }
     }
 
@@ -100,18 +93,18 @@ public class ProjectListFragment extends ListFragment{
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.menu_project_fragment, menu);
+        inflater.inflate(R.menu.menu_company_fragment, menu);
     }
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-        MenuItem item = menu.findItem(R.id.action_create_project);
+        MenuItem item = menu.findItem(R.id.action_add_company);
         if (item != null) {
             item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                 @Override
                 public boolean onMenuItemClick(MenuItem item) {
-                startActivity(new Intent(getActivity(), CreateProjectActivity.class));
-                return true;
+                    startActivity(new Intent(getActivity(), AddCompanyScopeActivity.class));
+                    return true;
                 }
             });
         }
@@ -120,18 +113,18 @@ public class ProjectListFragment extends ListFragment{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_project, container, false);
+        View view = inflater.inflate(R.layout.fragment_company_list, container, false);
         listView = (ListView) view.findViewById(android.R.id.list);
-        progressBar = (ProgressBar) view.findViewById(R.id.project_list_progress_bar);
-        emptyTextView = (TextView) view.findViewById(R.id.project_list_empty_message);
+        progressBar = (ProgressBar) view.findViewById(R.id.company_list_progress_bar);
+        emptyTextView = (TextView) view.findViewById(R.id.company_list_empty_message);
         return view;
     }
 
     @Override
     public void onResume() {
         if (adapter != null) {
-            projectList = new ArrayList<>();
-            loadProjectList();
+            companyList = new ArrayList<>();
+            loadCompanyList();
             adapter.notifyDataSetChanged();
         }
 
@@ -141,6 +134,8 @@ public class ProjectListFragment extends ListFragment{
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
+        ((ProjectDashboardActivity) activity).onSectionAttached(
+                ProjectDashboardActivity.COMPANY_SCOPE_SECTION);
     }
 
     @Override
@@ -157,7 +152,7 @@ public class ProjectListFragment extends ListFragment{
         if (isAdded()) {
             if (emptyTextView != null && show)
                 setEmptyText(false);
-            else if (projectList.isEmpty())
+            else if (companyList.isEmpty())
                 setEmptyText(true);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
@@ -190,3 +185,4 @@ public class ProjectListFragment extends ListFragment{
     }
 
 }
+

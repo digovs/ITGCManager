@@ -30,12 +30,10 @@ import com.parse.ParseQuery;
 import com.parse.ParseRelation;
 import com.parse.ParseUser;
 import com.vieira.rodrigo.itgcmanager.AddMemberActivity;
-import com.vieira.rodrigo.itgcmanager.CreateProjectActivity;
 import com.vieira.rodrigo.itgcmanager.ProjectDashboardActivity;
 import com.vieira.rodrigo.itgcmanager.R;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.Utils.ParseUtils;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.adapters.MemberListAdapter;
-import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.adapters.ProjectListAdapter;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.Project;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.User;
 
@@ -54,7 +52,7 @@ public class TeamMemberListFragment extends ListFragment {
     private ListView listView;
     private ProgressBar progressBar;
     private TextView emptyTextView;
-    private ArrayList<User> members = new ArrayList<>();
+    private ArrayList<User> teamMemberList = new ArrayList<>();
 
     public TeamMemberListFragment() {
         // Required empty public constructor
@@ -131,12 +129,13 @@ public class TeamMemberListFragment extends ListFragment {
                             if (result.isEmpty()) {
                                 setEmptyText(true);
                             } else {
+                                setEmptyText(false);
                                 for (ParseUser user : result) {
                                     User tempUser = new User(user);
-                                    members.add(tempUser);
+                                    teamMemberList.add(tempUser);
                                 }
 
-                                adapter = new MemberListAdapter(getActivity(), members);
+                                adapter = new MemberListAdapter(getActivity(), teamMemberList);
                                 setListAdapter(adapter);
                             }
                         }
@@ -151,8 +150,8 @@ public class TeamMemberListFragment extends ListFragment {
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         if (adapter != null) {
-            ParseUtils.saveStringToSession(getActivity(), User.KEY_SELECTED_USER_ID, members.get(position).getId());
-            ParseUtils.saveStringToSession(getActivity(), User.KEY_SELECTED_USER_NAME, members.get(position).getUserName());
+            ParseUtils.saveStringToSession(getActivity(), User.KEY_SELECTED_USER_ID, teamMemberList.get(position).getId());
+            ParseUtils.saveStringToSession(getActivity(), User.KEY_SELECTED_USER_NAME, teamMemberList.get(position).getUserName());
             // TODO dashboard de atividades de usuarios
             startActivity(new Intent(getActivity(), ProjectDashboardActivity.class));
         }
@@ -177,8 +176,10 @@ public class TeamMemberListFragment extends ListFragment {
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     public void showProgress(final boolean show) {
         if (isAdded()) {
-            if (emptyTextView != null)
-                setEmptyText(show);
+            if (emptyTextView != null && show)
+                setEmptyText(false);
+            else if (teamMemberList.isEmpty())
+                setEmptyText(true);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
                 int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);

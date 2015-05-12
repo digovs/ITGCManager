@@ -14,8 +14,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 
+import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments.CompanyListFragment;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments.ProjectDashboardNavigationDrawerFragment;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments.ProjectDetailsFragment;
+import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments.SystemListFragment;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments.TeamMemberListFragment;
 
 public class ProjectDashboardActivity extends ActionBarActivity
@@ -23,7 +25,8 @@ public class ProjectDashboardActivity extends ActionBarActivity
 
     public static final int HOME_SECTION = 1;
     public static final int TEAM_SECTION = 2;
-    public static final int SCOPE_SECTION = 3;
+    public static final int SYSTEM_SCOPE_SECTION = 3;
+    public static final int COMPANY_SCOPE_SECTION = 4;
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -68,8 +71,18 @@ public class ProjectDashboardActivity extends ActionBarActivity
                         .commit();
                 break;
 
-            case SCOPE_SECTION:
-                startActivity(new Intent(this, AddCompanyScopeActivity.class));
+            case SYSTEM_SCOPE_SECTION:
+                SystemListFragment systemListFragment = new SystemListFragment();
+                fragmentManager.beginTransaction()
+                        .replace(R.id.container, systemListFragment)
+                        .commit();
+                break;
+
+            case COMPANY_SCOPE_SECTION:
+                CompanyListFragment companyListFragment = new CompanyListFragment();
+                fragmentManager.beginTransaction()
+                        .replace(R.id.container, companyListFragment)
+                        .commit();
                 break;
         }
 
@@ -83,8 +96,11 @@ public class ProjectDashboardActivity extends ActionBarActivity
             case TEAM_SECTION:
                 mTitle = getString(R.string.title_team_section);
                 break;
-            case SCOPE_SECTION:
-                mTitle = getString(R.string.title_section3);
+            case SYSTEM_SCOPE_SECTION:
+                mTitle = getString(R.string.title_system_section);
+                break;
+            case COMPANY_SCOPE_SECTION:
+                mTitle = getString(R.string.title_company_section);
                 break;
         }
     }
