@@ -14,6 +14,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 
+import com.parse.ParseUser;
+import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.Utils.SelectorDialogActivity;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments.CompanyListFragment;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments.ProjectDashboardNavigationDrawerFragment;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments.ProjectDetailsFragment;
@@ -27,6 +29,8 @@ public class ProjectDashboardActivity extends ActionBarActivity
     public static final int TEAM_SECTION = 2;
     public static final int SYSTEM_SCOPE_SECTION = 3;
     public static final int COMPANY_SCOPE_SECTION = 4;
+    public static final int CONTROLS_SECTION = 5;
+    public static final int LOG_OUT_SECTION = 6;
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -69,6 +73,7 @@ public class ProjectDashboardActivity extends ActionBarActivity
                 fragmentManager.beginTransaction()
                         .replace(R.id.container, teamMemberListFragment)
                         .commit();
+
                 break;
 
             case SYSTEM_SCOPE_SECTION:
@@ -83,6 +88,18 @@ public class ProjectDashboardActivity extends ActionBarActivity
                 fragmentManager.beginTransaction()
                         .replace(R.id.container, companyListFragment)
                         .commit();
+                break;
+
+            case CONTROLS_SECTION:
+                startActivity(new Intent(getApplicationContext(), AddControlActivity.class));
+                break;
+
+            case LOG_OUT_SECTION:
+                ParseUser.logOut();
+                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                finish();
                 break;
         }
 

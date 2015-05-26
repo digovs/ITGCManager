@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">ITGCManager</string>
+    <string name="app_name">ITGC Manager</string>
 
 
     <!-- Error Message Dialog Activity Strings -->
@@ -91,4 +91,28 @@
 
     <string name="action_title_add_company">Add company</string>
     <string name="company_list_empty_string">You have no companies, to add one, click the button "Add Company" at the right top of the screen</string>
+    <string name="title_activity_selector_dialog">SelectorDialogActivity</string>
+
+    <!-- Selector Dialog Activity -->
+    <string name="selector_dialog_no_results_message">No results</string>
+
+    <!-- Add Control Activity -->
+    <string name="title_activity_add_control">Add Control</string>
+    <string name="add_control_company_button">Select Company</string>
+    <string name="add_control_user_button">Select Owner</string>
+    <string name="add_control_system_button">Select System</string>
+    <string name="add_control_name_hint">Control name</string>
+    <string name="add_control_description_hint">Control description</string>
+    <string name="add_control_is_automatic_checkbox_text">Is Automatic</string>
+    <string name="add_control_save_button_text">Save</string>
+    <string name="add_control_save_and_continue_button_text">Save and Continue</string>
+    <string name="add_control_no_users_selected_error_message">The field responsible user is required.</string>
+    <string name="add_control_no_companies_selected_error_message">The field company is required.</string>
+    <string name="add_control_no_systems_selected_error_message">The field system is required.</string>
+
+    <string name="title_logout">Logout</string>
+    <string name="title_control_section">Controls</string>
+
+
+
 </resources>

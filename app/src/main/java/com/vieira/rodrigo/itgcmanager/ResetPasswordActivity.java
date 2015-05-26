@@ -19,6 +19,7 @@ import android.widget.ProgressBar;
 import com.parse.ParseException;
 import com.parse.ParseUser;
 import com.parse.RequestPasswordResetCallback;
+import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.Utils.ErrorMessageDialogActivity;
 
 
 public class ResetPasswordActivity extends ActionBarActivity {

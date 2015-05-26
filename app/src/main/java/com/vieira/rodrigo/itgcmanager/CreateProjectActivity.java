@@ -17,7 +17,6 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
 import com.parse.FindCallback;
-import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -25,9 +24,9 @@ import com.parse.ParseRelation;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
+import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.Utils.ErrorMessageDialogActivity;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.Utils.ParseUtils;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.Project;
-import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.User;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -17,6 +17,7 @@ import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
 
+import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.Utils.ErrorMessageDialogActivity;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.User;
 
 /**

@@ -1,6 +1,7 @@
 package com.vieira.rodrigo.itgcmanager;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -13,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 
+import com.parse.ParseUser;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments.HomeNavigationDrawerFragment;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments.ProjectListFragment;
 
@@ -21,6 +23,7 @@ public class HomeActivity extends ActionBarActivity
         implements HomeNavigationDrawerFragment.NavigationDrawerCallbacks {
 
     private static final int HOME_SECTION = 1;
+    private static final int LOG_OUT_SECTION = 2;
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -51,6 +54,23 @@ public class HomeActivity extends ActionBarActivity
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getSupportFragmentManager();
+
+        switch (position +1){
+            case HOME_SECTION:
+                ProjectListFragment projectListFragment = new ProjectListFragment();
+                fragmentManager.beginTransaction()
+                        .replace(R.id.container, projectListFragment)
+                        .commit();
+                break;
+
+            case LOG_OUT_SECTION:
+                ParseUser.logOut();
+                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                finish();
+                break;
+        }
         if ((position + 1) == HOME_SECTION) {
             ProjectListFragment projectListFragment = new ProjectListFragment();
             fragmentManager.beginTransaction()
@@ -67,12 +87,6 @@ public class HomeActivity extends ActionBarActivity
         switch (number) {
             case HOME_SECTION:
                 mTitle = getString(R.string.title_home_section);
-                break;
-            case 2:
-                mTitle = getString(R.string.title_section2);
-                break;
-            case 3:
-                mTitle = getString(R.string.title_section3);
                 break;
         }
     }

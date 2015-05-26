@@ -1,13 +1,12 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent" android:background="@android:color/transparent"
-    tools:context="com.vieira.rodrigo.itgcmanager.ErrorMessageDialogActivity"
+    tools:context="com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.Utils.ErrorMessageDialogActivity"
     android:padding="10dp">
 
     <RelativeLayout android:id="@+id/fullscreen_content_controls" style="?metaButtonBarStyle"
         android:layout_width="wrap_content" android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:background="@color/wallet_highlighted_text_holo_light"
         tools:ignore="UselessParent">
 
         <TextView

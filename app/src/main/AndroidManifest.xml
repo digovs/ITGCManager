@@ -31,14 +31,15 @@
             android:windowSoftInputMode="adjustResize|stateVisible" >
         </activity>
         <activity
-            android:name=".ErrorMessageDialogActivity"
+            android:name=".com.vieira.rodrigo.Utils.ErrorMessageDialogActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_error_message_dialog"
             android:theme="@style/Theme.AppCompat.Light.Dialog" >
         </activity>
         <activity
             android:name=".HomeActivity"
-            android:label="@string/title_activity_home" >
+            android:label="@string/title_activity_home"
+            android:launchMode="singleTop" >
         </activity>
         <activity
             android:name=".ResetPasswordActivity"
@@ -51,14 +52,15 @@
         </activity>
         <activity
             android:name=".ProjectDashboardActivity"
-            android:label="@string/title_activity_project_dashboard" >
+            android:label="@string/title_activity_project_dashboard"
+            android:launchMode="singleTop" >
         </activity>
         <activity
             android:name=".AddMemberActivity"
             android:label="@string/title_activity_add_member" >
         </activity>
         <activity
-            android:name=".ConfirmationDialogActivity"
+            android:name=".com.vieira.rodrigo.Utils.ConfirmationDialogActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_confirmation_dialog"
             android:theme="@style/Theme.AppCompat.Light.Dialog" >
@@ -70,6 +72,16 @@
         <activity
             android:name=".AddCompanyScopeActivity"
             android:label="@string/title_activity_add_company_scope" >
+        </activity>
+        <activity
+            android:name=".com.vieira.rodrigo.Utils.SelectorDialogActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_selector_dialog"
+            android:theme="@style/Theme.AppCompat.Light.Dialog" >
+        </activity>
+        <activity
+            android:name=".AddControlActivity"
+            android:label="@string/title_activity_add_control" >
         </activity>
     </application>
 

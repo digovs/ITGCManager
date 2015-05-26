@@ -42,6 +42,7 @@ public class ProjectListFragment extends ListFragment{
     private ProgressBar progressBar;
     private TextView emptyTextView;
     private ArrayList<Project> projectList = new ArrayList<>();
+    private Activity myActivity;
 
     public ProjectListFragment() {
     }
@@ -49,7 +50,7 @@ public class ProjectListFragment extends ListFragment{
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
+        myActivity = getActivity();
         loadProjectList();
     }
 
@@ -68,7 +69,7 @@ public class ProjectListFragment extends ListFragment{
                         Project tempProject = new Project(project);
                         projectList.add(tempProject);
                     }
-                    adapter = new ProjectListAdapter(getActivity(), projectList);
+                    adapter = new ProjectListAdapter(myActivity, projectList);
                     setListAdapter(adapter);
                     if (projectList.isEmpty())
                         setEmptyText(true);
@@ -76,7 +77,7 @@ public class ProjectListFragment extends ListFragment{
                         setEmptyText(false);
                 } else {
                     projectList = new ArrayList<>();
-                    ParseUtils.handleParseException(getActivity(), e);
+                    ParseUtils.handleParseException(myActivity, e);
                 }
             }
         });
