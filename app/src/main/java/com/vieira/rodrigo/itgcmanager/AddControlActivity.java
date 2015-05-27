@@ -33,6 +33,7 @@ import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.Utils.ParseUtils;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.Utils.SelectorDialogActivity;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.Company;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.Control;
+import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.Project;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.SystemApp;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.User;
 
@@ -54,6 +55,8 @@ public class AddControlActivity extends ActionBarActivity {
 
     ArrayList<ParseObject> selectedSystemObjectList = new ArrayList<>();
     ArrayList<String> selectedSystemNameList = new ArrayList<>();
+
+    ParseObject currentProjectObject;
 
     ScrollView formView;
     ProgressBar progressBar;
@@ -81,6 +84,7 @@ public class AddControlActivity extends ActionBarActivity {
         controlDescriptionView = (EditText) findViewById(R.id.add_control_description);
         isAutomaticCheckbox = (CheckBox) findViewById(R.id.add_control_is_automatic_checkbox);
 
+        loadProjectObject();
         loadOwnerForm();
         loadCompanyForm();
         loadSystemForm();
@@ -92,6 +96,28 @@ public class AddControlActivity extends ActionBarActivity {
             public void onClick(View v) {
                 if (validateForm())
                     attemptSavingControl();
+            }
+        });
+    }
+
+    private void loadProjectObject() {
+        showProgress(true);
+        String currentProjectId = ParseUtils.getStringFromSession(getApplicationContext(), Project.KEY_PROJECT_ID);
+        ParseQuery getCurrentProjectObject = new ParseQuery(Project.TABLE_PROJECT);
+        getCurrentProjectObject.getInBackground(currentProjectId, new GetCallback() {
+            @Override
+            public void done(ParseObject parseObject, ParseException e) {
+                showProgress(false);
+                if (e != null)
+                    ParseUtils.handleParseException(getApplicationContext(), e);
+            }
+
+            @Override
+            public void done(Object o, Throwable throwable) {
+                showProgress(false);
+                if (o != null) {
+                    currentProjectObject = (ParseObject) o;
+                }
             }
         });
     }
@@ -218,8 +244,6 @@ public class AddControlActivity extends ActionBarActivity {
             return false;
         }
 
-        boolean isAutomatic = isAutomaticCheckbox.isChecked();
-
         if (selectedOwnerObject == null || selectedOwnerObject.getObjectId().equals("")) {
             ParseUtils.callErrorDialogWithMessage(getApplicationContext(), getString(R.string.add_control_no_users_selected_error_message));
             return false;
@@ -244,6 +268,7 @@ public class AddControlActivity extends ActionBarActivity {
         newControl.put(Control.KEY_CONTROL_NAME, controlNameView.getText().toString());
         newControl.put(Control.KEY_CONTROL_DESCRIPTION, controlDescriptionView.getText().toString());
         newControl.put(Control.KEY_CONTROL_IS_AUTOMATIC, isAutomaticCheckbox.isChecked());
+        newControl.put(Control.KEY_CONTROL_PROJECT, currentProjectObject);
         newControl.put(Control.KEY_CONTROL_OWNER, selectedOwnerObject);
         ParseRelation<ParseObject> companyListRelation = newControl.getRelation(Control.KEY_CONTROL_COMPANY_LIST);
         for (ParseObject companyObject : selectedCompanyObjectList) {

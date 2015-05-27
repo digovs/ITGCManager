@@ -57,8 +57,6 @@ public class SelectorDialogActivity extends ListActivity {
 
         requestCode = getIntent().getIntExtra(KEY_REQUEST_CODE, 0);
         listOfIdsToExclude = getIntent().getStringArrayListExtra(KEY_LIST_OF_IDS_TO_EXCLUDE);
-        if (requestCode == REQUEST_MEMBER_LIST)
-            listOfIdsToExclude.add(ParseUser.getCurrentUser().getObjectId());
         currentProjectId = ParseUtils.getStringFromSession(getApplicationContext(), Project.KEY_PROJECT_ID);
 
         listView = (ListView) findViewById(android.R.id.list);

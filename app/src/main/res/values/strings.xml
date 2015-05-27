@@ -112,6 +112,8 @@
 
     <string name="title_logout">Logout</string>
     <string name="title_control_section">Controls</string>
+    <string name="action_title_add_control">Add Control</string>
+    <string name="control_list_empty_string">You have no controls, to add one, click the button "Add Control" at the right top of the screen</string>
 
 
 

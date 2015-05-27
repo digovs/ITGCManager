@@ -17,6 +17,7 @@ import android.support.v4.widget.DrawerLayout;
 import com.parse.ParseUser;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.Utils.SelectorDialogActivity;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments.CompanyListFragment;
+import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments.ControlListFragment;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments.ProjectDashboardNavigationDrawerFragment;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments.ProjectDetailsFragment;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments.SystemListFragment;
@@ -91,7 +92,10 @@ public class ProjectDashboardActivity extends ActionBarActivity
                 break;
 
             case CONTROLS_SECTION:
-                startActivity(new Intent(getApplicationContext(), AddControlActivity.class));
+                ControlListFragment controlListFragment = new ControlListFragment();
+                fragmentManager.beginTransaction()
+                        .replace(R.id.container, controlListFragment)
+                        .commit();
                 break;
 
             case LOG_OUT_SECTION:
@@ -118,6 +122,9 @@ public class ProjectDashboardActivity extends ActionBarActivity
                 break;
             case COMPANY_SCOPE_SECTION:
                 mTitle = getString(R.string.title_company_section);
+                break;
+            case CONTROLS_SECTION:
+                mTitle = getString(R.string.title_control_section);
                 break;
         }
     }

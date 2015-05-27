@@ -11,6 +11,7 @@ public class Control {
     public static final String KEY_CONTROL_NAME = "name";
     public static final String KEY_CONTROL_DESCRIPTION = "description";
     public static final String KEY_CONTROL_IS_AUTOMATIC = "isAutomatic";
+    public static final String KEY_CONTROL_PROJECT = "project";
     public static final String KEY_CONTROL_OWNER = "owner";
     public static final String KEY_CONTROL_COMPANY_LIST = "companyList";
     public static final String KEY_CONTROL_SYSTEM_LIST = "systemList";
