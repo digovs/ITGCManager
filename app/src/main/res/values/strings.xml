@@ -103,6 +103,7 @@
     <string name="add_control_system_button">Select System</string>
     <string name="add_control_name_hint">Control name</string>
     <string name="add_control_description_hint">Control description</string>
+    <string name="add_control_popultion_hint">Control population</string>
     <string name="add_control_is_automatic_checkbox_text">Is Automatic</string>
     <string name="add_control_save_button_text">Save</string>
     <string name="add_control_save_and_continue_button_text">Save and Continue</string>
@@ -115,6 +116,21 @@
     <string name="action_title_add_control">Add Control</string>
     <string name="control_list_empty_string">You have no controls, to add one, click the button "Add Control" at the right top of the screen</string>
 
-
+    <!-- Add Test Activity -->
+    <string name="title_activity_add_test">Add Test</string>
+    <string name="add_test_description_hint">Test description</string>
+    <string name="add_test_coverage_date_hint">Coverage Date</string>
+    <string name="add_test_scheduled_date_hint">Scheduled Date</string>
+    <string name="add_test_company_button">Select Company</string>
+    <string name="add_test_system_button">Select System</string>
+    <string name="add_test_save_button_text">Save</string>
+    <string name="add_test_save_and_continue_button_text">Save and Continue</string>
+    <string name="add_test_no_users_selected_error_message">The field responsible user is required.</string>
+    <string name="add_test_no_companies_selected_error_message">The field company is required.</string>
+    <string name="add_test_no_systems_selected_error_message">The field system is required.</string>
+    <string name="add_test_status_label">Status: </string>
+    <string name="add_test_status_done">Done</string>
+    <string name="add_test_status_scheduled">Scheduled</string>
+    <string name="add_test_status_on_progress">On progress</string>
 
 </resources>

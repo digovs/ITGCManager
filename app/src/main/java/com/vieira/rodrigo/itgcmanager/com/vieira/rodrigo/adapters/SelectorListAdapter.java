@@ -72,15 +72,23 @@ public class SelectorListAdapter extends BaseAdapter{
         ParseObject dataObject = dataList.get(position);
 
         switch (requestCode){
-            case SelectorDialogActivity.REQUEST_MEMBER_LIST:
+            case SelectorDialogActivity.REQUEST_PROJECT_MEMBER_LIST:
                 holder.objectName.setText(dataObject.getString(User.KEY_USER_NAME));
                 break;
 
-            case SelectorDialogActivity.REQUEST_SYSTEM_LIST:
+            case SelectorDialogActivity.REQUEST_PROJECT_SYSTEM_LIST:
                 holder.objectName.setText(dataObject.getString(SystemApp.KEY_SYSTEM_NAME));
                 break;
 
-            case SelectorDialogActivity.REQUEST_COMPANY_LIST:
+            case SelectorDialogActivity.REQUEST_PROJECT_COMPANY_LIST:
+                holder.objectName.setText(dataObject.getString(Company.KEY_COMPANY_NAME));
+                break;
+
+            case SelectorDialogActivity.REQUEST_CONTROL_SYSTEM_LIST:
+                holder.objectName.setText(dataObject.getString(SystemApp.KEY_SYSTEM_NAME));
+                break;
+
+            case SelectorDialogActivity.REQUEST_CONTROL_COMPANY_LIST:
                 holder.objectName.setText(dataObject.getString(Company.KEY_COMPANY_NAME));
                 break;
         }

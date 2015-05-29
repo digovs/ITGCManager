@@ -3,9 +3,9 @@ package com.vieira.rodrigo.itgcmanager;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Build;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -14,12 +14,12 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CheckBox;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
 import android.widget.ScrollView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.parse.GetCallback;
@@ -27,20 +27,29 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseRelation;
-import com.parse.ParseUser;
 import com.parse.SaveCallback;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.Utils.ParseUtils;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.Utils.SelectorDialogActivity;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.Company;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.Control;
-import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.Project;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.SystemApp;
-import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.User;
+import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.Test;
 
 import java.util.ArrayList;
 
 
-public class AddControlActivity extends ActionBarActivity {
+public class AddTestActivity extends ActionBarActivity implements DatePickerDialog.OnDateSetListener{
+
+    ProgressBar progressBar;
+    ScrollView formView;
+
+    EditText descriptionView;
+    EditText scheduledDateView;
+    EditText coverageDateView;
+    String testStatus;
+
+    String currentControlId;
+    ParseObject currentControlObject;
 
     ListView companyListView;
     Button addCompanyButton;
@@ -56,57 +65,39 @@ public class AddControlActivity extends ActionBarActivity {
     ArrayList<ParseObject> selectedSystemObjectList = new ArrayList<>();
     ArrayList<String> selectedSystemNameList = new ArrayList<>();
 
-    ParseObject currentProjectObject;
-
-    ScrollView formView;
-    ProgressBar progressBar;
-    TextView ownerTextView;
-    Button addOwnerButton;
-    ParseUser selectedOwnerObject;
-
-    EditText controlNameView;
-    EditText controlDescriptionView;
-    EditText controlPopulationView;
-    CheckBox isAutomaticCheckbox;
-    Button saveButton;
-    Button saveAndContinueButton;
+    Button saveTestButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_control);
+        setContentView(R.layout.activity_add_test);
 
-        ActionBar actionbar = getSupportActionBar();
-        actionbar.setDisplayHomeAsUpEnabled(true);
+        currentControlId = getIntent().getStringExtra(Control.KEY_CONTROL_ID);
 
-        formView = (ScrollView) findViewById(R.id.add_control_form_view);
-        progressBar = (ProgressBar) findViewById(R.id.add_control_progress_bar);
-        controlNameView = (EditText) findViewById(R.id.add_control_name);
-        controlDescriptionView = (EditText) findViewById(R.id.add_control_description);
-        controlPopulationView = (EditText) findViewById(R.id.add_control_population);
-        isAutomaticCheckbox = (CheckBox) findViewById(R.id.add_control_is_automatic_checkbox);
+        formView = (ScrollView) findViewById(R.id.add_test_form_view);
+        progressBar = (ProgressBar) findViewById(R.id.add_test_progress_bar);
+        descriptionView = (EditText) findViewById(R.id.add_test_description);
+        scheduledDateView = (EditText) findViewById(R.id.add_test_scheduled_date);
+        coverageDateView = (EditText) findViewById(R.id.add_test_coverage_date);
 
-        loadProjectObject();
-        loadOwnerForm();
-        loadCompanyForm();
-        loadSystemForm();
-
-
-        saveButton = (Button) findViewById(R.id.add_control_save_button);
-        saveButton.setOnClickListener(new View.OnClickListener() {
+        saveTestButton = (Button) findViewById(R.id.add_test_save_button);
+        saveTestButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (isFormValid())
-                    attemptSavingControl();
+                    attemptSavingTest();
             }
         });
+
+        loadControlObject();
+        loadCompanyForm();
+        loadSystemForm();
     }
 
-    private void loadProjectObject() {
+    private void loadControlObject() {
         showProgress(true);
-        String currentProjectId = ParseUtils.getStringFromSession(getApplicationContext(), Project.KEY_PROJECT_ID);
-        ParseQuery getCurrentProjectObject = new ParseQuery(Project.TABLE_PROJECT);
-        getCurrentProjectObject.getInBackground(currentProjectId, new GetCallback() {
+        ParseQuery getCurrentControlObject = new ParseQuery(Control.TABLE_CONTROL);
+        getCurrentControlObject.getInBackground(currentControlId, new GetCallback() {
             @Override
             public void done(ParseObject parseObject, ParseException e) {
                 showProgress(false);
@@ -118,47 +109,14 @@ public class AddControlActivity extends ActionBarActivity {
             public void done(Object o, Throwable throwable) {
                 showProgress(false);
                 if (o != null) {
-                    currentProjectObject = (ParseObject) o;
+                    currentControlObject = (ParseObject) o;
                 }
             }
         });
     }
 
-    private void loadOwnerForm() {
-        ownerTextView = (TextView) findViewById(R.id.add_control_owner_view);
-        ownerTextView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(final View view) {
-                view.animate().setDuration(2000).alpha(0)
-                        .withEndAction(new Runnable() {
-                            @Override
-                            public void run() {
-                                ownerTextView.setText("");
-                                selectedOwnerObject = null;
-                                view.setAlpha(1);
-                            }
-                        });
-                return true;
-            }
-        });
-
-        addOwnerButton = (Button) findViewById(R.id.add_control_owner_button);
-        addOwnerButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), SelectorDialogActivity.class);
-                intent.putExtra(SelectorDialogActivity.KEY_REQUEST_CODE, SelectorDialogActivity.REQUEST_PROJECT_MEMBER_LIST);
-                ArrayList<String> listOfIdsToExclude = new ArrayList<>();
-                if (selectedOwnerObject != null)
-                    listOfIdsToExclude.add(selectedOwnerObject.getObjectId());
-                intent.putStringArrayListExtra(SelectorDialogActivity.KEY_LIST_OF_IDS_TO_EXCLUDE, listOfIdsToExclude);
-                startActivityForResult(intent, SelectorDialogActivity.REQUEST_PROJECT_MEMBER_LIST);
-            }
-        });
-    }
-
     private void loadCompanyForm() {
-        companyListView = (ListView) findViewById(R.id.add_control_company_list);
+        companyListView = (ListView) findViewById(R.id.add_test_company_list);
         companyListAdapter = new ArrayAdapter(getApplicationContext(), android.R.layout.simple_list_item_activated_1, selectedCompanyNameList);
         companyListView.setAdapter(companyListAdapter);
         companyListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -179,24 +137,25 @@ public class AddControlActivity extends ActionBarActivity {
             }
         });
 
-        addCompanyButton = (Button) findViewById(R.id.add_control_company_button);
+        addCompanyButton = (Button) findViewById(R.id.add_test_company_button);
         addCompanyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), SelectorDialogActivity.class);
-                intent.putExtra(SelectorDialogActivity.KEY_REQUEST_CODE, SelectorDialogActivity.REQUEST_PROJECT_COMPANY_LIST);
+                intent.putExtra(Control.KEY_CONTROL_ID, currentControlId);
+                intent.putExtra(SelectorDialogActivity.KEY_REQUEST_CODE, SelectorDialogActivity.REQUEST_CONTROL_COMPANY_LIST);
                 ArrayList<String> listOfIdsToExclude = new ArrayList<>();
-                for (ParseObject companyObject : selectedCompanyObjectList){
+                for (ParseObject companyObject : selectedCompanyObjectList) {
                     listOfIdsToExclude.add(companyObject.getObjectId());
                 }
                 intent.putStringArrayListExtra(SelectorDialogActivity.KEY_LIST_OF_IDS_TO_EXCLUDE, listOfIdsToExclude);
-                startActivityForResult(intent, SelectorDialogActivity.REQUEST_PROJECT_COMPANY_LIST);
+                startActivityForResult(intent, SelectorDialogActivity.REQUEST_CONTROL_COMPANY_LIST);
             }
         });
     }
 
     private void loadSystemForm() {
-        systemListView = (ListView) findViewById(R.id.add_control_system_list);
+        systemListView = (ListView) findViewById(R.id.add_test_system_list);
         systemListAdapter = new ArrayAdapter(getApplicationContext(), android.R.layout.simple_list_item_activated_1, selectedSystemNameList);
         systemListView.setAdapter(systemListAdapter);
         systemListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -217,84 +176,19 @@ public class AddControlActivity extends ActionBarActivity {
             }
         });
 
-        addSystemButton = (Button) findViewById(R.id.add_control_system_button);
+        addSystemButton = (Button) findViewById(R.id.add_test_system_button);
         addSystemButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), SelectorDialogActivity.class);
-                intent.putExtra(SelectorDialogActivity.KEY_REQUEST_CODE, SelectorDialogActivity.REQUEST_PROJECT_SYSTEM_LIST);
+                intent.putExtra(Control.KEY_CONTROL_ID, currentControlId);
+                intent.putExtra(SelectorDialogActivity.KEY_REQUEST_CODE, SelectorDialogActivity.REQUEST_CONTROL_SYSTEM_LIST);
                 ArrayList<String> listOfIdsToExclude = new ArrayList<>();
-                for (ParseObject systemObject : selectedSystemObjectList){
+                for (ParseObject systemObject : selectedSystemObjectList) {
                     listOfIdsToExclude.add(systemObject.getObjectId());
                 }
                 intent.putStringArrayListExtra(SelectorDialogActivity.KEY_LIST_OF_IDS_TO_EXCLUDE, listOfIdsToExclude);
-                startActivityForResult(intent, SelectorDialogActivity.REQUEST_PROJECT_SYSTEM_LIST);
-            }
-        });
-    }
-
-    private boolean isFormValid() {
-        String controlName = controlNameView.getText().toString();
-        if (controlName.isEmpty()) {
-            controlNameView.setError(getString(R.string.error_field_required));
-            return false;
-        }
-
-        String controlDescription = controlDescriptionView.getText().toString();
-        if (controlDescription.isEmpty()){
-            controlNameView.setError(getString(R.string.error_field_required));
-            return false;
-        }
-
-        String controlPopulation = controlPopulationView.getText().toString();
-        if (controlPopulation.isEmpty()){
-            controlPopulationView.setError(getString(R.string.error_field_required));
-            return false;
-        }
-
-        if (selectedOwnerObject == null || selectedOwnerObject.getObjectId().equals("")) {
-            ParseUtils.callErrorDialogWithMessage(getApplicationContext(), getString(R.string.add_control_no_users_selected_error_message));
-            return false;
-        }
-
-        if (selectedCompanyObjectList == null || selectedCompanyObjectList.isEmpty()) {
-            ParseUtils.callErrorDialogWithMessage(getApplicationContext(), getString(R.string.add_control_no_companies_selected_error_message));
-            return false;
-        }
-
-        if (selectedSystemObjectList == null || selectedSystemObjectList.isEmpty()){
-            ParseUtils.callErrorDialogWithMessage(getApplicationContext(), getString(R.string.add_control_no_systems_selected_error_message));
-            return false;
-        }
-
-        return true;
-    }
-
-    private void attemptSavingControl() {
-        showProgress(true);
-        ParseObject newControl = new ParseObject(Control.TABLE_CONTROL);
-        newControl.put(Control.KEY_CONTROL_NAME, controlNameView.getText().toString());
-        newControl.put(Control.KEY_CONTROL_DESCRIPTION, controlDescriptionView.getText().toString());
-        newControl.put(Control.KEY_CONTROL_POPULATION, controlPopulationView.getText().toString());
-        newControl.put(Control.KEY_CONTROL_IS_AUTOMATIC, isAutomaticCheckbox.isChecked());
-        newControl.put(Control.KEY_CONTROL_PROJECT, currentProjectObject);
-        newControl.put(Control.KEY_CONTROL_OWNER, selectedOwnerObject);
-        ParseRelation<ParseObject> companyListRelation = newControl.getRelation(Control.KEY_CONTROL_COMPANY_RELATION);
-        for (ParseObject companyObject : selectedCompanyObjectList) {
-            companyListRelation.add(companyObject);
-        }
-        ParseRelation<ParseObject> systemListRelation = newControl.getRelation(Control.KEY_CONTROL_SYSTEM_RELATION);
-        for (ParseObject systemObject : selectedSystemObjectList) {
-            systemListRelation.add(systemObject);
-        }
-        newControl.saveInBackground(new SaveCallback() {
-            @Override
-            public void done(ParseException e) {
-                showProgress(false);
-                if (e == null) {
-                    Toast.makeText(getApplicationContext(), "SALVO COM SUCESSO!", Toast.LENGTH_LONG).show();
-                } else
-                    ParseUtils.handleParseException(getApplicationContext(), e);
+                startActivityForResult(intent, SelectorDialogActivity.REQUEST_CONTROL_SYSTEM_LIST);
             }
         });
     }
@@ -302,7 +196,7 @@ public class AddControlActivity extends ActionBarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_add_control, menu);
+        getMenuInflater().inflate(R.menu.menu_add_test, menu);
         return true;
     }
 
@@ -314,11 +208,37 @@ public class AddControlActivity extends ActionBarActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == android.R.id.home) {
-            finish();
+        if (id == R.id.action_settings) {
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+
+    }
+
+    public void onRadioButtonClicked(View view) {
+        boolean checked = ((RadioButton) view).isChecked();
+
+        switch (view.getId()) {
+            case R.id.add_test_status_radio_scheduled:
+                if (checked)
+                    testStatus = Test.SCHEDULED;
+                break;
+
+            case R.id.add_test_status_radio_on_progress:
+                if (checked)
+                    testStatus = Test.ON_PROGRESS;
+                break;
+
+            case R.id.add_test_status_radio_done:
+                if (checked)
+                    testStatus = Test.DONE;
+                break;
+        }
     }
 
     @Override
@@ -328,23 +248,19 @@ public class AddControlActivity extends ActionBarActivity {
         if (data != null) {
             String selectedItemId = data.getStringExtra(SelectorDialogActivity.KEY_SELECTED_ITEM_ID);
             switch (requestCode) {
-                case SelectorDialogActivity.REQUEST_PROJECT_COMPANY_LIST:
+                case SelectorDialogActivity.REQUEST_CONTROL_COMPANY_LIST:
                     addCompanyToList(selectedItemId);
                     break;
 
-                case SelectorDialogActivity.REQUEST_PROJECT_MEMBER_LIST:
-                    addMemberToView(selectedItemId);
-                    break;
-
-                case SelectorDialogActivity.REQUEST_PROJECT_SYSTEM_LIST:
+                case SelectorDialogActivity.REQUEST_CONTROL_SYSTEM_LIST:
                     addSystemToList(selectedItemId);
             }
         }
     }
 
-    private void addMemberToView(String memberId) {
-        ParseQuery getMemberObject = ParseUser.getQuery();
-        getMemberObject.getInBackground(memberId, new GetCallback() {
+    private void addCompanyToList(String companyId) {
+        ParseQuery getCompanyObject = ParseQuery.getQuery(Company.TABLE_COMPANY);
+        getCompanyObject.getInBackground(companyId, new GetCallback() {
             @Override
             public void done(ParseObject parseObject, ParseException e) {
                 if (e != null) {
@@ -355,27 +271,6 @@ public class AddControlActivity extends ActionBarActivity {
             @Override
             public void done(Object o, Throwable throwable) {
                 if (o != null) {
-                    ParseUser resultMemberObject = (ParseUser) o;
-                    selectedOwnerObject = resultMemberObject;
-                    ownerTextView.setText(selectedOwnerObject.getString(User.KEY_USER_NAME));
-                }
-            }
-        });
-    }
-
-    private void addCompanyToList(String companyId) {
-        ParseQuery getCompanyObject = ParseQuery.getQuery(Company.TABLE_COMPANY);
-        getCompanyObject.getInBackground(companyId, new GetCallback() {
-            @Override
-            public void done(ParseObject parseObject, ParseException e) {
-                if (e != null){
-                    ParseUtils.handleParseException(getApplicationContext(), e);
-                }
-            }
-
-            @Override
-            public void done(Object o, Throwable throwable) {
-                if (o != null){
                     ParseObject resultCompanyObject = (ParseObject) o;
                     selectedCompanyObjectList.add(resultCompanyObject);
                     selectedCompanyNameList.add(resultCompanyObject.getString(Company.KEY_COMPANY_NAME));
@@ -402,6 +297,70 @@ public class AddControlActivity extends ActionBarActivity {
                     selectedSystemObjectList.add(resultSystemObject);
                     selectedSystemNameList.add(resultSystemObject.getString(SystemApp.KEY_SYSTEM_NAME));
                     systemListAdapter.notifyDataSetChanged();
+                }
+            }
+        });
+    }
+
+    private boolean isFormValid() {
+        String description = descriptionView.getText().toString();
+        if (description.isEmpty()) {
+            descriptionView.setError(getString(R.string.error_field_required));
+            return false;
+        }
+
+        String scheduledDate = scheduledDateView.getText().toString();
+        if (scheduledDate.isEmpty()) {
+            scheduledDateView.setError(getString(R.string.error_field_required));
+            return false;
+        }
+
+        String coverageDate = coverageDateView.getText().toString();
+        if (coverageDate.isEmpty()) {
+            coverageDateView.setError(getString(R.string.error_field_required));
+            return false;
+        }
+        if (testStatus.isEmpty())
+            return false;
+
+        if (selectedCompanyObjectList == null || selectedCompanyObjectList.isEmpty()) {
+            ParseUtils.callErrorDialogWithMessage(getApplicationContext(), getString(R.string.add_control_no_companies_selected_error_message));
+            return false;
+        }
+
+        if (selectedSystemObjectList == null || selectedSystemObjectList.isEmpty()){
+            ParseUtils.callErrorDialogWithMessage(getApplicationContext(), getString(R.string.add_control_no_systems_selected_error_message));
+            return false;
+        }
+        return true;
+    }
+
+    private void attemptSavingTest() {
+        showProgress(true);
+        ParseObject newTest = new ParseObject(Test.TABLE_TEST);
+        newTest.put(Test.KEY_TEST_DESCRIPTION, descriptionView.getText().toString());
+        newTest.put(Test.KEY_TEST_SCHEDULED_DATE, scheduledDateView.getText().toString());
+        newTest.put(Test.KEY_TEST_COVERAGE_DATE, coverageDateView.getText().toString());
+        newTest.put(Test.KEY_TEST_STATUS, testStatus);
+
+        ParseRelation<ParseObject> companyRelation = newTest.getRelation(Test.KEY_TEST_COMPANY_RELATION);
+        for (ParseObject companyObject : selectedCompanyObjectList){
+            companyRelation.add(companyObject);
+        }
+
+        ParseRelation<ParseObject> systemRelation = newTest.getRelation(Test.KEY_TEST_SYSTEM_RELATION);
+        for (ParseObject systemObject : selectedSystemObjectList) {
+            systemRelation.add(systemObject);
+        }
+
+        newTest.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e == null) {
+                    Toast.makeText(getApplicationContext(), "SALVO COM SUCESSO!", Toast.LENGTH_LONG).show();
+                }
+                else {
+                    ParseUtils.handleParseException(getApplicationContext(), e);
                 }
             }
         });

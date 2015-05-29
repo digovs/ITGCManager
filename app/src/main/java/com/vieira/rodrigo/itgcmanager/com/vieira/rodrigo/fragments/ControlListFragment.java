@@ -28,6 +28,7 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.vieira.rodrigo.itgcmanager.AddCompanyScopeActivity;
 import com.vieira.rodrigo.itgcmanager.AddControlActivity;
+import com.vieira.rodrigo.itgcmanager.AddTestActivity;
 import com.vieira.rodrigo.itgcmanager.ProjectDashboardActivity;
 import com.vieira.rodrigo.itgcmanager.R;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.Utils.ParseUtils;
@@ -103,6 +104,10 @@ public class ControlListFragment extends ListFragment {
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         if (adapter != null) {
+            String selectedControlId = controlList.get(position).getObjectId();
+            Intent intent = new Intent(getActivity(), AddTestActivity.class);
+            intent.putExtra(Control.KEY_CONTROL_ID, selectedControlId);
+            startActivity(intent);
         }
     }
 
