@@ -27,18 +27,20 @@ public class SystemListAdapter extends BaseAdapter{
         inflater = LayoutInflater.from(activity);
     }
 
-    public SystemListAdapter() {
-
-    }
-
     @Override
     public int getCount() {
-        return systemApps.size();
+        if (systemApps != null)
+            return systemApps.size();
+        else
+            return 0;
     }
 
     @Override
     public Object getItem(int position) {
-        return systemApps.get(position);
+        if (systemApps != null)
+            return systemApps.get(position);
+        else
+            return null;
     }
 
     @Override

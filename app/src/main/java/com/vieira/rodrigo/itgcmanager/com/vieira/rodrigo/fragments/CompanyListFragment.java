@@ -64,6 +64,8 @@ public class CompanyListFragment extends ListFragment {
                 showProgress(false);
                 if (e == null) {
                     companyList = (ArrayList) parseObject.getList(Project.KEY_COMPANY_SCOPE_LIST);
+                    if (companyList == null)
+                        companyList = new ArrayList<>();
                     adapter = new CompanyListAdapter(getActivity(), companyList);
                     setListAdapter(adapter);
                     if (companyList.isEmpty())

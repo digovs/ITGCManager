@@ -11,7 +11,6 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -29,7 +28,6 @@ import com.parse.ParseQuery;
 import com.parse.ParseRelation;
 import com.parse.SaveCallback;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.Utils.ParseUtils;
-import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.Utils.SelectorDialogActivity;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.Company;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.Control;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.SystemApp;
@@ -90,8 +88,6 @@ public class AddTestActivity extends ActionBarActivity implements DatePickerDial
         });
 
         loadControlObject();
-        loadCompanyForm();
-        loadSystemForm();
     }
 
     private void loadControlObject() {
@@ -115,83 +111,6 @@ public class AddTestActivity extends ActionBarActivity implements DatePickerDial
         });
     }
 
-    private void loadCompanyForm() {
-        companyListView = (ListView) findViewById(R.id.add_test_company_list);
-        companyListAdapter = new ArrayAdapter(getApplicationContext(), android.R.layout.simple_list_item_activated_1, selectedCompanyNameList);
-        companyListView.setAdapter(companyListAdapter);
-        companyListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, final View view, final int position, long id) {
-                final String item = (String) parent.getItemAtPosition(position);
-                view.animate().setDuration(2000).alpha(0)
-                        .withEndAction(new Runnable() {
-                            @Override
-                            public void run() {
-                                selectedCompanyObjectList.remove(position);
-                                selectedCompanyNameList.remove(item);
-                                companyListAdapter.notifyDataSetChanged();
-                                view.setAlpha(1);
-                            }
-                        });
-                return true;
-            }
-        });
-
-        addCompanyButton = (Button) findViewById(R.id.add_test_company_button);
-        addCompanyButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), SelectorDialogActivity.class);
-                intent.putExtra(Control.KEY_CONTROL_ID, currentControlId);
-                intent.putExtra(SelectorDialogActivity.KEY_REQUEST_CODE, SelectorDialogActivity.REQUEST_CONTROL_COMPANY_LIST);
-                ArrayList<String> listOfIdsToExclude = new ArrayList<>();
-                for (ParseObject companyObject : selectedCompanyObjectList) {
-                    listOfIdsToExclude.add(companyObject.getObjectId());
-                }
-                intent.putStringArrayListExtra(SelectorDialogActivity.KEY_LIST_OF_IDS_TO_EXCLUDE, listOfIdsToExclude);
-                startActivityForResult(intent, SelectorDialogActivity.REQUEST_CONTROL_COMPANY_LIST);
-            }
-        });
-    }
-
-    private void loadSystemForm() {
-        systemListView = (ListView) findViewById(R.id.add_test_system_list);
-        systemListAdapter = new ArrayAdapter(getApplicationContext(), android.R.layout.simple_list_item_activated_1, selectedSystemNameList);
-        systemListView.setAdapter(systemListAdapter);
-        systemListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, final View view, final int position, long id) {
-                final String item = (String) parent.getItemAtPosition(position);
-                view.animate().setDuration(2000).alpha(0)
-                        .withEndAction(new Runnable() {
-                            @Override
-                            public void run() {
-                                selectedSystemObjectList.remove(position);
-                                selectedSystemNameList.remove(item);
-                                systemListAdapter.notifyDataSetChanged();
-                                view.setAlpha(1);
-                            }
-                        });
-                return true;
-            }
-        });
-
-        addSystemButton = (Button) findViewById(R.id.add_test_system_button);
-        addSystemButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), SelectorDialogActivity.class);
-                intent.putExtra(Control.KEY_CONTROL_ID, currentControlId);
-                intent.putExtra(SelectorDialogActivity.KEY_REQUEST_CODE, SelectorDialogActivity.REQUEST_CONTROL_SYSTEM_LIST);
-                ArrayList<String> listOfIdsToExclude = new ArrayList<>();
-                for (ParseObject systemObject : selectedSystemObjectList) {
-                    listOfIdsToExclude.add(systemObject.getObjectId());
-                }
-                intent.putStringArrayListExtra(SelectorDialogActivity.KEY_LIST_OF_IDS_TO_EXCLUDE, listOfIdsToExclude);
-                startActivityForResult(intent, SelectorDialogActivity.REQUEST_CONTROL_SYSTEM_LIST);
-            }
-        });
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -245,17 +164,7 @@ public class AddTestActivity extends ActionBarActivity implements DatePickerDial
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (data != null) {
-            String selectedItemId = data.getStringExtra(SelectorDialogActivity.KEY_SELECTED_ITEM_ID);
-            switch (requestCode) {
-                case SelectorDialogActivity.REQUEST_CONTROL_COMPANY_LIST:
-                    addCompanyToList(selectedItemId);
-                    break;
 
-                case SelectorDialogActivity.REQUEST_CONTROL_SYSTEM_LIST:
-                    addSystemToList(selectedItemId);
-            }
-        }
     }
 
     private void addCompanyToList(String companyId) {
@@ -323,15 +232,6 @@ public class AddTestActivity extends ActionBarActivity implements DatePickerDial
         if (testStatus.isEmpty())
             return false;
 
-        if (selectedCompanyObjectList == null || selectedCompanyObjectList.isEmpty()) {
-            ParseUtils.callErrorDialogWithMessage(getApplicationContext(), getString(R.string.add_control_no_companies_selected_error_message));
-            return false;
-        }
-
-        if (selectedSystemObjectList == null || selectedSystemObjectList.isEmpty()){
-            ParseUtils.callErrorDialogWithMessage(getApplicationContext(), getString(R.string.add_control_no_systems_selected_error_message));
-            return false;
-        }
         return true;
     }
 

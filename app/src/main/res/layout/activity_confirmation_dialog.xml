@@ -1,7 +1,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent" android:background="@android:color/transparent"
-    tools:context="com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.Utils.ConfirmationDialogActivity"
+    tools:context="com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.dialogs.ConfirmationDialogActivity"
     android:padding="10dp">
 
     <RelativeLayout android:id="@+id/fullscreen_content_controls" style="?metaButtonBarStyle"
@@ -22,12 +22,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
+            style="?android:attr/buttonBarStyle"
             android:layout_below="@+id/confirmation_dialog_text">
 
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                style="?android:attr/buttonBarButtonStyle"
                 android:text="@string/confirmation_dialog_yes"
                 android:id="@+id/confirmation_dialog_yes_button"/>
 
@@ -35,6 +37,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                style="?android:attr/buttonBarButtonStyle"
                 android:text="@string/confirmation_dialog_no"
                 android:id="@+id/confirmation_dialog_no_button"/>
 

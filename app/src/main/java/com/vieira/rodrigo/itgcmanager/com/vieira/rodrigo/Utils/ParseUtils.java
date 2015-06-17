@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 
 import com.parse.ParseException;
 import com.vieira.rodrigo.itgcmanager.R;
+import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.dialogs.ErrorMessageDialogActivity;
 
 public abstract class ParseUtils {
 

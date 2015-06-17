@@ -64,6 +64,8 @@ public class SystemListFragment extends ListFragment {
                 showProgress(false);
                 if (e == null) {
                     systemList = (ArrayList) parseObject.getList(Project.KEY_SYSTEM_SCOPE_LIST);
+                    if (systemList == null)
+                        systemList = new ArrayList<>();
                     adapter = new SystemListAdapter(getActivity(), systemList);
                     setListAdapter(adapter);
                     if (systemList.isEmpty())

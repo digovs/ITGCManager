@@ -11,30 +11,27 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
-import com.parse.ParseRelation;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.Utils.ParseUtils;
-import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.Utils.SelectorDialogActivity;
-import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.Company;
+import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.adapters.ScopeListAdapter;
+import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.dialogs.SystemScopeSelectorDialogActivity;
+import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.dialogs.TeamMemberSelectorDialogActivity;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.Control;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.Project;
-import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.SystemApp;
+import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.Scope;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.User;
 
 import java.util.ArrayList;
@@ -42,25 +39,22 @@ import java.util.ArrayList;
 
 public class AddControlActivity extends ActionBarActivity {
 
-    ListView companyListView;
-    Button addCompanyButton;
-    ArrayAdapter companyListAdapter;
+    public static final int REQUEST_TEAM_MEMBER_SELECTOR = 1154;
+    public static final int REQUEST_SCOPE_SELECTOR = 5776;
+    public static final int REQUEST_COMPANY_SCOPE_SELECTOR = 3249;
+    public static final String REQUEST_CODE = "requestCode";
 
-    ArrayList<ParseObject> selectedCompanyObjectList = new ArrayList<>();
-    ArrayList<String> selectedCompanyNameList = new ArrayList<>();
-
-    ListView systemListView;
-    Button addSystemButton;
-    ArrayAdapter systemListAdapter;
-
-    ArrayList<ParseObject> selectedSystemObjectList = new ArrayList<>();
-    ArrayList<String> selectedSystemNameList = new ArrayList<>();
 
     ParseObject currentProjectObject;
+    ArrayList<ParseObject> controlScopeList = new ArrayList<>();
+
+    ListView scopeListView;
+    ScopeListAdapter scopeListAdapter;
+    Button defineScope;
 
     ScrollView formView;
     ProgressBar progressBar;
-    TextView ownerTextView;
+    EditText ownerTextView;
     Button addOwnerButton;
     ParseUser selectedOwnerObject;
 
@@ -69,7 +63,7 @@ public class AddControlActivity extends ActionBarActivity {
     EditText controlPopulationView;
     CheckBox isAutomaticCheckbox;
     Button saveButton;
-    Button saveAndContinueButton;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,12 +79,22 @@ public class AddControlActivity extends ActionBarActivity {
         controlDescriptionView = (EditText) findViewById(R.id.add_control_description);
         controlPopulationView = (EditText) findViewById(R.id.add_control_population);
         isAutomaticCheckbox = (CheckBox) findViewById(R.id.add_control_is_automatic_checkbox);
+        scopeListView = (ListView) findViewById(R.id.add_control_scope_list);
+
 
         loadProjectObject();
         loadOwnerForm();
-        loadCompanyForm();
-        loadSystemForm();
+        loadScopeList();
 
+        defineScope = (Button) findViewById(R.id.add_control_scope_button);
+        defineScope.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), SystemScopeSelectorDialogActivity.class);
+                intent.putExtra(REQUEST_CODE, REQUEST_SCOPE_SELECTOR);
+                startActivityForResult(intent, REQUEST_SCOPE_SELECTOR);
+            }
+        });
 
         saveButton = (Button) findViewById(R.id.add_control_save_button);
         saveButton.setOnClickListener(new View.OnClickListener() {
@@ -104,7 +108,7 @@ public class AddControlActivity extends ActionBarActivity {
 
     private void loadProjectObject() {
         showProgress(true);
-        String currentProjectId = ParseUtils.getStringFromSession(getApplicationContext(), Project.KEY_PROJECT_ID);
+        final String currentProjectId = ParseUtils.getStringFromSession(getApplicationContext(), Project.KEY_PROJECT_ID);
         ParseQuery getCurrentProjectObject = new ParseQuery(Project.TABLE_PROJECT);
         getCurrentProjectObject.getInBackground(currentProjectId, new GetCallback() {
             @Override
@@ -125,7 +129,7 @@ public class AddControlActivity extends ActionBarActivity {
     }
 
     private void loadOwnerForm() {
-        ownerTextView = (TextView) findViewById(R.id.add_control_owner_view);
+        ownerTextView = (EditText) findViewById(R.id.add_control_owner_view);
         ownerTextView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(final View view) {
@@ -146,91 +150,19 @@ public class AddControlActivity extends ActionBarActivity {
         addOwnerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), SelectorDialogActivity.class);
-                intent.putExtra(SelectorDialogActivity.KEY_REQUEST_CODE, SelectorDialogActivity.REQUEST_PROJECT_MEMBER_LIST);
-                ArrayList<String> listOfIdsToExclude = new ArrayList<>();
+                Intent intent = new Intent(getApplicationContext(), TeamMemberSelectorDialogActivity.class);
+                intent.putExtra(REQUEST_CODE, REQUEST_TEAM_MEMBER_SELECTOR);
                 if (selectedOwnerObject != null)
-                    listOfIdsToExclude.add(selectedOwnerObject.getObjectId());
-                intent.putStringArrayListExtra(SelectorDialogActivity.KEY_LIST_OF_IDS_TO_EXCLUDE, listOfIdsToExclude);
-                startActivityForResult(intent, SelectorDialogActivity.REQUEST_PROJECT_MEMBER_LIST);
+                    intent.putExtra(TeamMemberSelectorDialogActivity.KEY_ID_TO_EXCLUDE, selectedOwnerObject.getObjectId());
+                else
+                    intent.putExtra(TeamMemberSelectorDialogActivity.KEY_ID_TO_EXCLUDE, "");
+                startActivityForResult(intent, REQUEST_TEAM_MEMBER_SELECTOR);
             }
         });
     }
 
-    private void loadCompanyForm() {
-        companyListView = (ListView) findViewById(R.id.add_control_company_list);
-        companyListAdapter = new ArrayAdapter(getApplicationContext(), android.R.layout.simple_list_item_activated_1, selectedCompanyNameList);
-        companyListView.setAdapter(companyListAdapter);
-        companyListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, final View view, final int position, long id) {
-                final String item = (String) parent.getItemAtPosition(position);
-                view.animate().setDuration(2000).alpha(0)
-                        .withEndAction(new Runnable() {
-                            @Override
-                            public void run() {
-                                selectedCompanyObjectList.remove(position);
-                                selectedCompanyNameList.remove(item);
-                                companyListAdapter.notifyDataSetChanged();
-                                view.setAlpha(1);
-                            }
-                        });
-                return true;
-            }
-        });
+    private void loadScopeList() {
 
-        addCompanyButton = (Button) findViewById(R.id.add_control_company_button);
-        addCompanyButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), SelectorDialogActivity.class);
-                intent.putExtra(SelectorDialogActivity.KEY_REQUEST_CODE, SelectorDialogActivity.REQUEST_PROJECT_COMPANY_LIST);
-                ArrayList<String> listOfIdsToExclude = new ArrayList<>();
-                for (ParseObject companyObject : selectedCompanyObjectList){
-                    listOfIdsToExclude.add(companyObject.getObjectId());
-                }
-                intent.putStringArrayListExtra(SelectorDialogActivity.KEY_LIST_OF_IDS_TO_EXCLUDE, listOfIdsToExclude);
-                startActivityForResult(intent, SelectorDialogActivity.REQUEST_PROJECT_COMPANY_LIST);
-            }
-        });
-    }
-
-    private void loadSystemForm() {
-        systemListView = (ListView) findViewById(R.id.add_control_system_list);
-        systemListAdapter = new ArrayAdapter(getApplicationContext(), android.R.layout.simple_list_item_activated_1, selectedSystemNameList);
-        systemListView.setAdapter(systemListAdapter);
-        systemListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, final View view, final int position, long id) {
-                final String item = (String) parent.getItemAtPosition(position);
-                view.animate().setDuration(2000).alpha(0)
-                        .withEndAction(new Runnable() {
-                            @Override
-                            public void run() {
-                                selectedSystemObjectList.remove(position);
-                                selectedSystemNameList.remove(item);
-                                systemListAdapter.notifyDataSetChanged();
-                                view.setAlpha(1);
-                            }
-                        });
-                return true;
-            }
-        });
-
-        addSystemButton = (Button) findViewById(R.id.add_control_system_button);
-        addSystemButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), SelectorDialogActivity.class);
-                intent.putExtra(SelectorDialogActivity.KEY_REQUEST_CODE, SelectorDialogActivity.REQUEST_PROJECT_SYSTEM_LIST);
-                ArrayList<String> listOfIdsToExclude = new ArrayList<>();
-                for (ParseObject systemObject : selectedSystemObjectList){
-                    listOfIdsToExclude.add(systemObject.getObjectId());
-                }
-                intent.putStringArrayListExtra(SelectorDialogActivity.KEY_LIST_OF_IDS_TO_EXCLUDE, listOfIdsToExclude);
-                startActivityForResult(intent, SelectorDialogActivity.REQUEST_PROJECT_SYSTEM_LIST);
-            }
-        });
     }
 
     private boolean isFormValid() {
@@ -257,13 +189,8 @@ public class AddControlActivity extends ActionBarActivity {
             return false;
         }
 
-        if (selectedCompanyObjectList == null || selectedCompanyObjectList.isEmpty()) {
-            ParseUtils.callErrorDialogWithMessage(getApplicationContext(), getString(R.string.add_control_no_companies_selected_error_message));
-            return false;
-        }
-
-        if (selectedSystemObjectList == null || selectedSystemObjectList.isEmpty()){
-            ParseUtils.callErrorDialogWithMessage(getApplicationContext(), getString(R.string.add_control_no_systems_selected_error_message));
+        if (controlScopeList.isEmpty()) {
+            ParseUtils.callErrorDialogWithMessage(getApplicationContext(), getString(R.string.add_control_no_scope_selected_error_message));
             return false;
         }
 
@@ -279,14 +206,8 @@ public class AddControlActivity extends ActionBarActivity {
         newControl.put(Control.KEY_CONTROL_IS_AUTOMATIC, isAutomaticCheckbox.isChecked());
         newControl.put(Control.KEY_CONTROL_PROJECT, currentProjectObject);
         newControl.put(Control.KEY_CONTROL_OWNER, selectedOwnerObject);
-        ParseRelation<ParseObject> companyListRelation = newControl.getRelation(Control.KEY_CONTROL_COMPANY_RELATION);
-        for (ParseObject companyObject : selectedCompanyObjectList) {
-            companyListRelation.add(companyObject);
-        }
-        ParseRelation<ParseObject> systemListRelation = newControl.getRelation(Control.KEY_CONTROL_SYSTEM_RELATION);
-        for (ParseObject systemObject : selectedSystemObjectList) {
-            systemListRelation.add(systemObject);
-        }
+        newControl.put(Control.KEY_CONTROL_SCOPE_LIST, controlScopeList);
+
         newControl.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
@@ -295,6 +216,69 @@ public class AddControlActivity extends ActionBarActivity {
                     Toast.makeText(getApplicationContext(), "SALVO COM SUCESSO!", Toast.LENGTH_LONG).show();
                 } else
                     ParseUtils.handleParseException(getApplicationContext(), e);
+            }
+        });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode) {
+            case REQUEST_TEAM_MEMBER_SELECTOR:
+                if (data != null) {
+                    String selectedItemId = data.getStringExtra(TeamMemberSelectorDialogActivity.KEY_SELECTED_ITEM_ID);
+                    addMemberToView(selectedItemId);
+                }
+                break;
+
+            case REQUEST_SCOPE_SELECTOR:
+                if (resultCode == RESULT_OK && data != null) {
+                    String newScopeId = data.getStringExtra(SystemScopeSelectorDialogActivity.KEY_SCOPE_ID);
+                    addScopeToList(newScopeId);
+                }
+        }
+
+    }
+
+    private void addScopeToList(String newScopeId) {
+        ParseQuery getNewScopeObject = ParseQuery.getQuery(Scope.TABLE_SCOPE);
+        getNewScopeObject.include(Scope.KEY_COMPANY_LIST);
+        getNewScopeObject.getInBackground(newScopeId, new GetCallback() {
+            @Override
+            public void done(ParseObject parseObject, ParseException e) {
+                if (e != null) {
+                    ParseUtils.handleParseException(getApplicationContext(), e);
+                }
+            }
+
+            @Override
+            public void done(Object o, Throwable throwable) {
+                if (o != null) {
+                    controlScopeList.add((ParseObject) o);
+                    scopeListAdapter = new ScopeListAdapter(getApplicationContext(), controlScopeList);
+                    scopeListView.setAdapter(scopeListAdapter);
+                }
+            }
+        });
+    }
+
+    private void addMemberToView(String memberId) {
+        ParseQuery getMemberObject = ParseUser.getQuery();
+        getMemberObject.getInBackground(memberId, new GetCallback() {
+            @Override
+            public void done(ParseObject parseObject, ParseException e) {
+                if (e != null) {
+                    ParseUtils.handleParseException(getApplicationContext(), e);
+                }
+            }
+
+            @Override
+            public void done(Object o, Throwable throwable) {
+                if (o != null) {
+                    selectedOwnerObject = (ParseUser) o;
+                    ownerTextView.setText(selectedOwnerObject.getString(User.KEY_USER_NAME));
+                }
             }
         });
     }
@@ -319,92 +303,6 @@ public class AddControlActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (data != null) {
-            String selectedItemId = data.getStringExtra(SelectorDialogActivity.KEY_SELECTED_ITEM_ID);
-            switch (requestCode) {
-                case SelectorDialogActivity.REQUEST_PROJECT_COMPANY_LIST:
-                    addCompanyToList(selectedItemId);
-                    break;
-
-                case SelectorDialogActivity.REQUEST_PROJECT_MEMBER_LIST:
-                    addMemberToView(selectedItemId);
-                    break;
-
-                case SelectorDialogActivity.REQUEST_PROJECT_SYSTEM_LIST:
-                    addSystemToList(selectedItemId);
-            }
-        }
-    }
-
-    private void addMemberToView(String memberId) {
-        ParseQuery getMemberObject = ParseUser.getQuery();
-        getMemberObject.getInBackground(memberId, new GetCallback() {
-            @Override
-            public void done(ParseObject parseObject, ParseException e) {
-                if (e != null) {
-                    ParseUtils.handleParseException(getApplicationContext(), e);
-                }
-            }
-
-            @Override
-            public void done(Object o, Throwable throwable) {
-                if (o != null) {
-                    ParseUser resultMemberObject = (ParseUser) o;
-                    selectedOwnerObject = resultMemberObject;
-                    ownerTextView.setText(selectedOwnerObject.getString(User.KEY_USER_NAME));
-                }
-            }
-        });
-    }
-
-    private void addCompanyToList(String companyId) {
-        ParseQuery getCompanyObject = ParseQuery.getQuery(Company.TABLE_COMPANY);
-        getCompanyObject.getInBackground(companyId, new GetCallback() {
-            @Override
-            public void done(ParseObject parseObject, ParseException e) {
-                if (e != null){
-                    ParseUtils.handleParseException(getApplicationContext(), e);
-                }
-            }
-
-            @Override
-            public void done(Object o, Throwable throwable) {
-                if (o != null){
-                    ParseObject resultCompanyObject = (ParseObject) o;
-                    selectedCompanyObjectList.add(resultCompanyObject);
-                    selectedCompanyNameList.add(resultCompanyObject.getString(Company.KEY_COMPANY_NAME));
-                    companyListAdapter.notifyDataSetChanged();
-                }
-            }
-        });
-    }
-
-    private void addSystemToList(String systemId) {
-        ParseQuery getSystemObject = ParseQuery.getQuery(SystemApp.TABLE_SYSTEM);
-        getSystemObject.getInBackground(systemId, new GetCallback() {
-            @Override
-            public void done(ParseObject parseObject, ParseException e) {
-                if (e != null){
-                    ParseUtils.handleParseException(getApplicationContext(), e);
-                }
-            }
-
-            @Override
-            public void done(Object o, Throwable throwable) {
-                if (o != null){
-                    ParseObject resultSystemObject = (ParseObject) o;
-                    selectedSystemObjectList.add(resultSystemObject);
-                    selectedSystemNameList.add(resultSystemObject.getString(SystemApp.KEY_SYSTEM_NAME));
-                    systemListAdapter.notifyDataSetChanged();
-                }
-            }
-        });
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)

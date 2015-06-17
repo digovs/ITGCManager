@@ -5,12 +5,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.parse.ParseObject;
+import com.vieira.rodrigo.itgcmanager.AddControlActivity;
 import com.vieira.rodrigo.itgcmanager.R;
-import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.Utils.SelectorDialogActivity;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.Company;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.SystemApp;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.User;
@@ -21,14 +20,12 @@ import java.util.Arrays;
 public class SelectorListAdapter extends BaseAdapter{
 
 
-    private Context context;
     private ArrayList<ParseObject> dataList;
     private boolean[] selectedItems;
     private static LayoutInflater inflater = null;
     private int requestCode;
 
     public SelectorListAdapter(Context context, ArrayList<ParseObject> dataList, int requestCode) {
-        this.context = context;
         this.dataList = dataList;
         this.requestCode = requestCode;
         this.selectedItems = new boolean[dataList.size()];
@@ -60,8 +57,6 @@ public class SelectorListAdapter extends BaseAdapter{
         if (convertView == null) {
             rowView = inflater.inflate(R.layout.selector_list_item, null);
 
-            RelativeLayout backgroundLayout = (RelativeLayout) rowView.findViewById(R.id.selector_list_item_background);
-
             holder = new ViewHolder();
             holder.objectName = (TextView) rowView.findViewById(R.id.selector_list_item_name);
 
@@ -72,23 +67,15 @@ public class SelectorListAdapter extends BaseAdapter{
         ParseObject dataObject = dataList.get(position);
 
         switch (requestCode){
-            case SelectorDialogActivity.REQUEST_PROJECT_MEMBER_LIST:
+            case AddControlActivity.REQUEST_SCOPE_SELECTOR:
+                holder.objectName.setText(dataObject.getString(SystemApp.KEY_SYSTEM_NAME));
+                break;
+
+            case AddControlActivity.REQUEST_TEAM_MEMBER_SELECTOR:
                 holder.objectName.setText(dataObject.getString(User.KEY_USER_NAME));
                 break;
 
-            case SelectorDialogActivity.REQUEST_PROJECT_SYSTEM_LIST:
-                holder.objectName.setText(dataObject.getString(SystemApp.KEY_SYSTEM_NAME));
-                break;
-
-            case SelectorDialogActivity.REQUEST_PROJECT_COMPANY_LIST:
-                holder.objectName.setText(dataObject.getString(Company.KEY_COMPANY_NAME));
-                break;
-
-            case SelectorDialogActivity.REQUEST_CONTROL_SYSTEM_LIST:
-                holder.objectName.setText(dataObject.getString(SystemApp.KEY_SYSTEM_NAME));
-                break;
-
-            case SelectorDialogActivity.REQUEST_CONTROL_COMPANY_LIST:
+            case AddControlActivity.REQUEST_COMPANY_SCOPE_SELECTOR:
                 holder.objectName.setText(dataObject.getString(Company.KEY_COMPANY_NAME));
                 break;
         }

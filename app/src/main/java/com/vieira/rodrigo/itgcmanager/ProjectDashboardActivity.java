@@ -15,7 +15,6 @@ import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 
 import com.parse.ParseUser;
-import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.Utils.SelectorDialogActivity;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments.CompanyListFragment;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments.ControlListFragment;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments.ProjectDashboardNavigationDrawerFragment;

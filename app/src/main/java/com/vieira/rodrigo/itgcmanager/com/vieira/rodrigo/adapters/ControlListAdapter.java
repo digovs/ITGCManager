@@ -30,12 +30,18 @@ public class ControlListAdapter extends BaseAdapter{
     }
     @Override
     public int getCount() {
-        return controlList.size();
+        if (controlList != null)
+            return controlList.size();
+        else
+            return 0;
     }
 
     @Override
     public Object getItem(int position) {
-        return controlList.get(position);
+        if (controlList != null)
+            return controlList.get(position);
+        else
+            return 0;
     }
 
     @Override

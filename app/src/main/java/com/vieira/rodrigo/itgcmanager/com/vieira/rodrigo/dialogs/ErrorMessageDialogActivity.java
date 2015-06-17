@@ -1,4 +1,4 @@
-package com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.Utils;
+package com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.dialogs;
 
 import android.app.Activity;
 import android.content.Intent;

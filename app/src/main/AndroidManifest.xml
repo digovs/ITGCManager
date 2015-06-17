@@ -31,7 +31,7 @@
             android:windowSoftInputMode="adjustResize|stateVisible" >
         </activity>
         <activity
-            android:name=".com.vieira.rodrigo.Utils.ErrorMessageDialogActivity"
+            android:name=".com.vieira.rodrigo.dialogs.ErrorMessageDialogActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_error_message_dialog"
             android:theme="@style/Theme.AppCompat.Light.Dialog" >
@@ -60,7 +60,7 @@
             android:label="@string/title_activity_add_member" >
         </activity>
         <activity
-            android:name=".com.vieira.rodrigo.Utils.ConfirmationDialogActivity"
+            android:name=".com.vieira.rodrigo.dialogs.ConfirmationDialogActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_confirmation_dialog"
             android:theme="@style/Theme.AppCompat.Light.Dialog" >
@@ -74,9 +74,13 @@
             android:label="@string/title_activity_add_company_scope" >
         </activity>
         <activity
-            android:name=".com.vieira.rodrigo.Utils.SelectorDialogActivity"
+            android:name=".com.vieira.rodrigo.dialogs.SystemScopeSelectorDialogActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_selector_dialog"
+            android:theme="@style/Theme.AppCompat.Light.Dialog" >
+        </activity>
+        <activity
+            android:name=".com.vieira.rodrigo.dialogs.TeamMemberSelectorDialogActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:theme="@style/Theme.AppCompat.Light.Dialog" >
         </activity>
         <activity

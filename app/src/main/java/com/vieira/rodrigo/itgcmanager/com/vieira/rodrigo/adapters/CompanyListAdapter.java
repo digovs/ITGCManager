@@ -28,18 +28,20 @@ public class CompanyListAdapter extends BaseAdapter{
         inflater = LayoutInflater.from(activity);
     }
 
-    public CompanyListAdapter() {
-
-    }
-
     @Override
     public int getCount() {
-        return companyList.size();
+        if (companyList != null)
+            return companyList.size();
+        else
+            return 0;
     }
 
     @Override
     public Object getItem(int position) {
-        return companyList.get(position);
+        if (companyList != null)
+            return companyList.get(position);
+        else
+            return 0;
     }
 
     @Override
