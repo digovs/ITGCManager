@@ -30,4 +30,5 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:21.0.0'
     compile 'com.android.support:support-v4:21.0.3'
     compile files('libs/bolts-android-1.1.4.jar')
+    compile files('libs/gson-2.3.1.jar')
 }

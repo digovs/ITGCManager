@@ -2,45 +2,39 @@ package com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models;
 
 import com.parse.ParseObject;
 
+import java.io.Serializable;
+import java.io.SerializablePermission;
 import java.util.ArrayList;
 
-public class Control {
+public class Control implements Serializable {
 
     public static final String TABLE_CONTROL = "Control";
     public static final String KEY_CONTROL_ID = "controlId";
     public static final String KEY_CONTROL_NAME = "name";
     public static final String KEY_CONTROL_DESCRIPTION = "description";
-    public static final String KEY_CONTROL_POPULATION = "population";
-    public static final String KEY_CONTROL_IS_AUTOMATIC = "isAutomatic";
-    public static final String KEY_CONTROL_PROJECT = "project";
+    public static final String KEY_CONTROL_RISK_CLASS = "riskClass";
     public static final String KEY_CONTROL_OWNER = "owner";
+    public static final String KEY_CONTROL_POPULATION = "population";
+    public static final String KEY_CONTROL_FREQUENCY = "frequency";
+    public static final String KEY_CONTROL_NATURE = "nature";
+    public static final String KEY_CONTROL_TYPE = "type";
+    public static final String KEY_CONTROL_PROJECT = "project";
+    public static final String KEY_CONTROL_MEMBER_RESPONSIBLE = "memberResponsible";
     public static final String KEY_CONTROL_SCOPE_LIST = "controlScopeList";
+    public static final String KEY_NEW_CONTROL = "newControl";
 
-    String id;
-    String name;
-    String description;
-    boolean isAutomatic;
-    ArrayList<ParseObject> companyList;
-    ArrayList<ParseObject> systemList;
+    String name = "";
+    String description = "";
+    String riskClassification = "";
+    String population = "";
+    String owner = "";
+    String type = "";
+    String frequency = "";
+    String nature = "";
+    ArrayList<ParseObject> controlScopeList = new ArrayList<>();
+    ArrayList<String> controlScopeIdList = new ArrayList<>();
 
     public Control() {
-    }
-
-    public Control(String id, String name, String description, boolean isAutomatic, ArrayList<ParseObject> companyList, ArrayList<ParseObject> systemList) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.isAutomatic = isAutomatic;
-        this.companyList = companyList;
-        this.systemList = systemList;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public String getName() {
@@ -59,27 +53,71 @@ public class Control {
         this.description = description;
     }
 
-    public boolean isAutomatic() {
-        return isAutomatic;
+    public String getRiskClassification() {
+        return riskClassification;
     }
 
-    public void setIsAutomatic(boolean isAutomatic) {
-        this.isAutomatic = isAutomatic;
+    public void setRiskClassification(String riskClassification) {
+        this.riskClassification = riskClassification;
     }
 
-    public ArrayList<ParseObject> getCompanyList() {
-        return companyList;
+    public String getPopulation() {
+        return population;
     }
 
-    public void setCompanyList(ArrayList<ParseObject> companyList) {
-        this.companyList = companyList;
+    public void setPopulation(String population) {
+        this.population = population;
     }
 
-    public ArrayList<ParseObject> getSystemList() {
-        return systemList;
+    public String getOwner() {
+        return owner;
     }
 
-    public void setSystemList(ArrayList<ParseObject> systemList) {
-        this.systemList = systemList;
+    public void setOwner(String owner) {
+        this.owner = owner;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getFrequency() {
+        return frequency;
+    }
+
+    public void setFrequency(String frequency) {
+        this.frequency = frequency;
+    }
+
+    public String getNature() {
+        return nature;
+    }
+
+    public void setNature(String nature) {
+        this.nature = nature;
+    }
+
+    public ArrayList<ParseObject> getControlScopeList() {
+        return controlScopeList;
+    }
+
+    public void setControlScopeList(ArrayList<ParseObject> controlScopeList) {
+        this.controlScopeList = controlScopeList;
+    }
+
+    public ArrayList<String> getControlScopeIdList() {
+        return controlScopeIdList;
+    }
+
+    public void setControlScopeIdList(ArrayList<String> controlScopeIdList) {
+        this.controlScopeIdList = controlScopeIdList;
+    }
+
+    public void addControlScopeObject(ParseObject controlScope) {
+        this.controlScopeList.add(controlScope);
     }
 }

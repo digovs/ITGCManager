@@ -1,6 +1,8 @@
 package com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models;
 
-public class SystemApp {
+import java.io.Serializable;
+
+public class SystemApp  implements Serializable {
 
     public static final String TABLE_SYSTEM = "System";
     public static final String KEY_SYSTEM_ID = "objectId";

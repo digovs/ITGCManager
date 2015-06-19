@@ -9,4 +9,5 @@
 
     <dimen name="add_control_margin_form">7dp</dimen>
     <dimen name="add_test_margin_form">7dp</dimen>
+    <dimen name="align_edit_text_to_text_view">3dp</dimen>
 </resources>

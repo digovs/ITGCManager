@@ -96,19 +96,74 @@
     <!-- Selector Dialog Activity -->
     <string name="selector_dialog_no_results_message">No results</string>
 
-    <!-- Add Control Activity -->
-    <string name="title_activity_add_control">Add Control</string>
+    <!-- Add Control Activity Step Details-->
+    <string name="title_activity_add_control_details">Add Control: Details</string>
     <string name="add_control_user_button">Select Owner</string>
-    <string name="add_control_name_hint">Control name</string>
-    <string name="add_control_owner_hint">Control owner</string>
-    <string name="add_control_description_hint">Control description</string>
-    <string name="add_control_population_hint">Control population</string>
-    <string name="add_control_is_automatic_checkbox_text">Is Automatic</string>
+    <string name="add_control_name_hint">*Name</string>
+    <string name="add_control_owner_hint">*Owner</string>
+    <string name="add_control_description_hint">*Description</string>
+    <string name="add_control_population_hint">*Population</string>
+
+    <string-array name="add_control_risk_classification_options">
+        <item>[Select Risk Classification...]</item>
+        <item>High</item>
+        <item>Medium</item>
+        <item>Low</item>
+        <item>Insignificant</item>
+    </string-array>
+
+    <string-array name="add_control_nature_options">
+        <item>[Select Nature...]</item>
+        <item>Preventive</item>
+        <item>Detective</item>
+    </string-array>
+
+    <string-array name="add_control_type_options">
+        <item>[Select Type...]</item>
+        <item>Manual</item>
+        <item>Automatic</item>
+        <item>IT Dependant</item>
+    </string-array>
+
+    <string-array name="add_control_frequency_options">
+        <item>[Select Frequency...]</item>
+        <item>Annual</item>
+        <item>Biannual</item>
+        <item>Quarterly</item>
+        <item>Monthly</item>
+        <item>Weekly</item>
+        <item>Daily</item>
+        <item>Daily Recurrent</item>
+        <item>On Demand</item>
+        <item>IT Configuration</item>
+    </string-array>
+
+    <!-- Add Control Activity Step Details - ErrorDialogFragment-->
+    <string name="add_control_error_fragment_title">Error!</string>
+    <string name="add_control_error_fragment_ok_button">OK</string>
+    <string name="add_control_details_error_fragment_message">The fields Risk Class, Type, Frequency and Nature are required</string>
+    <string name="add_control_scope_error_fragment_message">You must define at least one Scope to continue</string>
+
+
+    <!-- Add Control Activity Step Define Scope -->
+    <string name="title_activity_add_control_define_scope">Add Control: Define Scope</string>
+    <string name="add_control_define_scope_add_button_text">Add System Scope</string>
+    <string name="add_control_define_scope_empty_list_message">You have no Scope defined, click at the button right above to define one</string>
+
     <string name="add_control_scope_button_text">Define scope</string>
-    <string name="add_control_save_button_text">Save</string>
+    <string name="add_control_step_details_continue_button_text">Continue</string>
     <string name="add_control_save_and_continue_button_text">Save and Continue</string>
     <string name="add_control_no_users_selected_error_message">The field responsible user is required.</string>
     <string name="add_control_no_scope_selected_error_message">The field Scope is requires</string>
+
+
+    <!-- Add Control Activity Step Define Responsible -->
+    <string name="title_activity_add_control_define_responsible">Add Control: Define Responsible</string>
+    <string name="add_control_define_responsible_filter_hint">Filter member</string>
+    <string name="add_control_define_responsible_not_found_message">No results</string>
+    <string name="add_control_define_responsible_save_button_text">Save</string>
+    <string name="add_control_define_responsible_confirmation_dialog_message">Confirm to make X_USER responsible for Y_CONTROL Control?</string>
+
 
     <string name="title_logout">Logout</string>
     <string name="title_control_section">Controls</string>

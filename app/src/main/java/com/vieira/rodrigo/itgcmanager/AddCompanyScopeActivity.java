@@ -47,7 +47,7 @@ public class AddCompanyScopeActivity extends ActionBarActivity {
         actionBar.setHomeButtonEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
 
-        currentProjectId = ParseUtils.getStringFromSession(getApplicationContext(), Project.KEY_PROJECT_ID);
+        currentProjectId = ParseUtils.getStringFromSession(getApplicationContext(), ParseUtils.PREFS_CURRENT_PROJECT_ID);
 
         companyScopeFormView = (RelativeLayout) findViewById(R.id.add_company_scope_form_view);
         companyScopeNameView = (EditText) findViewById(R.id.add_company_scope_name);

@@ -14,10 +14,11 @@ public class SelectorDialogFragment extends DialogFragment {
     public static final String KEY_ITEM_LIST_ARGS = "itemList";
     public static final String KEY_SELECTED_ITEMS_LIST_ARGS = "selectedItemList";
     public static final String KEY_TITLE_ARGS = "title";
+    public static final String KEY_EDIT_MODE = "editMode";
 
     public interface SelectorDialogListener {
-        void onSaveButtonClicked(boolean[] selectedItems);
-        void onCancelButtonClicked();
+        void onSaveButtonClicked(boolean[] selectedItems, boolean editMode);
+        void onDeleteButtonClicked(boolean editMode);
     }
 
     SelectorDialogListener listener;
@@ -25,6 +26,7 @@ public class SelectorDialogFragment extends DialogFragment {
     boolean[] selectedItems;
     CharSequence[] items;
     String title;
+    boolean editMode = false;
 
     @Override
     public void onAttach(Activity activity) {
@@ -37,6 +39,7 @@ public class SelectorDialogFragment extends DialogFragment {
                     + " must implement SelectorDialogListener");
         }
 
+        editMode = getArguments().getBoolean(KEY_EDIT_MODE);
         items = getArguments().getCharSequenceArray(KEY_ITEM_LIST_ARGS);
         selectedItems = getArguments().getBooleanArray(KEY_SELECTED_ITEMS_LIST_ARGS);
         if (selectedItems == null) {
@@ -68,12 +71,12 @@ public class SelectorDialogFragment extends DialogFragment {
                 })
                 .setPositiveButton("Save", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        listener.onSaveButtonClicked(selectedItems);
+                        listener.onSaveButtonClicked(selectedItems, editMode);
                     }
                 })
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                .setNegativeButton("Delete", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        listener.onCancelButtonClicked();
+                        listener.onDeleteButtonClicked(editMode);
                     }
                 });
         // Create the AlertDialog object and return it

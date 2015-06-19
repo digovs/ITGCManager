@@ -47,7 +47,7 @@ public class AddSystemScopeActivity extends ActionBarActivity {
         actionBar.setHomeButtonEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
 
-        currentProjectId = ParseUtils.getStringFromSession(getApplicationContext(), Project.KEY_PROJECT_ID);
+        currentProjectId = ParseUtils.getStringFromSession(getApplicationContext(), ParseUtils.PREFS_CURRENT_PROJECT_ID);
 
         systemScopeFormView = (RelativeLayout) findViewById(R.id.add_system_scope_form_view);
         systemScopeNameView = (EditText) findViewById(R.id.add_system_scope_name);

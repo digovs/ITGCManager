@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import com.parse.ParseObject;
 import com.vieira.rodrigo.itgcmanager.R;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.Project;
 
@@ -15,10 +16,10 @@ import java.util.ArrayList;
 public class ProjectListAdapter  extends BaseAdapter {
 
     private Activity activity;
-    private ArrayList<Project> projects;
+    private ArrayList<ParseObject> projects;
     private static LayoutInflater inflater = null;
 
-    public ProjectListAdapter(Activity activity, ArrayList<Project> projects) {
+    public ProjectListAdapter(Activity activity, ArrayList<ParseObject> projects) {
         this.activity = activity;
         this.projects = projects;
 
@@ -59,8 +60,8 @@ public class ProjectListAdapter  extends BaseAdapter {
         } else
             holder = (ViewHolder) rowView.getTag();
 
-        Project currentProject = projects.get(position);
-        holder.projectNameView.setText(currentProject.getName());
+        ParseObject currentProject = projects.get(position);
+        holder.projectNameView.setText(currentProject.getString(Project.KEY_PROJECT_NAME));
 
         return rowView;
     }

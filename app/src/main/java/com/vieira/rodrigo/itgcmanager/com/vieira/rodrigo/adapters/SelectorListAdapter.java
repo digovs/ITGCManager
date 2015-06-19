@@ -8,7 +8,9 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.parse.ParseObject;
-import com.vieira.rodrigo.itgcmanager.AddControlActivity;
+import com.vieira.rodrigo.itgcmanager.AddControlActivityStepDefineResponsible;
+import com.vieira.rodrigo.itgcmanager.AddControlActivityStepDefineScope;
+import com.vieira.rodrigo.itgcmanager.AddControlActivityStepDetails;
 import com.vieira.rodrigo.itgcmanager.R;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.Company;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.SystemApp;
@@ -67,16 +69,8 @@ public class SelectorListAdapter extends BaseAdapter{
         ParseObject dataObject = dataList.get(position);
 
         switch (requestCode){
-            case AddControlActivity.REQUEST_SCOPE_SELECTOR:
+            case AddControlActivityStepDefineScope.REQUEST_SCOPE_SELECTOR:
                 holder.objectName.setText(dataObject.getString(SystemApp.KEY_SYSTEM_NAME));
-                break;
-
-            case AddControlActivity.REQUEST_TEAM_MEMBER_SELECTOR:
-                holder.objectName.setText(dataObject.getString(User.KEY_USER_NAME));
-                break;
-
-            case AddControlActivity.REQUEST_COMPANY_SCOPE_SELECTOR:
-                holder.objectName.setText(dataObject.getString(Company.KEY_COMPANY_NAME));
                 break;
         }
 

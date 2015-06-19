@@ -35,7 +35,7 @@ public class ProjectDetailsFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_project_details, container, false);
 
-        currentProjectname = ParseUtils.getStringFromSession(getActivity(), Project.KEY_PROJECT_NAME);
+        currentProjectname = ParseUtils.getStringFromSession(getActivity(), ParseUtils.PREFS_CURRENT_PROJECT_NAME);
 
         projectNameView = (TextView) view.findViewById(R.id.project_details_name);
         projectNameView.setText(currentProjectname);

@@ -264,7 +264,7 @@ public class ProjectDashboardNavigationDrawerFragment extends Fragment {
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayShowTitleEnabled(true);
 
-        String currentProjectName = ParseUtils.getStringFromSession(getActivity(), Project.KEY_PROJECT_NAME);
+        String currentProjectName = ParseUtils.getStringFromSession(getActivity(), ParseUtils.PREFS_CURRENT_PROJECT_NAME);
         actionBar.setTitle(currentProjectName);
     }
 

@@ -18,7 +18,7 @@ public class AddMemberActivity extends ActionBarActivity {
         setContentView(R.layout.activity_add_member);
 
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setTitle(ParseUtils.getStringFromSession(getApplicationContext(), Project.KEY_PROJECT_NAME));
+        actionBar.setTitle(ParseUtils.getStringFromSession(getApplicationContext(), ParseUtils.PREFS_CURRENT_PROJECT_NAME));
     }
 
 

@@ -5,12 +5,16 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 
 import com.parse.ParseException;
+import com.parse.ParseObject;
 import com.vieira.rodrigo.itgcmanager.R;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.dialogs.ErrorMessageDialogActivity;
+import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.Project;
 
 public abstract class ParseUtils {
 
     public static final String PREFS_NAME = "MyPrefsFile";
+    public static final String PREFS_CURRENT_PROJECT_ID = "currentProjectId";
+    public static final String PREFS_CURRENT_PROJECT_NAME = "currentProjectName";
 
     public static void handleParseException(Context context, ParseException exception) {
         int exceptionCode = exception.getCode();
@@ -47,6 +51,5 @@ public abstract class ParseUtils {
         SharedPreferences session = context.getSharedPreferences(PREFS_NAME, 0);
         return session.getString(key, "");
     }
-
 
 }

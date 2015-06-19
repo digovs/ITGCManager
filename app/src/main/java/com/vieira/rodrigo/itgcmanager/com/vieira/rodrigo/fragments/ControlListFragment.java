@@ -21,18 +21,15 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.parse.FindCallback;
-import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
-import com.vieira.rodrigo.itgcmanager.AddCompanyScopeActivity;
-import com.vieira.rodrigo.itgcmanager.AddControlActivity;
+import com.vieira.rodrigo.itgcmanager.AddControlActivityStepDetails;
 import com.vieira.rodrigo.itgcmanager.AddTestActivity;
 import com.vieira.rodrigo.itgcmanager.ProjectDashboardActivity;
 import com.vieira.rodrigo.itgcmanager.R;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.Utils.ParseUtils;
-import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.adapters.CompanyListAdapter;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.adapters.ControlListAdapter;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.Control;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.Project;
@@ -69,7 +66,7 @@ public class ControlListFragment extends ListFragment {
 
     private void loadCurrentProjectObject() {
         showProgress(true);
-        String currentProjectId = ParseUtils.getStringFromSession(context, Project.KEY_PROJECT_ID);
+        String currentProjectId = ParseUtils.getStringFromSession(getActivity(), ParseUtils.PREFS_CURRENT_PROJECT_ID);
         ParseQuery getCurrentProjectObject = new ParseQuery(Project.TABLE_PROJECT);
         try {
             currentProjectObject = getCurrentProjectObject.get(currentProjectId);
@@ -83,7 +80,8 @@ public class ControlListFragment extends ListFragment {
     private void loadControlList() {
         showProgress(true);
         ParseQuery<ParseObject> getUserControls = ParseQuery.getQuery(Control.TABLE_CONTROL);
-        getUserControls.whereEqualTo(Control.KEY_CONTROL_OWNER, ParseUser.getCurrentUser());
+        ParseUser currentUser = ParseUser.getCurrentUser();
+        //getUserControls.whereEqualTo(Control.KEY_CONTROL_MEMBER_RESPONSIBLE, ParseUser.getCurrentUser());
         getUserControls.whereEqualTo(Control.KEY_CONTROL_PROJECT, currentProjectObject);
         getUserControls.findInBackground(new FindCallback<ParseObject>() {
             @Override
@@ -130,7 +128,7 @@ public class ControlListFragment extends ListFragment {
             item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                 @Override
                 public boolean onMenuItemClick(MenuItem item) {
-                    startActivity(new Intent(getActivity(), AddControlActivity.class));
+                    startActivity(new Intent(getActivity(), AddControlActivityStepDetails.class));
                     return true;
                 }
             });

@@ -18,7 +18,7 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.SaveCallback;
-import com.vieira.rodrigo.itgcmanager.AddControlActivity;
+import com.vieira.rodrigo.itgcmanager.AddControlActivityStepDefineScope;
 import com.vieira.rodrigo.itgcmanager.R;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.Utils.ParseUtils;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.adapters.SelectorListAdapter;
@@ -54,7 +54,7 @@ public class SystemScopeSelectorDialogActivity extends FragmentActivity implemen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_system_selector_dialog);
 
-        requestCode = getIntent().getIntExtra(AddControlActivity.REQUEST_CODE, 0);
+        requestCode = getIntent().getIntExtra(AddControlActivityStepDefineScope.KEY_REQUEST_CODE, 0);
         listOfIdsToExclude = getIntent().getStringArrayListExtra(KEY_LIST_OF_IDS_TO_EXCLUDE);
 
         progressBar = (ProgressBar) findViewById(R.id.system_selector_dialog_progress_bar);
@@ -84,7 +84,7 @@ public class SystemScopeSelectorDialogActivity extends FragmentActivity implemen
     }
 
     private void loadDataList() {
-        currentProjectId = ParseUtils.getStringFromSession(getApplicationContext(), Project.KEY_PROJECT_ID);
+        currentProjectId = ParseUtils.getStringFromSession(getApplicationContext(), ParseUtils.PREFS_CURRENT_PROJECT_ID);
         showProgress(true);
 
         ParseQuery<ParseObject> getProject = ParseQuery.getQuery(Project.TABLE_PROJECT);
@@ -134,7 +134,7 @@ public class SystemScopeSelectorDialogActivity extends FragmentActivity implemen
     }
 
     @Override
-    public void onSaveButtonClicked(boolean[] selectedItems) {
+    public void onSaveButtonClicked(boolean[] selectedItems, boolean editMode) {
         showProgress(true);
         for (int i = 0; i < selectedItems.length; i++) {
             if (selectedItems[i] == true)
@@ -167,7 +167,7 @@ public class SystemScopeSelectorDialogActivity extends FragmentActivity implemen
     }
 
     @Override
-    public void onCancelButtonClicked() {
+    public void onDeleteButtonClicked(boolean editMode) {
         setResult(RESULT_CANCELED);
         finish();
     }

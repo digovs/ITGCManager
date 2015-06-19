@@ -27,6 +27,10 @@ public class ScopeListAdapter extends BaseAdapter{
         inflater = LayoutInflater.from(context);
     }
 
+    public void swapScopeList(ArrayList<ParseObject> newScopeList) {
+        scopeList = newScopeList;
+        notifyDataSetChanged();
+    }
     @Override
     public int getCount() {
         if (scopeList != null)

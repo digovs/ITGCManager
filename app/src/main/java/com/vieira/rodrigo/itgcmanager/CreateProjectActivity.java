@@ -83,9 +83,6 @@ public class CreateProjectActivity extends ActionBarActivity {
             @Override
             public void done(ParseException e) {
                 if (e == null) {
-                    ParseUtils.saveStringToSession(getApplicationContext(), Project.KEY_PROJECT_ID, newProjectObject.getObjectId());
-                    ParseUtils.saveStringToSession(getApplicationContext(), Project.KEY_PROJECT_NAME, newProjectObject.getString(Project.KEY_PROJECT_NAME));
-
                     attemptSaveProjectUserRelationship(newProjectObject);
                 } else {
                     showProgress(false);
@@ -93,12 +90,9 @@ public class CreateProjectActivity extends ActionBarActivity {
                 }
             }
         });
-
-
-
     }
 
-    private void attemptSaveProjectUserRelationship(ParseObject newProjectObject) {
+    private void attemptSaveProjectUserRelationship(final ParseObject newProjectObject) {
         ParseRelation<ParseObject> relation = newProjectObject.getRelation(Project.KEY_PROJECT_USER_RELATION);
         relation.add(ParseUser.getCurrentUser());
 
@@ -107,6 +101,8 @@ public class CreateProjectActivity extends ActionBarActivity {
             public void done(ParseException e) {
                 showProgress(false);
                 if (e == null) {
+                    ParseUtils.saveStringToSession(getApplicationContext(), ParseUtils.PREFS_CURRENT_PROJECT_ID, newProjectObject.getObjectId());
+                    ParseUtils.saveStringToSession(getApplicationContext(), ParseUtils.PREFS_CURRENT_PROJECT_NAME, newProjectObject.getString(Project.KEY_PROJECT_NAME));
                     startActivity(new Intent(getApplicationContext(), AddMemberActivity.class));
                 } else {
                     handleParseException(e);

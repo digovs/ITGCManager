@@ -30,8 +30,10 @@ public class ErrorMessageDialogActivity extends Activity {
         messageView.setText(messageText);
 
         okButton = (Button) findViewById(R.id.error_message_dialog_button);
-        if (!okButtonText.isEmpty())
+        if (okButtonText != null && !okButtonText.isEmpty())
             okButton.setText(okButtonText);
+        else
+            okButton.setText("OK");
 
         okButton.setOnClickListener(new View.OnClickListener() {
             @Override

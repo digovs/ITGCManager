@@ -23,6 +23,7 @@ import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.ParseRelation;
 import com.parse.ParseUser;
 import com.vieira.rodrigo.itgcmanager.CreateProjectActivity;
 import com.vieira.rodrigo.itgcmanager.ProjectDashboardActivity;
@@ -41,7 +42,7 @@ public class ProjectListFragment extends ListFragment{
     private ListView listView;
     private ProgressBar progressBar;
     private TextView emptyTextView;
-    private ArrayList<Project> projectList = new ArrayList<>();
+    private ArrayList<ParseObject> projectList = new ArrayList<>();
     private Activity myActivity;
 
     public ProjectListFragment() {
@@ -65,10 +66,7 @@ public class ProjectListFragment extends ListFragment{
             public void done(List<ParseObject> list, ParseException e) {
                 showProgress(false);
                 if (e == null) {
-                    for (ParseObject project : list) {
-                        Project tempProject = new Project(project);
-                        projectList.add(tempProject);
-                    }
+                    projectList = (ArrayList) list;
                     adapter = new ProjectListAdapter(myActivity, projectList);
                     setListAdapter(adapter);
                     if (projectList.isEmpty())
@@ -86,8 +84,9 @@ public class ProjectListFragment extends ListFragment{
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         if (adapter != null) {
-            ParseUtils.saveStringToSession(getActivity(), Project.KEY_PROJECT_ID, projectList.get(position).getId());
-            ParseUtils.saveStringToSession(getActivity(), Project.KEY_PROJECT_NAME, projectList.get(position).getName());
+            // TODO
+            ParseUtils.saveStringToSession(getActivity(), ParseUtils.PREFS_CURRENT_PROJECT_ID, projectList.get(position).getObjectId());
+            ParseUtils.saveStringToSession(getActivity(), ParseUtils.PREFS_CURRENT_PROJECT_NAME, projectList.get(position).getString(Project.KEY_PROJECT_NAME));
             startActivity(new Intent(getActivity(), ProjectDashboardActivity.class));
         }
     }

@@ -22,6 +22,7 @@ public class User {
     private String fullName;
     private String email;
     private String userName;
+    private ParseUser parseUser;
 
     public User() {
     }
@@ -31,6 +32,7 @@ public class User {
         this.userName = object.getString(KEY_USER_NAME);
         this.email = object.getString(KEY_USER_EMAIL);
         this.id = object.getObjectId();
+        this.parseUser = object;
     }
 
     public User(String fullName, String email, String userName) {
@@ -69,5 +71,13 @@ public class User {
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public ParseUser getParseUser() {
+        return parseUser;
+    }
+
+    public void setParseUser(ParseUser parseUser) {
+        this.parseUser = parseUser;
     }
 }

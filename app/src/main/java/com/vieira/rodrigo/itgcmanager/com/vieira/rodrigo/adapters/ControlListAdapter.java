@@ -59,7 +59,7 @@ public class ControlListAdapter extends BaseAdapter{
 
             holder = new ViewHolder();
             holder.controlNameView = (TextView) rowView.findViewById(R.id.control_list_item_name);
-            holder.controlOwnerView = (TextView) rowView.findViewById(R.id.control_list_item_owner);
+            holder.controlResponsibleView = (TextView) rowView.findViewById(R.id.control_list_item_owner);
 
             rowView.setTag(holder);
         } else
@@ -68,14 +68,14 @@ public class ControlListAdapter extends BaseAdapter{
         ParseObject controlObject = controlList.get(position);
         holder.controlNameView.setText(controlObject.getString(Control.KEY_CONTROL_NAME));
 
-        ParseUser owner = (ParseUser) controlObject.get(Control.KEY_CONTROL_OWNER);
-        holder.controlOwnerView.setText(owner.getString(User.KEY_USER_NAME));
+        ParseUser responsible = controlObject.getParseUser(Control.KEY_CONTROL_MEMBER_RESPONSIBLE);
+        holder.controlResponsibleView.setText("User responsible!");
 
         return rowView;
     }
 
     public static class ViewHolder {
         public TextView controlNameView;
-        public TextView controlOwnerView;
+        public TextView controlResponsibleView;
     }
 }
