@@ -29,6 +29,14 @@ import java.util.ArrayList;
 
 public class AddCompanyScopeActivity extends ActionBarActivity {
 
+    public static final String EDIT_MODE_FLAG = "EDIT_MODE_FLAG";
+    public static final String EDIT_MODE_COMPANY_NAME = "EDIT_MODE_COMPANY_NAME";
+    public static final String EDIT_MODE_COMPANY_OBJECT_ID = "EDIT_MODE_COMPANY_OBJECT_ID";
+
+    boolean editMode;
+    String editModeCompanyName;
+    String editModeCompanyObjectId;
+
     private String currentProjectId;
     private ParseObject currentProjectObject;
     private ArrayList<ParseObject> alreadyAddedCompanyList = new ArrayList<>();
@@ -47,12 +55,22 @@ public class AddCompanyScopeActivity extends ActionBarActivity {
         actionBar.setHomeButtonEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
 
+        editMode = getIntent().getBooleanExtra(EDIT_MODE_FLAG, false);
+        editModeCompanyName = getIntent().getStringExtra(EDIT_MODE_COMPANY_NAME);
+        editModeCompanyObjectId = getIntent().getStringExtra(EDIT_MODE_COMPANY_OBJECT_ID);
+
+        if (editMode) {
+            actionBar.setTitle(getString(R.string.edit_company_title));
+        }
         currentProjectId = ParseUtils.getStringFromSession(getApplicationContext(), ParseUtils.PREFS_CURRENT_PROJECT_ID);
 
         companyScopeFormView = (RelativeLayout) findViewById(R.id.add_company_scope_form_view);
         companyScopeNameView = (EditText) findViewById(R.id.add_company_scope_name);
         progressBar = (ProgressBar) findViewById(R.id.add_company_scope_progress_bar);
         saveButton = (Button) findViewById(R.id.add_company_scope_button);
+        if (editMode) {
+            companyScopeNameView.setText(editModeCompanyName);
+        }
 
         loadAlreadyAddedCompanyList();
 
@@ -66,11 +84,38 @@ public class AddCompanyScopeActivity extends ActionBarActivity {
                 } else if (!isNameAvailable(companyName)){
                     companyScopeNameView.setError(getString(R.string.add_company_duplicated_name_error));
                 } else {
-                    attemptSaveCompany(companyName);
+                    if (editMode) {
+                        attemptEditCompany(companyName);
+                    } else {
+                        attemptSaveCompany(companyName);
+                    }
                 }
                 showProgress(false);
             }
         });
+    }
+
+    private void attemptEditCompany(final String companyName) {
+        showProgress(true);
+        ParseQuery<ParseObject> getCurrentCompany = ParseQuery.getQuery(Company.TABLE_COMPANY);
+        getCurrentCompany.getInBackground(editModeCompanyObjectId, new GetCallback<ParseObject>() {
+            @Override
+            public void done(ParseObject companyParseObject, ParseException e) {
+                if (e == null) {
+                    companyParseObject.put(Company.KEY_COMPANY_NAME, companyName);
+                    try {
+                        companyParseObject.save();
+                        showProgress(false);
+                        finish();
+                    } catch (ParseException e1) {
+                        ParseUtils.handleParseException(getApplicationContext(), e1);
+                    }
+                } else {
+                    ParseUtils.handleParseException(getApplicationContext(), e);
+                }
+            }
+        });
+
     }
 
     private void loadAlreadyAddedCompanyList() {

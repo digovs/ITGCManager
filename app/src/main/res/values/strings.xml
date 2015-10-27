@@ -37,6 +37,24 @@
     <string name="project_list_long_click_dialog_title">Edit Project</string>
     <string name="project_list_long_click_dialog_message">Are you sure you want to edit Project XXX?</string>
 
+    <!-- Add Company Scope -->
+
+    <string name="title_company_section">Company Scope</string>
+    <string name="title_activity_add_company_scope">Add Company Scope</string>
+    <string name="add_company_scope_name_hint">Company Name</string>
+    <string name="add_company_scope_button_text">Save</string>
+    <string name="add_company_duplicated_name_error">Duplicated Company Name</string>
+
+    <string name="action_title_add_company">Add company</string>
+    <string name="company_list_empty_string">You have no companies, to add one, click the button "Add Company" at the right top of the screen</string>
+    <string name="title_activity_selector_dialog">SelectorDialogActivity</string>
+
+    <string name="edit_company_title">Edit Company</string>
+
+    <!-- Company List Fragment Long Click Dialog -->
+    <string name="company_list_long_click_dialog_title">Edit Company</string>
+    <string name="company_list_long_click_dialog_message">Are you sure you want to edit Company XXX?</string>
+
     <string name="title_activity_home">Home</string>
 
     <!-- Home Activity -->
@@ -94,15 +112,7 @@
     <string name="action_title_add_system">Add system</string>
     <string name="system_list_empty_string">You have no systems, to add one, click the button "Add System" at the right top of the screen</string>
 
-    <string name="title_company_section">Company Scope</string>
-    <string name="title_activity_add_company_scope">Add Company Scope</string>
-    <string name="add_company_scope_name_hint">Company Name</string>
-    <string name="add_company_scope_button_text">Save</string>
-    <string name="add_company_duplicated_name_error">Duplicated Company Name</string>
 
-    <string name="action_title_add_company">Add company</string>
-    <string name="company_list_empty_string">You have no companies, to add one, click the button "Add Company" at the right top of the screen</string>
-    <string name="title_activity_selector_dialog">SelectorDialogActivity</string>
 
     <!-- Selector Dialog Activity -->
     <string name="selector_dialog_no_results_message">No results</string>

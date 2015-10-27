@@ -155,7 +155,7 @@ public class ProjectListFragment extends ListFragment{
                     }
                 });
                 dialogBuilder.create().show();
-                return false;
+                return true;
             }
         });
         return view;
