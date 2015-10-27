@@ -17,6 +17,7 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
 import com.parse.FindCallback;
+import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -34,6 +35,11 @@ import java.util.List;
 
 public class CreateProjectActivity extends ActionBarActivity {
 
+    public static final String EDIT_MODE_FLAG = "EDIT_MODE_FLAG";
+    public static final String EDIT_MODE_PROJECT_NAME = "EDIT_MODE_PROJECT_NAME";
+
+    boolean editMode;
+    String editModeProjectName;
     ArrayList<String> userProjectNameList = new ArrayList<>();
 
     EditText projectNameView;
@@ -51,11 +57,21 @@ public class CreateProjectActivity extends ActionBarActivity {
         actionBar.setHomeButtonEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
 
-        createProjectFormView = (RelativeLayout) findViewById(R.id.create_project_form_view);
-        projectNameView = (EditText) findViewById(R.id.create_project_name);
-        progressBar = (ProgressBar) findViewById(R.id.create_project_progress_bar);
+        editMode = getIntent().getBooleanExtra(EDIT_MODE_FLAG, false);
+        editModeProjectName = getIntent().getStringExtra(EDIT_MODE_PROJECT_NAME);
 
+        if (editMode) {
+            actionBar.setTitle(getString(R.string.edit_project_title));
+        }
+
+        createProjectFormView = (RelativeLayout) findViewById(R.id.create_project_form_view);
+        progressBar = (ProgressBar) findViewById(R.id.create_project_progress_bar);
         createProjectBtn = (Button) findViewById(R.id.create_project_button);
+        projectNameView = (EditText) findViewById(R.id.create_project_name);
+        if (editMode){
+            projectNameView.setText(editModeProjectName);
+            createProjectBtn.setText(getString(R.string.edit_project_button_text));
+        }
         createProjectBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -67,12 +83,46 @@ public class CreateProjectActivity extends ActionBarActivity {
                     projectNameView.setError(getString(R.string.create_project_not_available_name_message));
                 } else {
                     projectNameView.setError(null);
-                    attemptSaveProject(projectName);
+                    if (editMode){
+                        attemptEditProject(projectName);
+                    } else {
+                        attemptSaveProject(projectName);
+                    }
+
                 }
             }
         });
 
         loadListWIthUserProjects();
+    }
+
+    private void attemptEditProject(final String projectName) {
+        showProgress(true);
+        String currentProjectId = ParseUtils.getStringFromSession(getApplicationContext(), ParseUtils.PREFS_CURRENT_PROJECT_ID);
+        ParseQuery<ParseObject> getProject = ParseQuery.getQuery(Project.TABLE_PROJECT);
+        getProject.getInBackground(currentProjectId, new GetCallback<ParseObject>() {
+            @Override
+            public void done(ParseObject currentProjectParseObject, ParseException e) {
+                if (e == null){
+                    currentProjectParseObject.put(Project.KEY_PROJECT_NAME, projectName);
+                    try {
+                        currentProjectParseObject.save();
+                        showProgress(false);
+                        ParseUtils.saveStringToSession(getApplicationContext(), ParseUtils.PREFS_CURRENT_PROJECT_NAME, projectName);
+                        Intent intent = new Intent(getApplicationContext(), ProjectDashboardActivity.class);
+                        intent.putExtra(EDIT_MODE_FLAG, true);
+                        startActivity(intent);
+                        finish();
+                    } catch (ParseException e1) {
+                        ParseUtils.handleParseException(getApplicationContext(), e1);
+                        finish();
+                    }
+                } else {
+                    ParseUtils.handleParseException(getApplicationContext(), e);
+                    finish();
+                }
+            }
+        });
     }
 
     private void attemptSaveProject(String projectName) {
@@ -104,6 +154,7 @@ public class CreateProjectActivity extends ActionBarActivity {
                     ParseUtils.saveStringToSession(getApplicationContext(), ParseUtils.PREFS_CURRENT_PROJECT_ID, newProjectObject.getObjectId());
                     ParseUtils.saveStringToSession(getApplicationContext(), ParseUtils.PREFS_CURRENT_PROJECT_NAME, newProjectObject.getString(Project.KEY_PROJECT_NAME));
                     startActivity(new Intent(getApplicationContext(), AddMemberActivity.class));
+                    finish();
                 } else {
                     handleParseException(e);
                 }
@@ -125,6 +176,8 @@ public class CreateProjectActivity extends ActionBarActivity {
                     for (ParseObject project : list) {
                         userProjectNameList.add(project.getString(Project.KEY_PROJECT_NAME));
                     }
+                    // If on edit mode, remove the name of the project from the verifying list
+                    userProjectNameList.remove(editModeProjectName);
                 } else {
                     userProjectNameList = new ArrayList<>();
                     ParseUtils.handleParseException(getApplicationContext(), e);
