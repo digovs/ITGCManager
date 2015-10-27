@@ -29,6 +29,14 @@ import java.util.ArrayList;
 
 public class AddSystemScopeActivity extends ActionBarActivity {
 
+    public static final String EDIT_MODE_FLAG = "EDIT_MODE_FLAG";
+    public static final String EDIT_MODE_SYSTEM_NAME = "EDIT_MODE_SYSTEM_NAME";
+    public static final String EDIT_MODE_SYSTEM_OBJECT_ID = "EDIT_MODE_SYSTEM_OBJECT_ID";
+
+    boolean editMode;
+    String editModeSystemName;
+    String editModeSystemObjectId;
+
     private String currentProjectId;
     private ParseObject currentProjectObject;
     private ArrayList<ParseObject> alreadyAddedSystemList = new ArrayList<>();
@@ -47,12 +55,24 @@ public class AddSystemScopeActivity extends ActionBarActivity {
         actionBar.setHomeButtonEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
 
+        editMode = getIntent().getBooleanExtra(EDIT_MODE_FLAG, false);
+        editModeSystemName = getIntent().getStringExtra(EDIT_MODE_SYSTEM_NAME);
+        editModeSystemObjectId = getIntent().getStringExtra(EDIT_MODE_SYSTEM_OBJECT_ID);
+
+        if (editMode) {
+            actionBar.setTitle(R.string.edit_system_title);
+        }
+
         currentProjectId = ParseUtils.getStringFromSession(getApplicationContext(), ParseUtils.PREFS_CURRENT_PROJECT_ID);
 
         systemScopeFormView = (RelativeLayout) findViewById(R.id.add_system_scope_form_view);
         systemScopeNameView = (EditText) findViewById(R.id.add_system_scope_name);
         progressBar = (ProgressBar) findViewById(R.id.add_system_scope_progress_bar);
         saveButton = (Button) findViewById(R.id.add_system_scope_button);
+
+        if (editMode) {
+            systemScopeNameView.setText(editModeSystemName);
+        }
 
         loadAlreadyAddedSystemList();
 
@@ -66,9 +86,35 @@ public class AddSystemScopeActivity extends ActionBarActivity {
                 } else if (!isNameAvailable(systemName)){
                     systemScopeNameView.setError(getString(R.string.add_system_duplicated_name_error));
                 } else {
-                    attemptSaveSystem(systemName);
+                    if (editMode) {
+                        attemptEditSystem(systemName);
+                    } else {
+                        attemptSaveSystem(systemName);
+                    }
                 }
                 showProgress(false);
+            }
+        });
+    }
+
+    private void attemptEditSystem(final String systemName) {
+        showProgress(true);
+        ParseQuery<ParseObject> getCurrentSystem = ParseQuery.getQuery(SystemApp.TABLE_SYSTEM);
+        getCurrentSystem.getInBackground(editModeSystemObjectId, new GetCallback<ParseObject>() {
+            @Override
+            public void done(ParseObject systemParseObject, ParseException e) {
+                if (e == null) {
+                    systemParseObject.put(SystemApp.KEY_SYSTEM_NAME, systemName);
+                    try {
+                        systemParseObject.save();
+                        showProgress(false);
+                        finish();
+                    } catch (ParseException e1) {
+                        ParseUtils.handleParseException(getApplicationContext(), e1);
+                    }
+                } else {
+                    ParseUtils.handleParseException(getApplicationContext(), e);
+                }
             }
         });
     }
@@ -95,7 +141,7 @@ public class AddSystemScopeActivity extends ActionBarActivity {
         if (alreadyAddedSystemList == null)
             return true;
         for (ParseObject systemObject : alreadyAddedSystemList) {
-            if (systemObject.getString(SystemApp.KEY_SYSTEM_NAME).equals(name))
+            if (systemObject.getString(SystemApp.KEY_SYSTEM_NAME).equals(name) && !systemObject.getString(Company.KEY_COMPANY_NAME).equals(editModeSystemName))
                 return false;
         }
         return true;

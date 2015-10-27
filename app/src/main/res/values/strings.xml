@@ -55,6 +55,12 @@
     <string name="company_list_long_click_dialog_title">Edit Company</string>
     <string name="company_list_long_click_dialog_message">Are you sure you want to edit Company XXX?</string>
 
+    <!-- System List Fragment Long Click Dialog -->
+    <string name="edit_system_title">Edit System</string>
+    <string name="system_list_long_click_dialog_title">Edit System</string>
+    <string name="system_list_long_click_dialog_message">Are you sure you want to edit System XXX?</string>
+
+
     <string name="title_activity_home">Home</string>
 
     <!-- Home Activity -->

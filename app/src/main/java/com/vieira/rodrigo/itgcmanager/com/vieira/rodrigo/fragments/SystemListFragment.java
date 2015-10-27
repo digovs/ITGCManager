@@ -4,6 +4,8 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,6 +16,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -28,6 +31,7 @@ import com.vieira.rodrigo.itgcmanager.R;
 
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.Utils.ParseUtils;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.adapters.SystemListAdapter;
+import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.SystemApp;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.Project;
 
 import java.util.ArrayList;
@@ -119,6 +123,39 @@ public class SystemListFragment extends ListFragment {
         listView = (ListView) view.findViewById(android.R.id.list);
         progressBar = (ProgressBar) view.findViewById(R.id.system_list_progress_bar);
         emptyTextView = (TextView) view.findViewById(R.id.system_list_empty_message);
+
+        listView.setLongClickable(true);
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
+                String title = getString(R.string.system_list_long_click_dialog_title);
+                String message = getString(R.string.system_list_long_click_dialog_message);
+                final String selectedSystemName = systemList.get(position).getString(SystemApp.KEY_SYSTEM_NAME);
+                final String selectedSystemObjectId = systemList.get(position).getObjectId();
+                message = message.replace("XXX", selectedSystemName);
+                dialogBuilder.setTitle(title);
+                dialogBuilder.setMessage(message);
+                dialogBuilder.setPositiveButton(getString(R.string.confirmation_dialog_yes), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(getActivity(), AddSystemScopeActivity.class);
+                        intent.putExtra(AddSystemScopeActivity.EDIT_MODE_FLAG, true);
+                        intent.putExtra(AddSystemScopeActivity.EDIT_MODE_SYSTEM_NAME, selectedSystemName);
+                        intent.putExtra(AddSystemScopeActivity.EDIT_MODE_SYSTEM_OBJECT_ID, selectedSystemObjectId);
+                        startActivity(intent);
+                    }
+                });
+                dialogBuilder.setNegativeButton(getString(R.string.confirmation_dialog_no), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                dialogBuilder.create().show();
+                return false;
+            }
+        });
         return view;
     }
 

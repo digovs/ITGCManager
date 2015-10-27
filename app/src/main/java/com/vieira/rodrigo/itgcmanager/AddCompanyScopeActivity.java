@@ -140,7 +140,7 @@ public class AddCompanyScopeActivity extends ActionBarActivity {
         if (alreadyAddedCompanyList == null)
             return true;
         for (ParseObject companyObject : alreadyAddedCompanyList) {
-            if (companyObject.getString(Company.KEY_COMPANY_NAME).equals(name))
+            if (companyObject.getString(Company.KEY_COMPANY_NAME).equals(name) && !companyObject.getString(Company.KEY_COMPANY_NAME).equals(editModeCompanyName))
                 return false;
         }
         return true;
@@ -156,7 +156,7 @@ public class AddCompanyScopeActivity extends ActionBarActivity {
             public void done(ParseException e) {
                 if (e == null) {
                     if (alreadyAddedCompanyList == null)
-                        alreadyAddedCompanyList = new ArrayList<ParseObject>();
+                        alreadyAddedCompanyList = new ArrayList<>();
                     alreadyAddedCompanyList.add(newCompany);
 
                     currentProjectObject.put(Project.KEY_COMPANY_SCOPE_LIST, alreadyAddedCompanyList);
