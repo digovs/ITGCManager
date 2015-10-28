@@ -123,6 +123,18 @@
     <!-- Selector Dialog Activity -->
     <string name="selector_dialog_no_results_message">No results</string>
 
+    <!-- Add Control Tab View -->
+    <string name="add_control_tab_view_section_details_title">Details</string>
+    <string name="add_control_tab_view_section_system_scope_title">System Scope</string>
+    <string name="add_control_tab_view_section_company_scope_title">Company Scope</string>
+    <string name="add_control_tab_view_section_responsible_title">Responsible</string>
+
+    <!-- Add Control Details Fragment -->
+    <string name="add_control_details_risk_classification_label">Risk Classification</string>
+    <string name="add_control_details_type_label">Type</string>
+    <string name="add_control_details_nature_label">Nature</string>
+    <string name="add_control_details_frequency_label">Frequency</string>
+
     <!-- Add Control Activity Step Details-->
     <string name="title_activity_add_control_details">Add Control: Details</string>
     <string name="add_control_user_button">Select Owner</string>
@@ -131,39 +143,7 @@
     <string name="add_control_description_hint">*Description</string>
     <string name="add_control_population_hint">*Population</string>
 
-    <string-array name="add_control_risk_classification_options">
-        <item>[Select Risk Classification...]</item>
-        <item>High</item>
-        <item>Medium</item>
-        <item>Low</item>
-        <item>Insignificant</item>
-    </string-array>
 
-    <string-array name="add_control_nature_options">
-        <item>[Select Nature...]</item>
-        <item>Preventive</item>
-        <item>Detective</item>
-    </string-array>
-
-    <string-array name="add_control_type_options">
-        <item>[Select Type...]</item>
-        <item>Manual</item>
-        <item>Automatic</item>
-        <item>IT Dependant</item>
-    </string-array>
-
-    <string-array name="add_control_frequency_options">
-        <item>[Select Frequency...]</item>
-        <item>Annual</item>
-        <item>Biannual</item>
-        <item>Quarterly</item>
-        <item>Monthly</item>
-        <item>Weekly</item>
-        <item>Daily</item>
-        <item>Daily Recurrent</item>
-        <item>On Demand</item>
-        <item>IT Configuration</item>
-    </string-array>
 
     <!-- Add Control Activity Step Details - ErrorDialogFragment-->
     <string name="add_control_error_fragment_title">Error!</string>
@@ -178,7 +158,7 @@
     <string name="add_control_define_scope_empty_list_message">You have no Scope defined, click at the button right above to define one</string>
 
     <string name="add_control_scope_button_text">Define scope</string>
-    <string name="add_control_step_details_continue_button_text">Continue</string>
+    <string name="add_control_save_button_text">Save</string>
     <string name="add_control_save_and_continue_button_text">Save and Continue</string>
     <string name="add_control_no_users_selected_error_message">The field responsible user is required.</string>
     <string name="add_control_no_scope_selected_error_message">The field Scope is requires</string>
@@ -213,5 +193,8 @@
     <string name="add_test_status_done">Done</string>
     <string name="add_test_status_scheduled">Scheduled</string>
     <string name="add_test_status_on_progress">On progress</string>
+    <string name="title_activity_add_edit_or_view_control">Add Control</string>
+
+    <string name="title_section1">Section 1</string>
 
 </resources>

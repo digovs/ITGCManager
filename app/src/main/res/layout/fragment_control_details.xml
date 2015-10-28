@@ -1,16 +1,16 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context="com.vieira.rodrigo.itgcmanager.AddControlActivityStepDetails">
+    tools:context="com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments.ControlDetailsFragment">
 
     <ProgressBar
         android:id="@+id/add_control_progress_bar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"/>
+        android:layout_gravity="center"/>
 
     <ScrollView
         android:id="@+id/add_control_form_view"
@@ -45,7 +45,7 @@
                 android:layout_below="@+id/add_control_name"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
-                android:lines="3"
+                android:lines="2"
                 android:gravity="start|top"
                 android:layout_marginBottom="@dimen/add_control_margin_form" />
 
@@ -53,6 +53,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/add_control_risk_spinner"
+                android:background="@drawable/card_background_selector"
                 android:layout_below="@+id/add_control_description"
                 android:layout_marginBottom="@dimen/add_control_margin_form"/>
 
@@ -91,6 +92,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/add_control_type_spinner"
+                android:background="@drawable/card_background_selector"
                 android:layout_below="@+id/add_control_owner_view"
                 android:layout_marginBottom="@dimen/add_control_margin_form"
                 android:layout_alignLeft="@+id/add_control_risk_spinner"
@@ -100,6 +102,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/add_control_frequency_spinner"
+                android:background="@drawable/card_background_selector"
                 android:layout_below="@+id/add_control_type_spinner"
                 android:layout_marginBottom="@dimen/add_control_margin_form"
                 android:layout_alignLeft="@+id/add_control_risk_spinner"
@@ -108,6 +111,7 @@
             <Spinner
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@drawable/card_background_selector"
                 android:id="@+id/add_control_nature_spinner"
                 android:layout_below="@+id/add_control_frequency_spinner"
                 android:layout_marginBottom="@dimen/add_control_margin_form"
@@ -130,6 +134,4 @@
 
     </ScrollView>
 
-
-
-</RelativeLayout>
+</FrameLayout>

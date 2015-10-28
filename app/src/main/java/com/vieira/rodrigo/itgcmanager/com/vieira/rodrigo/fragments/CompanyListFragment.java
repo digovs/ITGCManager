@@ -26,8 +26,6 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.vieira.rodrigo.itgcmanager.AddCompanyScopeActivity;
-import com.vieira.rodrigo.itgcmanager.AddControlActivityStepDetails;
-import com.vieira.rodrigo.itgcmanager.CreateProjectActivity;
 import com.vieira.rodrigo.itgcmanager.ProjectDashboardActivity;
 import com.vieira.rodrigo.itgcmanager.R;
 

@@ -25,7 +25,7 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
-import com.vieira.rodrigo.itgcmanager.AddControlActivityStepDetails;
+import com.vieira.rodrigo.itgcmanager.AddEditOrViewControlActivity;
 import com.vieira.rodrigo.itgcmanager.AddTestActivity;
 import com.vieira.rodrigo.itgcmanager.ProjectDashboardActivity;
 import com.vieira.rodrigo.itgcmanager.R;
@@ -128,7 +128,9 @@ public class ControlListFragment extends ListFragment {
             item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                 @Override
                 public boolean onMenuItemClick(MenuItem item) {
-                    startActivity(new Intent(getActivity(), AddControlActivityStepDetails.class));
+                    Intent intent = new Intent(getActivity(), AddEditOrViewControlActivity.class);
+                    intent.putExtra(AddEditOrViewControlActivity.MODE_FLAG, AddEditOrViewControlActivity.ADD_MODE);
+                    startActivity(intent);
                     return true;
                 }
             });

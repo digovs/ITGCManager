@@ -42,7 +42,7 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/add_control_step_details_continue_button_text"
+            android:text="@string/add_control_save_button_text"
             android:id="@+id/add_control_define_scope_continue_button"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_alignParentBottom="true"

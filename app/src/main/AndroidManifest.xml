@@ -74,25 +74,12 @@
             android:label="@string/title_activity_add_company_scope" >
         </activity>
         <activity
-            android:name=".com.vieira.rodrigo.dialogs.SystemScopeSelectorDialogActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:theme="@style/Theme.AppCompat.Light.Dialog" >
-        </activity>
-        <activity
-            android:name=".AddControlActivityStepDetails"
-            android:label="@string/title_activity_add_control_details" >
-        </activity>
-        <activity
-            android:name=".AddControlActivityStepDefineScope"
-            android:label="@string/title_activity_add_control_define_scope" >
-        </activity>
-        <activity
-            android:name=".AddControlActivityStepDefineResponsible"
-            android:label="@string/title_activity_add_control_define_responsible" >
-        </activity>
-        <activity
             android:name=".AddTestActivity"
             android:label="@string/title_activity_add_test" >
+        </activity>
+        <activity
+            android:name=".AddEditOrViewControlActivity"
+            android:label="@string/title_activity_add_edit_or_view_control" >
         </activity>
     </application>
 
