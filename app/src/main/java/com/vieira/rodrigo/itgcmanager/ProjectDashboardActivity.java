@@ -1,17 +1,12 @@
 package com.vieira.rodrigo.itgcmanager;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 
 import com.parse.ParseUser;
@@ -32,7 +27,15 @@ public class ProjectDashboardActivity extends ActionBarActivity
     public static final int CONTROLS_SECTION = 5;
     public static final int LOG_OUT_SECTION = 6;
 
+    public static final int COMING_FROM_CREATE_SYSTEM = 0;
+    public static final int COMING_FROM_CREATE_COMPANY = 1;
+    public static final int COMING_FROM_CREATE_TEAM_MEMBER = 2;
+    public static final int COMING_FROM_CREATE_CONTROL = 3;
+
+    public static final String KEY_COMING_FROM_ACTIVITY = "KEY_COMING_FROM_ACTIVITY";
+
     boolean projectEditMode = false;
+    int comingFromActivity;
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -58,13 +61,45 @@ public class ProjectDashboardActivity extends ActionBarActivity
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
 
+        FragmentManager fragmentManager = getSupportFragmentManager();
+
         projectEditMode = getIntent().getBooleanExtra(CreateProjectActivity.EDIT_MODE_FLAG, false);
         if (projectEditMode) {
-            FragmentManager fragmentManager = getSupportFragmentManager();
             ProjectDetailsFragment detailsFragment = new ProjectDetailsFragment();
             fragmentManager.beginTransaction()
                     .replace(R.id.container, detailsFragment)
                     .commit();
+        }
+
+        comingFromActivity = getIntent().getIntExtra(KEY_COMING_FROM_ACTIVITY, -1);
+        switch (comingFromActivity) {
+            case COMING_FROM_CREATE_CONTROL:
+                ControlListFragment controlListFragment = new ControlListFragment();
+                fragmentManager.beginTransaction()
+                        .replace(R.id.container, controlListFragment)
+                        .commit();
+                break;
+
+            case COMING_FROM_CREATE_COMPANY:
+                CompanyListFragment companyListFragment = new CompanyListFragment();
+                fragmentManager.beginTransaction()
+                        .replace(R.id.container, companyListFragment)
+                        .commit();
+                break;
+
+            case COMING_FROM_CREATE_SYSTEM:
+                SystemListFragment systemListFragment = new SystemListFragment();
+                fragmentManager.beginTransaction()
+                        .replace(R.id.container, systemListFragment)
+                        .commit();
+                break;
+
+            case COMING_FROM_CREATE_TEAM_MEMBER:
+                TeamMemberListFragment teamMemberListFragment = new TeamMemberListFragment();
+                fragmentManager.beginTransaction()
+                        .replace(R.id.container, teamMemberListFragment)
+                        .commit();
+                break;
         }
     }
 

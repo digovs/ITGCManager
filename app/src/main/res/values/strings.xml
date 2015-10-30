@@ -166,10 +166,12 @@
 
     <!-- Add Control Activity Step Define Responsible -->
     <string name="title_activity_add_control_define_responsible">Add Control: Define Responsible</string>
-    <string name="add_control_define_responsible_filter_hint">Filter member</string>
-    <string name="add_control_define_responsible_not_found_message">No results</string>
+    <string name="control_define_member_responsible_filter_hint">Filter member</string>
+    <string name="control_define_member_responsible_not_found_message">No results</string>
+    <string name="control_define_member_responsible_field_is_required_message">A member responsible for the control is required!</string>
     <string name="add_control_define_responsible_save_button_text">Save</string>
-    <string name="add_control_define_responsible_confirmation_dialog_message">Confirm to make X_USER responsible for Y_CONTROL Control?</string>
+    <string name="add_control_define_responsible_confirmation_dialog_title">Confirm member</string>
+    <string name="add_control_define_responsible_confirmation_dialog_message">Confirm to make X_USER responsible for Control?</string>
 
 
     <string name="title_logout">Logout</string>
@@ -196,5 +198,27 @@
     <string name="title_activity_add_edit_or_view_control">Add Control</string>
 
     <string name="title_section1">Section 1</string>
+
+    <!-- Save Control Error Messages -->
+    <string name="field_frequency_required">Frequency</string>
+    <string name="field_type_required">Type</string>
+    <string name="field_nature_required">Nature</string>
+    <string name="field_risk_classification_required">Risk Classification</string>
+    <string name="field_name_required">Name</string>
+    <string name="field_description_required">Description</string>
+    <string name="field_population_required">Population</string>
+    <string name="field_owner_required">Owner</string>
+    <string name="field_system_scope_required">System Scope</string>
+    <string name="field_company_scope_required">Company Scope</string>
+    <string name="field_member_responsible_required">Member Responsible</string>
+
+    <string name="control_invalid_error_message_single">The following field is not valid: </string>
+    <string name="control_invalid_error_message_plural">The following fields are not valid: </string>
+    <string name="control_invalid_error_message_fields">XXX</string>
+
+    <string name="dialog_message_saved_successfully">Saved successfully!</string>
+
+    <string name="loading_dialog_message_saving_control">Saving control...</string>
+    <string name="loading_dialog_message_validating_information">Validating information...</string>
 
 </resources>

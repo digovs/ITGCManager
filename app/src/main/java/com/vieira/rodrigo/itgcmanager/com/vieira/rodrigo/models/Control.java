@@ -1,6 +1,7 @@
 package com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models;
 
 import com.parse.ParseObject;
+import com.parse.ParseUser;
 
 import java.io.Serializable;
 import java.io.SerializablePermission;
@@ -20,7 +21,8 @@ public class Control implements Serializable {
     public static final String KEY_CONTROL_TYPE = "type";
     public static final String KEY_CONTROL_PROJECT = "project";
     public static final String KEY_CONTROL_MEMBER_RESPONSIBLE = "memberResponsible";
-    public static final String KEY_CONTROL_SCOPE_LIST = "controlScopeList";
+    public static final String KEY_CONTROL_SYSTEM_SCOPE = "systemScope";
+    public static final String KEY_CONTROL_COMPANY_SCOPE = "companyScope";
     public static final String KEY_NEW_CONTROL = "newControl";
 
     public static final String TABLE_CONTROL_FREQUENCY = "ControlFrequency";
@@ -33,21 +35,17 @@ public class Control implements Serializable {
 
     String name = "";
     String description = "";
-    String riskClassification = "";
     String population = "";
     String owner = "";
-    String type = "";
-    String frequency = "";
-    String nature = "";
-    ArrayList<ParseObject> controlScopeList = new ArrayList<>();
-    ArrayList<String> controlScopeIdList = new ArrayList<>();
+
     ParseObject riskClassificationObject;
     ParseObject frequencyObject;
     ParseObject natureObject;
     ParseObject typeObject;
-
+    ParseUser memberResponsible;
     ArrayList<ParseObject> companyList = new ArrayList<>();
     ArrayList<ParseObject> systemList = new ArrayList<>();
+
 
     public Control() {
     }
@@ -68,14 +66,6 @@ public class Control implements Serializable {
         this.description = description;
     }
 
-    public String getRiskClassification() {
-        return riskClassification;
-    }
-
-    public void setRiskClassification(String riskClassification) {
-        this.riskClassification = riskClassification;
-    }
-
     public String getPopulation() {
         return population;
     }
@@ -90,50 +80,6 @@ public class Control implements Serializable {
 
     public void setOwner(String owner) {
         this.owner = owner;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getFrequency() {
-        return frequency;
-    }
-
-    public void setFrequency(String frequency) {
-        this.frequency = frequency;
-    }
-
-    public String getNature() {
-        return nature;
-    }
-
-    public void setNature(String nature) {
-        this.nature = nature;
-    }
-
-    public ArrayList<ParseObject> getControlScopeList() {
-        return controlScopeList;
-    }
-
-    public void setControlScopeList(ArrayList<ParseObject> controlScopeList) {
-        this.controlScopeList = controlScopeList;
-    }
-
-    public ArrayList<String> getControlScopeIdList() {
-        return controlScopeIdList;
-    }
-
-    public void setControlScopeIdList(ArrayList<String> controlScopeIdList) {
-        this.controlScopeIdList = controlScopeIdList;
-    }
-
-    public void addControlScopeObject(ParseObject controlScope) {
-        this.controlScopeList.add(controlScope);
     }
 
     public ParseObject getRiskClassificationObject() {
@@ -168,7 +114,7 @@ public class Control implements Serializable {
         this.typeObject = typeObject;
     }
 
-    public ArrayList<ParseObject> getSystemList() {
+    public ArrayList<ParseObject> getSystemScopeList() {
         return systemList;
     }
 
@@ -176,11 +122,19 @@ public class Control implements Serializable {
         this.systemList = systemList;
     }
 
-    public ArrayList<ParseObject> getCompanyList() {
+    public ArrayList<ParseObject> getCompanyScopeList() {
         return companyList;
     }
 
     public void setCompanyList(ArrayList<ParseObject> companyList) {
         this.companyList = companyList;
+    }
+
+    public ParseUser getMemberResponsibleObject() {
+        return memberResponsible;
+    }
+
+    public void setMemberResponsible(ParseUser memberResponsible) {
+        this.memberResponsible = memberResponsible;
     }
 }

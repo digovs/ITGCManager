@@ -13,6 +13,7 @@ import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -20,6 +21,7 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -27,19 +29,24 @@ import com.vieira.rodrigo.itgcmanager.R;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.Utils.ParseUtils;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.Control;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.Project;
-import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.SystemApp;
+import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.Company;
 
 import java.util.ArrayList;
 
+/**
+ * A simple {@link Fragment} subclass.
+ * Activities that contain this fragment must implement the
+ * {@link ControlCompanyScopeTabFragment.OnFragmentInteractionListener} interface
+ * to handle interaction events.
+ */
+public class ControlCompanyScopeTabFragment extends Fragment {
 
-public class ControlSystemScopeFragment extends Fragment {
-
-    ArrayList<CharSequence> projectSystemCharSequenceList;
-    private ArrayList projectSystemObjectList;
-    private ArrayList selectedSystemObjects = new ArrayList();
+    ArrayList<CharSequence> projectCompanyCharSequenceList;
+    private ArrayList projectCompanyObjectList;
+    private ArrayList selectedCompanyObjects = new ArrayList();
 
     Control currentControl;
-    ListView systemListView;
+    ListView companyListView;
     RelativeLayout formView;
     ArrayAdapter adapter;
     ProgressBar progressBar;
@@ -50,7 +57,7 @@ public class ControlSystemScopeFragment extends Fragment {
     Button saveButton;
     private OnFragmentInteractionListener mListener;
 
-    public ControlSystemScopeFragment() {
+    public ControlCompanyScopeTabFragment() {
         // Required empty public constructor
     }
 
@@ -62,31 +69,50 @@ public class ControlSystemScopeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_control_system_scope, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_control_company_scope, container, false);
 
-        formView = (RelativeLayout) rootView.findViewById(R.id.control_system_multichoice_relative_layout);
-        systemListView = (ListView) rootView.findViewById(R.id.control_system_multichoice_list);
-        progressBar = (ProgressBar) rootView.findViewById(R.id.control_system_multichoice_progress_bar);
-        emptyText = (TextView) rootView.findViewById(R.id.control_system_multichoice_empty_message);
+        formView = (RelativeLayout) rootView.findViewById(R.id.control_company_multichoice_relative_layout);
+        companyListView = (ListView) rootView.findViewById(R.id.control_company_multichoice_list);
+        progressBar = (ProgressBar) rootView.findViewById(R.id.control_company_multichoice_progress_bar);
+        emptyText = (TextView) rootView.findViewById(R.id.control_company_multichoice_empty_message);
 
-        loadProjectSystemList();
-        adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_multiple_choice, projectSystemCharSequenceList);
+        loadProjectCompanyList();
+        adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_multiple_choice, projectCompanyCharSequenceList);
 
-        systemListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-        systemListView.setAdapter(adapter);
+        companyListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+        companyListView.setAdapter(adapter);
 
-        saveButton = (Button) rootView.findViewById(R.id.control_system_save_button);
+        companyListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if (companyListView.getCheckedItemCount() > 0) {
+                    SparseBooleanArray checked = companyListView.getCheckedItemPositions();
+                    ArrayList<ParseObject> tempSelectedCompanyObjects = new ArrayList<>();
+                    for (int i = 0; i < checked.size(); i++) {
+                        int index = checked.keyAt(i);
+                        if (checked.valueAt(i) == true)
+                            tempSelectedCompanyObjects.add((ParseObject) projectCompanyObjectList.get(index));
+                    }
+                    selectedCompanyObjects = tempSelectedCompanyObjects;
+                    mListener.saveSelectedCompaniesToActivityControl(selectedCompanyObjects);
+                }
+            }
+        });
+
+        saveButton = (Button) rootView.findViewById(R.id.control_company_save_button);
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (systemListView.getCheckedItemCount() > 0) {
-                    SparseBooleanArray checked = systemListView.getCheckedItemPositions();
+                if (companyListView.getCheckedItemCount() > 0) {
+                    SparseBooleanArray checked = companyListView.getCheckedItemPositions();
+                    ArrayList<ParseObject> tempSelectedCompanyObjects = new ArrayList<>();
                     for (int i = 0; i < checked.size(); i++) {
                         int position = checked.keyAt(i);
                         if (checked.valueAt(i) == true)
-                            selectedSystemObjects.add(projectSystemObjectList.get(position));
+                            tempSelectedCompanyObjects.add((ParseObject) projectCompanyObjectList.get(position));
                     }
-                    mListener.addSelectedSystemsToActivityControl(selectedSystemObjects);
+                    selectedCompanyObjects = tempSelectedCompanyObjects;
+                    mListener.saveSelectedCompaniesToActivityControl(selectedCompanyObjects);
                     mListener.onSaveButtonClicked();
                 } else {
                     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -103,15 +129,15 @@ public class ControlSystemScopeFragment extends Fragment {
         return rootView;
     }
 
-    private void loadProjectSystemList() {
+    private void loadProjectCompanyList() {
         showProgress(true);
         String currentProjectId = ParseUtils.getStringFromSession(getActivity(), ParseUtils.PREFS_CURRENT_PROJECT_ID);
         ParseQuery<ParseObject> getProjectCompanies = ParseQuery.getQuery(Project.TABLE_PROJECT);
-        getProjectCompanies.include(Project.KEY_SYSTEM_SCOPE_LIST);
+        getProjectCompanies.include(Project.KEY_COMPANY_SCOPE_LIST);
         try {
             ParseObject project = getProjectCompanies.get(currentProjectId);
-            projectSystemObjectList = (ArrayList) project.getList(Project.KEY_SYSTEM_SCOPE_LIST);
-            projectSystemCharSequenceList = castObjectListToCharSequenceList(projectSystemObjectList);
+            projectCompanyObjectList = (ArrayList) project.getList(Project.KEY_COMPANY_SCOPE_LIST);
+            projectCompanyCharSequenceList = castObjectListToCharSequenceList(projectCompanyObjectList);
             showProgress(false);
         } catch (ParseException e) {
             ParseUtils.handleParseException(getActivity(), e);
@@ -119,11 +145,11 @@ public class ControlSystemScopeFragment extends Fragment {
         }
     }
 
-    private ArrayList<CharSequence> castObjectListToCharSequenceList(ArrayList<ParseObject> systemObjectList) {
-        if (systemObjectList != null) {
+    private ArrayList<CharSequence> castObjectListToCharSequenceList(ArrayList<ParseObject> companyObjectList) {
+        if (companyObjectList != null) {
             ArrayList<CharSequence> resultList = new ArrayList<>();
-            for (ParseObject obj : systemObjectList) {
-                resultList.add(obj.getString(SystemApp.KEY_SYSTEM_NAME));
+            for (ParseObject obj : companyObjectList) {
+                resultList.add(obj.getString(Company.KEY_COMPANY_NAME));
             }
             return resultList;
         } else
@@ -133,7 +159,7 @@ public class ControlSystemScopeFragment extends Fragment {
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     public void showProgress(final boolean show) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-            if (projectSystemObjectList == null || projectSystemObjectList.isEmpty())
+            if (projectCompanyObjectList == null || projectCompanyObjectList.isEmpty())
                 emptyText.setVisibility(View.VISIBLE);
             else
                 emptyText.setVisibility(View.GONE);
@@ -182,10 +208,16 @@ public class ControlSystemScopeFragment extends Fragment {
         mListener = null;
     }
 
-    public interface OnFragmentInteractionListener {
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        if (!isVisibleToUser && mListener != null && !selectedCompanyObjects.isEmpty()){
+            mListener.saveSelectedCompaniesToActivityControl(selectedCompanyObjects);
+        }
+    }
 
+    public interface OnFragmentInteractionListener {
         void onSaveButtonClicked();
-        void addSelectedSystemsToActivityControl(ArrayList<ParseObject> selectedSystemItems);
+        void saveSelectedCompaniesToActivityControl(ArrayList<ParseObject> selectedCompanyItems);
     }
 
 }

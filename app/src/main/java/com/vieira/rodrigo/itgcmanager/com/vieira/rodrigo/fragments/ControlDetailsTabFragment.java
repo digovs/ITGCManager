@@ -30,7 +30,7 @@ import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.Control;
 import java.util.ArrayList;
 
 
-public class ControlDetailsFragment extends Fragment {
+public class ControlDetailsTabFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
@@ -40,7 +40,7 @@ public class ControlDetailsFragment extends Fragment {
     EditText controlDescriptionView;
     Spinner controlRiskClassSpinner;
     EditText controlPopulationView;
-    EditText controlOwner;
+    EditText controlOwnerView;
     Spinner controlTypeSpinner;
     Spinner controlFrequencySpinner;
     Spinner controlNatureSpinner;
@@ -58,7 +58,7 @@ public class ControlDetailsFragment extends Fragment {
     ArrayList<ParseObject> riskDescriptionObjectList;
     ArrayList<ParseObject> typeDescriptionObjectList;
 
-    public ControlDetailsFragment() {
+    public ControlDetailsTabFragment() {
         // Required empty public constructor
     }
 
@@ -76,9 +76,10 @@ public class ControlDetailsFragment extends Fragment {
 
         controlNameView = (EditText) rootView.findViewById(R.id.add_control_name);
         controlDescriptionView = (EditText) rootView.findViewById(R.id.add_control_description);
-        controlRiskClassSpinner = (Spinner) rootView.findViewById(R.id.add_control_risk_spinner);
         controlPopulationView = (EditText) rootView.findViewById(R.id.add_control_population);
-        controlOwner = (EditText) rootView.findViewById(R.id.add_control_owner_view);
+        controlOwnerView = (EditText) rootView.findViewById(R.id.add_control_owner_view);
+
+        controlRiskClassSpinner = (Spinner) rootView.findViewById(R.id.add_control_risk_spinner);
         controlTypeSpinner = (Spinner) rootView.findViewById(R.id.add_control_type_spinner);
         controlFrequencySpinner = (Spinner) rootView.findViewById(R.id.add_control_frequency_spinner);
         controlNatureSpinner = (Spinner) rootView.findViewById(R.id.add_control_nature_spinner);
@@ -93,8 +94,10 @@ public class ControlDetailsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if (isFormValid()) {
-                    populateNewControl();
-                    mListener.syncControlWithActivity(currentControl);
+                    mListener.saveNameToActivityControl(controlNameView.getText().toString());
+                    mListener.saveOwnerToActivityControl(controlOwnerView.getText().toString());
+                    mListener.savePopulationToActivityControl(controlPopulationView.getText().toString());
+                    mListener.saveDescriptionToActivityControl(controlDescriptionView.getText().toString());
                     mListener.onSaveButtonClicked();
                 }
             }
@@ -153,16 +156,13 @@ public class ControlDetailsFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (position != 0)
-                    currentControl.setRiskClassificationObject(riskDescriptionObjectList.get(position-1));
+                    mListener.saveRiskToActivityControl(riskDescriptionObjectList.get(position - 1));
                 else
-                    currentControl.setRiskClassificationObject(null);
-                mListener.syncControlWithActivity(currentControl);
+                    mListener.saveRiskToActivityControl(null);
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                currentControl.setRiskClassificationObject(null);
-                mListener.syncControlWithActivity(currentControl);
             }
         });
 
@@ -174,16 +174,13 @@ public class ControlDetailsFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (position != 0)
-                    currentControl.setTypeObject(typeDescriptionObjectList.get(position-1));
+                    mListener.saveTypeToActivityControl(typeDescriptionObjectList.get(position - 1));
                 else
-                    currentControl.setTypeObject(null);
-                mListener.syncControlWithActivity(currentControl);
+                    mListener.saveTypeToActivityControl(null);
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                currentControl.setTypeObject(null);
-                mListener.syncControlWithActivity(currentControl);
             }
         });
 
@@ -196,16 +193,13 @@ public class ControlDetailsFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (position != 0)
-                    currentControl.setFrequencyObject(frequencyDescriptionObjectList.get(position-1));
+                    mListener.saveFrequencyToActivityControl(frequencyDescriptionObjectList.get(position - 1));
                 else
-                    currentControl.setFrequencyObject(null);
-                mListener.syncControlWithActivity(currentControl);
+                    mListener.saveFrequencyToActivityControl(null);
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                currentControl.setFrequencyObject(null);
-                mListener.syncControlWithActivity(currentControl);
             }
         });
 
@@ -216,16 +210,14 @@ public class ControlDetailsFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (position != 0)
-                    currentControl.setNatureObject(natureDescriptionObjectList.get(position-1));
+                    mListener.saveNatureToActivityControl(natureDescriptionObjectList.get(position - 1));
                 else
-                    currentControl.setNatureObject(null);
-                mListener.syncControlWithActivity(currentControl);
+                    mListener.saveNatureToActivityControl(null);
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                currentControl.setNatureObject(null);
-                mListener.syncControlWithActivity(currentControl);
+
             }
         });
     }
@@ -242,8 +234,8 @@ public class ControlDetailsFragment extends Fragment {
             return false;
         }
 
-        if (currentControl.getRiskClassificationObject() == null || currentControl.getTypeObject() == null
-                || currentControl.getFrequencyObject() == null || currentControl.getNatureObject() == null) {
+        if (controlTypeSpinner.getSelectedItemPosition() == 0 || controlFrequencySpinner.getSelectedItemPosition() == 0
+                || controlNatureSpinner.getSelectedItemPosition() == 0 || controlRiskClassSpinner.getSelectedItemPosition() == 0) {
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setTitle(getString(R.string.add_control_error_fragment_title))
                     .setMessage(R.string.add_control_details_error_fragment_message)
@@ -262,19 +254,12 @@ public class ControlDetailsFragment extends Fragment {
             return false;
         }
 
-        if (controlOwner.getText().toString().isEmpty()) {
-            controlOwner.setError(getString(R.string.error_field_required));
+        if (controlOwnerView.getText().toString().isEmpty()) {
+            controlOwnerView.setError(getString(R.string.error_field_required));
             return false;
         }
 
         return true;
-    }
-
-    private void populateNewControl() {
-        currentControl.setName(controlNameView.getText().toString());
-        currentControl.setDescription(controlDescriptionView.getText().toString());
-        currentControl.setPopulation(controlPopulationView.getText().toString());
-        currentControl.setOwner(controlOwner.getText().toString());
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
@@ -325,9 +310,26 @@ public class ControlDetailsFragment extends Fragment {
         mListener = null;
     }
 
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        if (!isVisibleToUser && mListener != null) {
+            mListener.saveNameToActivityControl(controlNameView.getText().toString());
+            mListener.saveOwnerToActivityControl(controlOwnerView.getText().toString());
+            mListener.savePopulationToActivityControl(controlPopulationView.getText().toString());
+            mListener.saveDescriptionToActivityControl(controlDescriptionView.getText().toString());
+        }
+    }
+
     public interface OnFragmentInteractionListener {
         void onSaveButtonClicked();
-        void syncControlWithActivity(Control control);
+        void saveNameToActivityControl(String name);
+        void saveDescriptionToActivityControl(String description);
+        void savePopulationToActivityControl(String population);
+        void saveOwnerToActivityControl(String owner);
+        void saveRiskToActivityControl(ParseObject risk);
+        void saveTypeToActivityControl(ParseObject type);
+        void saveFrequencyToActivityControl(ParseObject frequency);
+        void saveNatureToActivityControl(ParseObject nature);
     }
 
 }
