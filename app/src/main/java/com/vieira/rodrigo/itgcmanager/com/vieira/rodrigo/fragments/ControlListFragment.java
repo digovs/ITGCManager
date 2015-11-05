@@ -5,7 +5,9 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -16,6 +18,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -27,6 +30,7 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.vieira.rodrigo.itgcmanager.AddEditOrViewControlActivity;
 import com.vieira.rodrigo.itgcmanager.AddTestActivity;
+import com.vieira.rodrigo.itgcmanager.CreateProjectActivity;
 import com.vieira.rodrigo.itgcmanager.ProjectDashboardActivity;
 import com.vieira.rodrigo.itgcmanager.R;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.Utils.ParseUtils;
@@ -103,7 +107,8 @@ public class ControlListFragment extends ListFragment {
     public void onListItemClick(ListView l, View v, int position, long id) {
         if (adapter != null) {
             String selectedControlId = controlList.get(position).getObjectId();
-            Intent intent = new Intent(getActivity(), AddTestActivity.class);
+            Intent intent = new Intent(getActivity(), AddEditOrViewControlActivity.class);
+            intent.putExtra(AddEditOrViewControlActivity.MODE_FLAG, AddEditOrViewControlActivity.VIEW_MODE);
             intent.putExtra(Control.KEY_CONTROL_ID, selectedControlId);
             startActivity(intent);
         }
@@ -144,6 +149,38 @@ public class ControlListFragment extends ListFragment {
         listView = (ListView) view.findViewById(android.R.id.list);
         progressBar = (ProgressBar) view.findViewById(R.id.control_list_progress_bar);
         emptyTextView = (TextView) view.findViewById(R.id.control_list_empty_message);
+
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
+                String title = getString(R.string.control_list_long_click_dialog_title);
+                String message = getString(R.string.control_list_long_click_dialog_message);
+                final String selectedControlName = controlList.get(position).getString(Control.KEY_CONTROL_NAME);
+                message = message.replace("XXX", selectedControlName);
+
+                dialogBuilder.setTitle(title);
+                dialogBuilder.setMessage(message);
+                dialogBuilder.setPositiveButton(getString(R.string.confirmation_dialog_yes), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(getActivity(), AddEditOrViewControlActivity.class);
+                        intent.putExtra(AddEditOrViewControlActivity.MODE_FLAG, AddEditOrViewControlActivity.EDIT_MODE);
+                        intent.putExtra(Control.KEY_CONTROL_ID, controlList.get(position).getObjectId());
+                        startActivity(intent);
+                    }
+                });
+                dialogBuilder.setNegativeButton(getString(R.string.confirmation_dialog_no), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                dialogBuilder.create().show();
+
+                return true;
+            }
+        });
         return view;
     }
 

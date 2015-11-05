@@ -1,12 +1,9 @@
 package com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -16,21 +13,31 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.Spinner;
 
-import com.parse.ParseException;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
+import com.vieira.rodrigo.itgcmanager.AddEditOrViewControlActivity;
 import com.vieira.rodrigo.itgcmanager.R;
-import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.Utils.ParseUtils;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.Control;
 
 import java.util.ArrayList;
 
 
 public class ControlDetailsTabFragment extends Fragment {
+
+    public static final String DETAILS_ARGS_NAME = "details_args_name";
+    public static final String DETAILS_ARGS_DESCRIPTION = "details_args_description";
+    public static final String DETAILS_ARGS_POPULATION = "details_args_population";
+    public static final String DETAILS_ARGS_OWNER = "details_args_owner";
+    public static final String DETAILS_ARGS_RISK = "details_args_risk";
+    public static final String DETAILS_ARGS_TYPE = "details_args_type";
+    public static final String DETAILS_ARGS_FREQUENCY = "details_args_frequency";
+    public static final String DETAILS_ARGS_NATURE = "details_args_nature";
+
+    public static final String RISK_LIST_CONTENT = "risk_list_content";
+    public static final String TYPE_LIST_CONTENT = "type_list_content";
+    public static final String FREQUENCY_LIST_CONTENT = "frequency_list_content";
+    public static final String NATURE_LIST_CONTENT = "nature_list_content";
 
     private OnFragmentInteractionListener mListener;
 
@@ -44,27 +51,28 @@ public class ControlDetailsTabFragment extends Fragment {
     Spinner controlTypeSpinner;
     Spinner controlFrequencySpinner;
     Spinner controlNatureSpinner;
-    Button continueButton;
-    ProgressBar progressBar;
+    Button saveButton;
     ScrollView formView;
 
-    ArrayList<CharSequence> frequencyDescriptionList;
-    ArrayList<CharSequence> natureDescriptionList;
-    ArrayList<CharSequence> riskDescriptionList;
-    ArrayList<CharSequence> typeDescriptionList;
+    ArrayList<String> frequencyDescriptionList;
+    ArrayList<String> natureDescriptionList;
+    ArrayList<String> riskDescriptionList;
+    ArrayList<String> typeDescriptionList;
 
-    ArrayList<ParseObject> frequencyDescriptionObjectList;
-    ArrayList<ParseObject> natureDescriptionObjectList;
-    ArrayList<ParseObject> riskDescriptionObjectList;
-    ArrayList<ParseObject> typeDescriptionObjectList;
+    int mode;
+    Bundle controlDetailsArgs;
+    ProgressDialog progressDialog;
 
     public ControlDetailsTabFragment() {
-        // Required empty public constructor
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        controlDetailsArgs = getArguments();
+        mode = controlDetailsArgs.getInt(AddEditOrViewControlActivity.MODE_FLAG, AddEditOrViewControlActivity.ADD_MODE);
+        progressDialog = new ProgressDialog(getActivity());
     }
 
     @Override
@@ -84,13 +92,10 @@ public class ControlDetailsTabFragment extends Fragment {
         controlFrequencySpinner = (Spinner) rootView.findViewById(R.id.add_control_frequency_spinner);
         controlNatureSpinner = (Spinner) rootView.findViewById(R.id.add_control_nature_spinner);
 
-        progressBar = (ProgressBar) rootView.findViewById(R.id.add_control_progress_bar);
         formView = (ScrollView) rootView.findViewById(R.id.add_control_form_view);
 
-        loadSpinnersContent();
-
-        continueButton = (Button) rootView.findViewById(R.id.add_control_save_button);
-        continueButton.setOnClickListener(new View.OnClickListener() {
+        saveButton = (Button) rootView.findViewById(R.id.add_control_save_button);
+        saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (isFormValid()) {
@@ -103,60 +108,90 @@ public class ControlDetailsTabFragment extends Fragment {
             }
         });
 
+        switch (mode) {
+            case AddEditOrViewControlActivity.VIEW_MODE:
+                loadSpinnersContentsWithActivityControlDetails();
+                loadActivityCurrentControlDetails();
+                lockViewsFromEdit();
+                break;
+
+            case AddEditOrViewControlActivity.EDIT_MODE:
+                loadDetailListsContents();
+                loadActivityCurrentControlDetails();
+                break;
+
+            case AddEditOrViewControlActivity.ADD_MODE:
+                loadDetailListsContents();
+                break;
+        }
+
         return rootView;
     }
 
-    private void loadSpinnerDescriptionContents() {
-        showProgress(true);
-        ParseQuery<ParseObject> getFrequencyDescription = ParseQuery.getQuery(Control.TABLE_CONTROL_FREQUENCY);
-        ParseQuery<ParseObject> getNatureDescription = ParseQuery.getQuery(Control.TABLE_CONTROL_NATURE);
-        ParseQuery<ParseObject> getRiskDescription = ParseQuery.getQuery(Control.TABLE_CONTROL_RISK);
-        ParseQuery<ParseObject> getTypeDescription = ParseQuery.getQuery(Control.TABLE_CONTROL_TYPE);
-        try {
-            frequencyDescriptionObjectList = (ArrayList<ParseObject>) getFrequencyDescription.find();
-            frequencyDescriptionList = castParseObjectListToCharSequenceList(frequencyDescriptionObjectList);
-            frequencyDescriptionList.add(0, getString(R.string.add_control_details_frequency_label));
+    private void loadSpinnersContentsWithActivityControlDetails() {
+        ArrayList<String> activityControlRiskSelected = new ArrayList<>();
+        activityControlRiskSelected.add(controlDetailsArgs.getString(DETAILS_ARGS_RISK));
+        riskDescriptionList = activityControlRiskSelected;
 
-            natureDescriptionObjectList = (ArrayList<ParseObject>) getNatureDescription.find();
-            natureDescriptionList = castParseObjectListToCharSequenceList(natureDescriptionObjectList);
-            natureDescriptionList.add(0, getString(R.string.add_control_details_nature_label));
+        ArrayList<String> activityControlFrequencySelected = new ArrayList<>();
+        activityControlFrequencySelected.add(controlDetailsArgs.getString(DETAILS_ARGS_FREQUENCY));
+        frequencyDescriptionList = activityControlFrequencySelected;
 
-            riskDescriptionObjectList = (ArrayList<ParseObject>) getRiskDescription.find();
-            riskDescriptionList = castParseObjectListToCharSequenceList(riskDescriptionObjectList);
-            riskDescriptionList.add(0, getString(R.string.add_control_details_risk_classification_label));
+        ArrayList<String> activityControlNatureSelected = new ArrayList<>();
+        activityControlNatureSelected.add(controlDetailsArgs.getString(DETAILS_ARGS_NATURE));
+        natureDescriptionList = activityControlNatureSelected;
 
-            typeDescriptionObjectList = (ArrayList<ParseObject>) getTypeDescription.find();
-            typeDescriptionList = castParseObjectListToCharSequenceList(typeDescriptionObjectList);
-            typeDescriptionList.add(0, getString(R.string.add_control_details_type_label));
+        ArrayList<String> activityControlTypeSelected = new ArrayList<>();
+        activityControlTypeSelected.add(controlDetailsArgs.getString(DETAILS_ARGS_TYPE));
+        typeDescriptionList = activityControlTypeSelected;
 
-            showProgress(false);
-        } catch (ParseException e) {
-            ParseUtils.handleParseException(getActivity(), e);
-            showProgress(false);
-        }
-
+        loadSpinnersContent();
     }
 
-    private ArrayList<CharSequence> castParseObjectListToCharSequenceList(ArrayList<ParseObject> parseObjectList) {
-        ArrayList<CharSequence> output = new ArrayList<>();
-        for (ParseObject obj : parseObjectList){
-            CharSequence desc = obj.getString(Control.KEY_CONTROL_GENERIC_DESCRIPTION);
-            output.add(desc);
-        }
-        return output;
+    private void loadDetailListsContents() {
+        riskDescriptionList = controlDetailsArgs.getStringArrayList(RISK_LIST_CONTENT);
+        typeDescriptionList = controlDetailsArgs.getStringArrayList(TYPE_LIST_CONTENT);
+        natureDescriptionList = controlDetailsArgs.getStringArrayList(NATURE_LIST_CONTENT);
+        frequencyDescriptionList = controlDetailsArgs.getStringArrayList(FREQUENCY_LIST_CONTENT);
+
+        loadSpinnersContent();
+    }
+
+    private void loadActivityCurrentControlDetails() {
+        controlNameView.setText(controlDetailsArgs.getString(DETAILS_ARGS_NAME));
+        controlDescriptionView.setText(controlDetailsArgs.getString(DETAILS_ARGS_DESCRIPTION));
+        controlPopulationView.setText(controlDetailsArgs.getString(DETAILS_ARGS_POPULATION));
+        controlOwnerView.setText(controlDetailsArgs.getString(DETAILS_ARGS_OWNER));
+
+        controlFrequencySpinner.setSelection(frequencyDescriptionList.indexOf((controlDetailsArgs.getString(DETAILS_ARGS_FREQUENCY))));
+        controlTypeSpinner.setSelection(typeDescriptionList.indexOf((controlDetailsArgs.getString(DETAILS_ARGS_TYPE))));
+        controlNatureSpinner.setSelection(natureDescriptionList.indexOf((controlDetailsArgs.getString(DETAILS_ARGS_NATURE))));
+        controlRiskClassSpinner.setSelection(riskDescriptionList.indexOf((controlDetailsArgs.getString(DETAILS_ARGS_RISK))));
+    }
+
+    private void lockViewsFromEdit() {
+        controlNameView.setEnabled(false);
+        controlDescriptionView.setEnabled(false);
+        controlPopulationView.setEnabled(false);
+        controlOwnerView.setEnabled(false);
+
+        controlFrequencySpinner.setEnabled(false);
+        controlTypeSpinner.setEnabled(false);
+        controlNatureSpinner.setEnabled(false);
+        controlRiskClassSpinner.setEnabled(false);
+
+        saveButton.setVisibility(View.GONE);
     }
 
     private void loadSpinnersContent() {
-        loadSpinnerDescriptionContents();
-
-        ArrayAdapter<CharSequence> riskSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_item, riskDescriptionList);
+        ArrayAdapter<String> riskSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_item, riskDescriptionList);
         riskSpinnerAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
         controlRiskClassSpinner.setAdapter(riskSpinnerAdapter);
         controlRiskClassSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (position != 0)
-                    mListener.saveRiskToActivityControl(riskDescriptionObjectList.get(position - 1));
+                    mListener.saveRiskToActivityControl(riskDescriptionList.get(position - 1));
                 else
                     mListener.saveRiskToActivityControl(null);
             }
@@ -167,14 +202,14 @@ public class ControlDetailsTabFragment extends Fragment {
         });
 
 
-        ArrayAdapter<CharSequence> typeSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_item, typeDescriptionList);
+        ArrayAdapter<String> typeSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_item, typeDescriptionList);
         typeSpinnerAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
         controlTypeSpinner.setAdapter(typeSpinnerAdapter);
         controlTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (position != 0)
-                    mListener.saveTypeToActivityControl(typeDescriptionObjectList.get(position - 1));
+                    mListener.saveTypeToActivityControl(typeDescriptionList.get(position - 1));
                 else
                     mListener.saveTypeToActivityControl(null);
             }
@@ -184,7 +219,7 @@ public class ControlDetailsTabFragment extends Fragment {
             }
         });
 
-        ArrayAdapter<CharSequence> frequencySpinnerAdapter = new ArrayAdapter<>(getActivity(),  R.layout.spinner_item, frequencyDescriptionList);
+        ArrayAdapter<String> frequencySpinnerAdapter = new ArrayAdapter<>(getActivity(),  R.layout.spinner_item, frequencyDescriptionList);
         frequencySpinnerAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
 
 
@@ -193,7 +228,7 @@ public class ControlDetailsTabFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (position != 0)
-                    mListener.saveFrequencyToActivityControl(frequencyDescriptionObjectList.get(position - 1));
+                    mListener.saveFrequencyToActivityControl(frequencyDescriptionList.get(position - 1));
                 else
                     mListener.saveFrequencyToActivityControl(null);
             }
@@ -203,14 +238,14 @@ public class ControlDetailsTabFragment extends Fragment {
             }
         });
 
-        ArrayAdapter<CharSequence> natureSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_item, natureDescriptionList);
+        ArrayAdapter<String> natureSpinnerAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_item, natureDescriptionList);
         natureSpinnerAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
         controlNatureSpinner.setAdapter(natureSpinnerAdapter);
         controlNatureSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (position != 0)
-                    mListener.saveNatureToActivityControl(natureDescriptionObjectList.get(position - 1));
+                    mListener.saveNatureToActivityControl(natureDescriptionList.get(position - 1));
                 else
                     mListener.saveNatureToActivityControl(null);
             }
@@ -262,37 +297,6 @@ public class ControlDetailsTabFragment extends Fragment {
         return true;
     }
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
-    public void showProgress(final boolean show) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
-
-            formView.setVisibility(show ? View.GONE : View.VISIBLE);
-            formView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    formView.setVisibility(show ? View.GONE : View.VISIBLE);
-                }
-            });
-
-            progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
-            progressBar.animate().setDuration(shortAnimTime).alpha(
-                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
-                }
-            });
-        } else {
-            // The ViewPropertyAnimator APIs are not available, so simply show
-            // and hide the relevant UI components.
-            progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
-            formView.setVisibility(show ? View.GONE : View.VISIBLE);
-        }
-    }
-
-
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -326,10 +330,10 @@ public class ControlDetailsTabFragment extends Fragment {
         void saveDescriptionToActivityControl(String description);
         void savePopulationToActivityControl(String population);
         void saveOwnerToActivityControl(String owner);
-        void saveRiskToActivityControl(ParseObject risk);
-        void saveTypeToActivityControl(ParseObject type);
-        void saveFrequencyToActivityControl(ParseObject frequency);
-        void saveNatureToActivityControl(ParseObject nature);
+        void saveRiskToActivityControl(String riskDescription);
+        void saveTypeToActivityControl(String typeDescription);
+        void saveFrequencyToActivityControl(String frequencyDescription);
+        void saveNatureToActivityControl(String natureDescription);
     }
 
 }

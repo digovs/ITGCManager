@@ -1,12 +1,8 @@
 package com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -20,44 +16,40 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.parse.FindCallback;
-import com.parse.GetCallback;
-import com.parse.ParseException;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
-import com.parse.ParseRelation;
 import com.parse.ParseUser;
+import com.vieira.rodrigo.itgcmanager.AddEditOrViewControlActivity;
 import com.vieira.rodrigo.itgcmanager.R;
-import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.Utils.ParseUtils;
-import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.Project;
-import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.User;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class ControlMemberResponsibleTabFragment extends Fragment {
 
+    public static final String MEMBER_RESPONSIBLE_ARGS_SELECTED_NAME = "member_responsible_args_selected_name";
+    public static final String MEMBER_LIST_CONTENT = "member_list_content";
     private OnFragmentInteractionListener mListener;
 
-    ArrayList<ParseUser> memberList = new ArrayList<>();
-    ArrayList<CharSequence> memberNameList = new ArrayList<>();
+    ArrayList<String> memberNameList = new ArrayList<>();
     ArrayAdapter adapter;
 
     RelativeLayout formView;
-    ProgressBar progressBar;
     TextView emptyText;
     Button saveButton;
 
     ListView memberListView;
-    ParseUser selectedMember;
+    String selectedMemberName;
+
+    int mode;
+    Bundle memberResponsibleArgs;
 
     public ControlMemberResponsibleTabFragment() {
-        // Required empty public constructor
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        memberResponsibleArgs = getArguments();
+        mode = memberResponsibleArgs.getInt(AddEditOrViewControlActivity.MODE_FLAG, AddEditOrViewControlActivity.ADD_MODE);
     }
 
     @Override
@@ -66,32 +58,26 @@ public class ControlMemberResponsibleTabFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_control_responsible, container, false);
 
         formView = (RelativeLayout) rootView.findViewById(R.id.control_define_member_responsible_form_view);
-        progressBar = (ProgressBar) rootView.findViewById(R.id.control_define_member_responsible_progress_bar);
         emptyText = (TextView) rootView.findViewById(R.id.control_define_member_responsible_empty_text);
         saveButton = (Button) rootView.findViewById(R.id.control_define_member_responsible_save_button);
+
         memberListView = (ListView) rootView.findViewById(R.id.control_define_member_responsible_list_view);
-
-        loadMemberList();
-        adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_single_choice, memberNameList);
         memberListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-        memberListView.setAdapter(adapter);
-
         memberListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                selectedMember = memberList.get(position);
-                mListener.saveSelectedMemberResponsibleToActivityControl(selectedMember);
+                selectedMemberName = memberNameList.get(position);
+                mListener.saveSelectedMemberResponsibleToActivityControl(selectedMemberName);
             }
         });
 
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (selectedMember != null) {
-                    mListener.saveSelectedMemberResponsibleToActivityControl(selectedMember);
+                if (selectedMemberName != null) {
+                    mListener.saveSelectedMemberResponsibleToActivityControl(selectedMemberName);
                     mListener.onSaveButtonClicked();
-                }
-                else {
+                } else {
                     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                     builder.setTitle(R.string.add_control_error_fragment_title)
                             .setMessage(R.string.control_define_member_responsible_field_is_required_message)
@@ -105,69 +91,38 @@ public class ControlMemberResponsibleTabFragment extends Fragment {
             }
         });
 
+        switch (mode) {
+            case AddEditOrViewControlActivity.VIEW_MODE:
+                ArrayList<String> tempSelectedMemberResponsible = new ArrayList<>();
+                tempSelectedMemberResponsible.add(memberResponsibleArgs.getString(MEMBER_RESPONSIBLE_ARGS_SELECTED_NAME));
+                adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_single_choice, tempSelectedMemberResponsible);
+                memberListView.setAdapter(adapter);
+                memberListView.setItemChecked(0, true);
+                memberListView.setEnabled(false);
+                saveButton.setVisibility(View.GONE);
+                break;
+
+            case AddEditOrViewControlActivity.EDIT_MODE:
+                loadMemberListContent();
+                loadActivityCurrentControlMemberResponsible();
+                break;
+
+            case AddEditOrViewControlActivity.ADD_MODE:
+                loadMemberListContent();
+                break;
+        }
         return rootView;
     }
 
-    private void loadMemberList() {
-        showProgress(true);
-        String currentProjectId = ParseUtils.getStringFromSession(getActivity(), ParseUtils.PREFS_CURRENT_PROJECT_ID);
-        ParseQuery<ParseObject> getCurrentProjectObject = ParseQuery.getQuery(Project.TABLE_PROJECT);
-        getCurrentProjectObject.getInBackground(currentProjectId, new GetCallback<ParseObject>() {
-            @Override
-            public void done(ParseObject projectObject, ParseException e) {
-                if (e == null) {
-                    ParseRelation<ParseUser> projectUserRelation = projectObject.getRelation(Project.KEY_PROJECT_USER_RELATION);
-                    ParseQuery<ParseUser> getProjectUserList = projectUserRelation.getQuery();
-                    getProjectUserList.findInBackground(new FindCallback<ParseUser>() {
-                        @Override
-                        public void done(List<ParseUser> resultList, ParseException e) {
-                            showProgress(false);
-                            if (e == null) {
-                                memberList = (ArrayList<ParseUser>) resultList;
-                                for (ParseUser user : memberList) {
-                                    memberNameList.add(user.getString(User.KEY_USER_FULL_NAME));
-                                }
-                            } else {
-                                ParseUtils.handleParseException(getActivity(), e);
-                            }
-                        }
-                    });
-                } else {
-                    showProgress(false);
-                    ParseUtils.handleParseException(getActivity(), e);
-                }
-            }
-        });
+    private void loadMemberListContent() {
+        memberNameList = memberResponsibleArgs.getStringArrayList(MEMBER_LIST_CONTENT);
+        adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_single_choice, memberNameList);
+        memberListView.setAdapter(adapter);
     }
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
-    public void showProgress(final boolean show) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
-
-            formView.setVisibility(show ? View.GONE : View.VISIBLE);
-            formView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    formView.setVisibility(show ? View.GONE : View.VISIBLE);
-                }
-            });
-
-            progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
-            progressBar.animate().setDuration(shortAnimTime).alpha(
-                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
-                }
-            });
-        } else {
-            // The ViewPropertyAnimator APIs are not available, so simply show
-            // and hide the relevant UI components.
-            progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
-            formView.setVisibility(show ? View.GONE : View.VISIBLE);
-        }
+    private void loadActivityCurrentControlMemberResponsible() {
+        String selectedMemberResponsibleName = getArguments().getString(MEMBER_RESPONSIBLE_ARGS_SELECTED_NAME);
+        memberListView.setItemChecked(memberNameList.indexOf(selectedMemberResponsibleName), true);
     }
 
     @Override
@@ -189,7 +144,7 @@ public class ControlMemberResponsibleTabFragment extends Fragment {
 
     public interface OnFragmentInteractionListener {
         void onSaveButtonClicked();
-        void saveSelectedMemberResponsibleToActivityControl(ParseUser selectedMemberResponsible);
+        void saveSelectedMemberResponsibleToActivityControl(String selectedMemberResponsibleName);
     }
 
 }

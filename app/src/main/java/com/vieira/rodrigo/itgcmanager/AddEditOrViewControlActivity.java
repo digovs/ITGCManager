@@ -1,7 +1,9 @@
 package com.vieira.rodrigo.itgcmanager;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -18,12 +20,14 @@ import android.support.v4.view.ViewPager;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.ParseRelation;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.Utils.ParseUtils;
@@ -31,8 +35,11 @@ import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments.ControlCompan
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments.ControlDetailsTabFragment;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments.ControlMemberResponsibleTabFragment;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments.ControlSystemScopeTabFragment;
+import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.Company;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.Control;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.Project;
+import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.SystemApp;
+import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.User;
 
 
 public class AddEditOrViewControlActivity extends ActionBarActivity implements ActionBar.TabListener,
@@ -50,25 +57,36 @@ public class AddEditOrViewControlActivity extends ActionBarActivity implements A
     public static final int EDIT_MODE = 1;
     public static final int VIEW_MODE = 2;
 
-
+    private int mode;
+    ActionBar actionBar;
 
     public static Control activityCurrentControl;
+    public static ParseObject activityCurrentControlObject;
 
-    /**
-     * The {@link android.support.v4.view.PagerAdapter} that will provide
-     * fragments for each of the sections. We use a
-     * {@link FragmentPagerAdapter} derivative, which will keep every
-     * loaded fragment in memory. If this becomes too memory intensive, it
-     * may be best to switch to a
-     * {@link android.support.v4.app.FragmentStatePagerAdapter}.
-     */
+
+    RelativeLayout relativeLayout;
+
     SectionsPagerAdapter mSectionsPagerAdapter;
 
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
     ViewPager viewPager;
-    ProgressBar progressBar;
+
+    ParseObject currentProjectObject;
+    private ArrayList<ParseObject> frequencyObjectList;
+    private ArrayList<ParseObject> natureObjectList;
+    private ArrayList<ParseObject> typeObjectList;
+    private ArrayList<ParseObject> riskObjectList;
+    private ArrayList<ParseObject> systemObjectList;
+    private ArrayList<ParseObject> companyObjectList;
+    private ArrayList<ParseUser> memberObjectList;
+
+    private ArrayList<String> frequencyDescriptionList;
+    private ArrayList<String> natureDescriptionList;
+    private ArrayList<String> typeDescriptionList;
+    private ArrayList<String> riskDescriptionList;
+    private ArrayList<String> systemNameList;
+    private ArrayList<String> companyNameList;
+    private ArrayList<String> memberNameList;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,11 +94,12 @@ public class AddEditOrViewControlActivity extends ActionBarActivity implements A
         setContentView(R.layout.activity_add_edit_or_view_control);
 
         // Set up the action bar.
-        final ActionBar actionBar = getSupportActionBar();
+        actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
         actionBar.setDisplayHomeAsUpEnabled(true);
 
-        activityCurrentControl = new Control();
+        relativeLayout = (RelativeLayout) findViewById(R.id.control_tab_relative_layout);
+
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
@@ -88,14 +107,31 @@ public class AddEditOrViewControlActivity extends ActionBarActivity implements A
 
         // Set up the ViewPager with the sections adapter.
         viewPager = (ViewPager) findViewById(R.id.pager);
-        viewPager.setAdapter(mSectionsPagerAdapter);
 
-        // Set up the progress bar
-        progressBar = (ProgressBar) findViewById(R.id.control_tab_view_progress_bar);
+        // set Activity mode (Add, Edit or View)
+        mode = getIntent().getIntExtra(MODE_FLAG, ADD_MODE);
+        switch (mode) {
+            case ADD_MODE:
+                activityCurrentControl = new Control();
+                loadControlContents();
+                break;
+
+            case EDIT_MODE:
+                loadControlContents();
+                loadActivityCurrentControl(getIntent().getStringExtra(Control.KEY_CONTROL_ID));
+                break;
+
+            case VIEW_MODE:
+                loadActivityCurrentControl(getIntent().getStringExtra(Control.KEY_CONTROL_ID));
+                break;
+        }
+
+        viewPager.setAdapter(mSectionsPagerAdapter);
 
         // When swiping between different sections, select the corresponding
         // tab. We can also use ActionBar.Tab#select() to do this if we have
         // a reference to the Tab.
+
         viewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
@@ -114,8 +150,56 @@ public class AddEditOrViewControlActivity extends ActionBarActivity implements A
                             .setText(mSectionsPagerAdapter.getPageTitle(i))
                             .setTabListener(this));
         }
+
+
     }
 
+    private void loadControlContents() {
+        ProgressDialog progressDialog = new ProgressDialog(AddEditOrViewControlActivity.this);
+        progressDialog.show();
+        loadCurrentProjectObject();
+
+        progressDialog.setMessage(getString(R.string.loading_dialog_message_loading_details));
+        loadDetailsSpinnerContents();
+
+        progressDialog.setMessage(getString(R.string.loading_dialog_message_loading_system_list));
+        loadProjectSystemListContents();
+
+        progressDialog.setMessage(getString(R.string.loading_dialog_message_loading_company_list));
+        loadProjectCompanyListContents();
+
+        progressDialog.setMessage(getString(R.string.loading_dialog_message_loading_member_list));
+        loadMemberListContents();
+
+        progressDialog.dismiss();
+    }
+
+    private void loadActivityCurrentControl(String controlId) {
+        relativeLayout.setAlpha(0.5f);
+        ProgressDialog progressDialog = new ProgressDialog(AddEditOrViewControlActivity.this);
+        progressDialog.setMessage(getString(R.string.loading_dialog_message_loading_control));
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+
+        ParseQuery getCurrentControl = ParseQuery.getQuery(Control.TABLE_CONTROL);
+        getCurrentControl.include(Control.KEY_CONTROL_COMPANY_SCOPE)
+                .include(Control.KEY_CONTROL_SYSTEM_SCOPE)
+                .include(Control.KEY_CONTROL_RISK)
+                .include(Control.KEY_CONTROL_FREQUENCY)
+                .include(Control.KEY_CONTROL_TYPE)
+                .include(Control.KEY_CONTROL_NATURE)
+                .include(Control.KEY_CONTROL_MEMBER_RESPONSIBLE);
+        try {
+            activityCurrentControlObject = getCurrentControl.get(controlId);
+            activityCurrentControl = new Control(activityCurrentControlObject);
+            actionBar.setTitle(activityCurrentControl.getName());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        progressDialog.dismiss();
+        relativeLayout.setAlpha(1);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -132,8 +216,8 @@ public class AddEditOrViewControlActivity extends ActionBarActivity implements A
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        if (id == R.id.home) {
+            finish();
         }
 
         return super.onOptionsItemSelected(item);
@@ -156,55 +240,127 @@ public class AddEditOrViewControlActivity extends ActionBarActivity implements A
 
     @Override
     public void onSaveButtonClicked() {
-        if (controlIsValid()) {
+        if (controlIsValid() && currentProjectObject != null) {
             final ProgressDialog progressDialog = ProgressDialog.show(AddEditOrViewControlActivity.this, "",getString(R.string.loading_dialog_message_saving_control), true, false);
             progressDialog.setCancelable(false);
 
-            ParseObject currentProjectObject = getCurrentProjectObject();
-            if (currentProjectObject != null) {
-                ParseObject newParseObjectControl = new ParseObject(Control.TABLE_CONTROL);
-                newParseObjectControl.put(Control.KEY_CONTROL_NAME, activityCurrentControl.getName());
-                newParseObjectControl.put(Control.KEY_CONTROL_DESCRIPTION, activityCurrentControl.getDescription());
-                newParseObjectControl.put(Control.KEY_CONTROL_OWNER, activityCurrentControl.getOwner());
-                newParseObjectControl.put(Control.KEY_CONTROL_POPULATION, activityCurrentControl.getPopulation());
-                newParseObjectControl.put(Control.KEY_CONTROL_RISK, activityCurrentControl.getRiskClassificationObject());
-                newParseObjectControl.put(Control.KEY_CONTROL_TYPE, activityCurrentControl.getTypeObject());
-                newParseObjectControl.put(Control.KEY_CONTROL_FREQUENCY, activityCurrentControl.getFrequencyObject());
-                newParseObjectControl.put(Control.KEY_CONTROL_NATURE, activityCurrentControl.getNatureObject());
-                newParseObjectControl.put(Control.KEY_CONTROL_SYSTEM_SCOPE, activityCurrentControl.getSystemScopeList());
-                newParseObjectControl.put(Control.KEY_CONTROL_COMPANY_SCOPE, activityCurrentControl.getCompanyScopeList());
-                newParseObjectControl.put(Control.KEY_CONTROL_PROJECT, currentProjectObject);
-                newParseObjectControl.put(Control.KEY_CONTROL_MEMBER_RESPONSIBLE, activityCurrentControl.getMemberResponsibleObject());
+            ParseObject parseObjectControl;
+            if (mode == EDIT_MODE)
+                parseObjectControl = activityCurrentControlObject;
+            else
+                parseObjectControl = new ParseObject(Control.TABLE_CONTROL);
 
-                newParseObjectControl.saveInBackground(new SaveCallback() {
-                    @Override
-                    public void done(ParseException e) {
-                        progressDialog.dismiss();
-                        if (e == null) {
-                            Toast successToast = Toast.makeText(AddEditOrViewControlActivity.this, R.string.dialog_message_saved_successfully, Toast.LENGTH_LONG);
-                            successToast.setGravity(Gravity.CENTER, 0, 0);
-                            successToast.show();
-                            Intent intent = new Intent(AddEditOrViewControlActivity.this, ProjectDashboardActivity.class);
-                            intent.putExtra(ProjectDashboardActivity.KEY_COMING_FROM_ACTIVITY, ProjectDashboardActivity.COMING_FROM_CREATE_CONTROL);
-                            startActivity(intent);
-                            finish();
-                        } else
-                            ParseUtils.handleParseException(getApplicationContext(), e);
-                    }
-                });
-            }
+            parseObjectControl.put(Control.KEY_CONTROL_NAME, activityCurrentControl.getName());
+            parseObjectControl.put(Control.KEY_CONTROL_DESCRIPTION, activityCurrentControl.getDescription());
+            parseObjectControl.put(Control.KEY_CONTROL_OWNER, activityCurrentControl.getOwner());
+            parseObjectControl.put(Control.KEY_CONTROL_POPULATION, activityCurrentControl.getPopulation());
+            parseObjectControl.put(Control.KEY_CONTROL_RISK, activityCurrentControl.getRiskClassificationObject());
+            parseObjectControl.put(Control.KEY_CONTROL_TYPE, activityCurrentControl.getTypeObject());
+            parseObjectControl.put(Control.KEY_CONTROL_FREQUENCY, activityCurrentControl.getFrequencyObject());
+            parseObjectControl.put(Control.KEY_CONTROL_NATURE, activityCurrentControl.getNatureObject());
+            parseObjectControl.put(Control.KEY_CONTROL_SYSTEM_SCOPE, activityCurrentControl.getSystemScopeList());
+            parseObjectControl.put(Control.KEY_CONTROL_COMPANY_SCOPE, activityCurrentControl.getCompanyScopeList());
+            parseObjectControl.put(Control.KEY_CONTROL_PROJECT, currentProjectObject);
+            parseObjectControl.put(Control.KEY_CONTROL_MEMBER_RESPONSIBLE, activityCurrentControl.getMemberResponsibleObject());
+
+            parseObjectControl.saveInBackground(new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                    progressDialog.dismiss();
+                    if (e == null) {
+                        Toast successToast = Toast.makeText(AddEditOrViewControlActivity.this, R.string.dialog_message_saved_successfully, Toast.LENGTH_LONG);
+                        successToast.setGravity(Gravity.CENTER, 0, 0);
+                        successToast.show();
+                        Intent intent = new Intent(AddEditOrViewControlActivity.this, ProjectDashboardActivity.class);
+                        intent.putExtra(ProjectDashboardActivity.KEY_COMING_FROM_ACTIVITY, ProjectDashboardActivity.COMING_FROM_CREATE_CONTROL);
+                        startActivity(intent);
+                        finish();
+                    } else
+                        ParseUtils.handleParseException(getApplicationContext(), e);
+                }
+            });
             progressDialog.dismiss();
         }
     }
 
-    private ParseObject getCurrentProjectObject() {
+    private void loadCurrentProjectObject() {
         String currentProjectId = ParseUtils.getStringFromSession(getApplicationContext(), ParseUtils.PREFS_CURRENT_PROJECT_ID);
         ParseQuery<ParseObject> getCurrentProjectQuery = ParseQuery.getQuery(Project.TABLE_PROJECT);
+        getCurrentProjectQuery.include(Project.KEY_SYSTEM_SCOPE_LIST)
+                .include(Project.KEY_COMPANY_SCOPE_LIST);
         try {
-            return getCurrentProjectQuery.get(currentProjectId);
+            currentProjectObject = getCurrentProjectQuery.get(currentProjectId);
         } catch (ParseException e) {
-            return null;
+            ParseUtils.handleParseException(AddEditOrViewControlActivity.this, e);
         }
+    }
+
+    private void loadDetailsSpinnerContents() {
+        ParseQuery<ParseObject> getFrequencyDescription = ParseQuery.getQuery(Control.TABLE_CONTROL_FREQUENCY);
+        ParseQuery<ParseObject> getNatureDescription = ParseQuery.getQuery(Control.TABLE_CONTROL_NATURE);
+        ParseQuery<ParseObject> getRiskDescription = ParseQuery.getQuery(Control.TABLE_CONTROL_RISK);
+        ParseQuery<ParseObject> getTypeDescription = ParseQuery.getQuery(Control.TABLE_CONTROL_TYPE);
+        try {
+            frequencyObjectList = (ArrayList<ParseObject>) getFrequencyDescription.find();
+            frequencyDescriptionList = castParseObjectListToStringList(frequencyObjectList, Control.KEY_CONTROL_GENERIC_DESCRIPTION);
+            frequencyDescriptionList.add(0, getString(R.string.add_control_details_frequency_label));
+
+            natureObjectList = (ArrayList<ParseObject>) getNatureDescription.find();
+            natureDescriptionList = castParseObjectListToStringList(natureObjectList, Control.KEY_CONTROL_GENERIC_DESCRIPTION);
+            natureDescriptionList.add(0, getString(R.string.add_control_details_nature_label));
+
+            riskObjectList = (ArrayList<ParseObject>) getRiskDescription.find();
+            riskDescriptionList = castParseObjectListToStringList(riskObjectList, Control.KEY_CONTROL_GENERIC_DESCRIPTION);
+            riskDescriptionList.add(0, getString(R.string.add_control_details_risk_classification_label));
+
+            typeObjectList = (ArrayList<ParseObject>) getTypeDescription.find();
+            typeDescriptionList = castParseObjectListToStringList(typeObjectList, Control.KEY_CONTROL_GENERIC_DESCRIPTION);
+            typeDescriptionList.add(0, getString(R.string.add_control_details_type_label));
+        } catch (ParseException e) {
+            ParseUtils.handleParseException(AddEditOrViewControlActivity.this, e);
+        }
+    }
+
+    private void loadProjectSystemListContents() {
+        systemObjectList = (ArrayList) currentProjectObject.getList(Project.KEY_SYSTEM_SCOPE_LIST);
+        systemNameList = castParseObjectListToStringList(systemObjectList, SystemApp.KEY_SYSTEM_NAME);
+    }
+
+    private void loadProjectCompanyListContents() {
+        companyObjectList = (ArrayList) currentProjectObject.getList(Project.KEY_COMPANY_SCOPE_LIST);
+        companyNameList = castParseObjectListToStringList(companyObjectList, Company.KEY_COMPANY_NAME);
+    }
+
+    private void loadMemberListContents() {
+        ParseRelation<ParseUser> projectUserRelation = currentProjectObject.getRelation(Project.KEY_PROJECT_USER_RELATION);
+        ParseQuery<ParseUser> getProjectUserList = projectUserRelation.getQuery();
+        try {
+            memberObjectList = (ArrayList) getProjectUserList.find();
+            if (memberObjectList != null) {
+                memberNameList = castParseUserListToStringList(memberObjectList);
+            } else
+                memberNameList = new ArrayList();
+        } catch (ParseException e) {
+            ParseUtils.handleParseException(AddEditOrViewControlActivity.this, e);
+        }
+    }
+
+    private ArrayList<String> castParseObjectListToStringList(ArrayList<ParseObject> parseObjectList, String tableField) {
+        ArrayList<String> output = new ArrayList<>();
+        for (ParseObject obj : parseObjectList){
+            String desc = obj.getString(tableField);
+            output.add(desc);
+        }
+        return output;
+    }
+
+    private ArrayList<String> castParseUserListToStringList(ArrayList<ParseUser> parseObjectList) {
+        ArrayList<String> output = new ArrayList<>();
+        for (ParseUser user : parseObjectList){
+            String userName = user.getUsername();
+            output.add(userName);
+        }
+        return output;
     }
 
     private boolean controlIsValid() {
@@ -316,9 +472,9 @@ public class AddEditOrViewControlActivity extends ActionBarActivity implements A
     }
 
     @Override
-    public void saveSelectedMemberResponsibleToActivityControl(ParseUser selectedMemberResponsible) {
-        if (selectedMemberResponsible != null)
-            activityCurrentControl.setMemberResponsible(selectedMemberResponsible);
+    public void saveSelectedMemberResponsibleToActivityControl(String selectedMemberResponsibleName) {
+        if (selectedMemberResponsibleName != null)
+            activityCurrentControl.setMemberResponsible(memberObjectList.get(memberNameList.indexOf(selectedMemberResponsibleName)));
     }
 
     @Override
@@ -346,46 +502,53 @@ public class AddEditOrViewControlActivity extends ActionBarActivity implements A
     }
 
     @Override
-    public void saveRiskToActivityControl(ParseObject risk) {
-        if (risk != null)
-            activityCurrentControl.setRiskClassificationObject(risk);
+    public void saveRiskToActivityControl(String riskDescription) {
+        if (riskDescription != null)
+            activityCurrentControl.setRiskClassificationObject(riskObjectList.get(riskDescriptionList.indexOf(riskDescription)));
     }
 
     @Override
-    public void saveTypeToActivityControl(ParseObject type) {
-        if (type != null)
-            activityCurrentControl.setTypeObject(type);
+    public void saveTypeToActivityControl(String typeDescription) {
+        if (typeDescription != null)
+            activityCurrentControl.setTypeObject(typeObjectList.get(typeDescriptionList.indexOf(typeDescription)));
     }
 
     @Override
-    public void saveFrequencyToActivityControl(ParseObject frequency) {
-        if (frequency != null)
-            activityCurrentControl.setFrequencyObject(frequency);
+    public void saveFrequencyToActivityControl(String frequencyDescription) {
+        if (frequencyDescription != null)
+            activityCurrentControl.setFrequencyObject(frequencyObjectList.get(frequencyDescriptionList.indexOf(frequencyDescription)));
     }
 
     @Override
-    public void saveNatureToActivityControl(ParseObject nature) {
-        if (nature != null)
-            activityCurrentControl.setNatureObject(nature);
+    public void saveNatureToActivityControl(String natureDescription) {
+        if (natureDescription != null)
+            activityCurrentControl.setNatureObject(natureObjectList.get(natureDescriptionList.indexOf(natureDescription)));
     }
 
     @Override
-    public void saveSelectedCompaniesToActivityControl(ArrayList<ParseObject> selectedCompanyItems) {
-        if (selectedCompanyItems != null)
-            activityCurrentControl.setCompanyList(selectedCompanyItems);
+    public void saveSelectedCompaniesToActivityControl(ArrayList<String> selectedCompanyItems) {
+        if (selectedCompanyItems != null) {
+            ArrayList<ParseObject> tempSelectedCompanyObjectList = new ArrayList<>();
+            for (String companyName : selectedCompanyItems) {
+                int position = companyNameList.indexOf(companyName);
+                tempSelectedCompanyObjectList.add(companyObjectList.get(position));
+            }
+            activityCurrentControl.setCompanyList(tempSelectedCompanyObjectList);
+        }
     }
 
     @Override
-    public void saveSelectedSystemsToActivityControl(ArrayList<ParseObject> selectedSystemItems) {
-        if (selectedSystemItems != null)
-            activityCurrentControl.setSystemList(selectedSystemItems);
+    public void saveSelectedSystemsToActivityControl(ArrayList<String> selectedSystemItems) {
+        if (selectedSystemItems != null) {
+            ArrayList<ParseObject> tempSelectedSystemObjectList = new ArrayList<>();
+            for (String systemName : selectedSystemItems) {
+                int position = systemNameList.indexOf(systemName);
+                tempSelectedSystemObjectList.add(systemObjectList.get(position));
+            }
+            activityCurrentControl.setSystemList(tempSelectedSystemObjectList);
+        }
     }
 
-
-    /**
-     * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
-     * one of the sections/tabs/pages.
-     */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
         public SectionsPagerAdapter(FragmentManager fm) {
@@ -394,25 +557,77 @@ public class AddEditOrViewControlActivity extends ActionBarActivity implements A
 
         @Override
         public Fragment getItem(int position) {
-            // getItem is called to instantiate the fragment for the given page.
-            // Return a PlaceholderFragment (defined as a static inner class below).
-            // return PlaceholderFragment.newInstance(position + 1);
-
             switch (position) {
                 case TAB_DETAILS:
                     ControlDetailsTabFragment detailsFragment = new ControlDetailsTabFragment();
+                    Bundle detailsArgs = new Bundle();
+                    detailsArgs.putInt(MODE_FLAG, mode);
+                    if (mode == EDIT_MODE || mode == ADD_MODE) {
+                        detailsArgs.putStringArrayList(ControlDetailsTabFragment.FREQUENCY_LIST_CONTENT, frequencyDescriptionList);
+                        detailsArgs.putStringArrayList(ControlDetailsTabFragment.TYPE_LIST_CONTENT, typeDescriptionList);
+                        detailsArgs.putStringArrayList(ControlDetailsTabFragment.NATURE_LIST_CONTENT, natureDescriptionList);
+                        detailsArgs.putStringArrayList(ControlDetailsTabFragment.RISK_LIST_CONTENT, riskDescriptionList);
+                    }
+                    if (mode == VIEW_MODE || mode == EDIT_MODE){
+                        detailsArgs.putString(ControlDetailsTabFragment.DETAILS_ARGS_NAME, activityCurrentControl.getName());
+                        detailsArgs.putString(ControlDetailsTabFragment.DETAILS_ARGS_DESCRIPTION, activityCurrentControl.getDescription());
+                        detailsArgs.putString(ControlDetailsTabFragment.DETAILS_ARGS_POPULATION, activityCurrentControl.getPopulation());
+                        detailsArgs.putString(ControlDetailsTabFragment.DETAILS_ARGS_OWNER, activityCurrentControl.getOwner());
+                        detailsArgs.putString(ControlDetailsTabFragment.DETAILS_ARGS_FREQUENCY, activityCurrentControl.getFrequencyObject().getString(Control.KEY_CONTROL_GENERIC_DESCRIPTION));
+                        detailsArgs.putString(ControlDetailsTabFragment.DETAILS_ARGS_TYPE, activityCurrentControl.getTypeObject().getString(Control.KEY_CONTROL_GENERIC_DESCRIPTION));
+                        detailsArgs.putString(ControlDetailsTabFragment.DETAILS_ARGS_NATURE, activityCurrentControl.getNatureObject().getString(Control.KEY_CONTROL_GENERIC_DESCRIPTION));
+                        detailsArgs.putString(ControlDetailsTabFragment.DETAILS_ARGS_RISK, activityCurrentControl.getRiskClassificationObject().getString(Control.KEY_CONTROL_GENERIC_DESCRIPTION));
+                        detailsFragment.setArguments(detailsArgs);
+                    }
                     return detailsFragment;
 
                 case TAB_SYSTEM_SCOPE:
                     ControlSystemScopeTabFragment systemScopeFragment = new ControlSystemScopeTabFragment();
+                    Bundle systemScopeArgs = new Bundle();
+                    systemScopeArgs.putInt(MODE_FLAG, mode);
+                    if (mode == EDIT_MODE || mode == ADD_MODE) {
+                        systemScopeArgs.putStringArrayList(ControlSystemScopeTabFragment.SYSTEM_LIST_CONTENT, systemNameList);
+                    }
+                    if (mode == VIEW_MODE || mode == EDIT_MODE){
+                        ArrayList<ParseObject> currentSystemScope = activityCurrentControl.getSystemScopeList();
+                        ArrayList<String> currentSystemScopeNameList = new ArrayList<>();
+                        for (ParseObject system : currentSystemScope) {
+                            currentSystemScopeNameList.add(system.getString(SystemApp.KEY_SYSTEM_NAME));
+                        }
+                        systemScopeArgs.putStringArrayList(ControlSystemScopeTabFragment.SYSTEM_SCOPE_ARGS_SELECTED_NAME_LIST, currentSystemScopeNameList);
+                        systemScopeFragment.setArguments(systemScopeArgs);
+                    }
                     return systemScopeFragment;
 
                 case TAB_COMPANY_SCOPE:
                     ControlCompanyScopeTabFragment companyScopeFragment = new ControlCompanyScopeTabFragment();
+                    Bundle companyScopeArgs = new Bundle();
+                    companyScopeArgs.putInt(MODE_FLAG, mode);
+                    if (mode == EDIT_MODE || mode == ADD_MODE) {
+                        companyScopeArgs.putStringArrayList(ControlCompanyScopeTabFragment.COMPANY_LIST_CONTENT, companyNameList);
+                    }
+                    if (mode == VIEW_MODE || mode == EDIT_MODE){
+                        ArrayList<ParseObject> currentCompanyScope = activityCurrentControl.getCompanyScopeList();
+                        ArrayList<String> currentCompanyScopeNameList = new ArrayList<>();
+                        for (ParseObject company : currentCompanyScope) {
+                            currentCompanyScopeNameList.add(company.getString(Company.KEY_COMPANY_NAME));
+                        }
+                        companyScopeArgs.putStringArrayList(ControlCompanyScopeTabFragment.COMPANY_SCOPE_ARGS_SELECTED_NAME_LIST, currentCompanyScopeNameList);
+                        companyScopeFragment.setArguments(companyScopeArgs);
+                    }
                     return companyScopeFragment;
 
                 case TAB_RESPONSIBLE:
                     ControlMemberResponsibleTabFragment responsibleFragment = new ControlMemberResponsibleTabFragment();
+                    Bundle memberResponsibleArgs = new Bundle();
+                    memberResponsibleArgs.putInt(MODE_FLAG, mode);
+                    if (mode == EDIT_MODE || mode == ADD_MODE) {
+                        memberResponsibleArgs.putStringArrayList(ControlMemberResponsibleTabFragment.MEMBER_LIST_CONTENT, memberNameList);
+                    }
+                    if (mode == VIEW_MODE || mode == EDIT_MODE) {
+                        memberResponsibleArgs.putString(ControlMemberResponsibleTabFragment.MEMBER_RESPONSIBLE_ARGS_SELECTED_NAME, activityCurrentControl.getMemberResponsibleObject().getUsername());
+                        responsibleFragment.setArguments(memberResponsibleArgs);
+                    }
                     return responsibleFragment;
             }
             return null;
@@ -425,7 +640,7 @@ public class AddEditOrViewControlActivity extends ActionBarActivity implements A
         }
 
         @Override
-        public CharSequence getPageTitle(int position) {
+        public String getPageTitle(int position) {
             Locale l = Locale.getDefault();
             switch (position) {
                 case TAB_DETAILS:
@@ -444,44 +659,4 @@ public class AddEditOrViewControlActivity extends ActionBarActivity implements A
         }
     }
 
-    /*@TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
-    public void showProgress(final boolean show) {
-        float gone = 0;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
-
-            viewPager.setVisibility(show ? View.GONE : View.VISIBLE);
-            viewPager.animate().setDuration(shortAnimTime).alpha(
-                    show ? gone : 1).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    viewPager.setVisibility(show ? View.GONE : View.VISIBLE);
-                }
-            });
-
-            progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
-            progressBar.animate().setDuration(shortAnimTime).alpha(
-                    show ? gone : 0).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
-                }
-            });
-        } else {
-            // The ViewPropertyAnimator APIs are not available, so simply show
-            // and hide the relevant UI components.
-            progressBar.setAlpha(show ? 1 : gone);
-            viewPager.setAlpha(show ? gone : 1);
-        }
-    }*/
-
-    public void showProgress(final boolean show) {
-        ProgressDialog progressDialog = new ProgressDialog(AddEditOrViewControlActivity.this);
-        progressDialog.setMessage(getString(R.string.loading_dialog_message_saving_control));
-
-        if (show)
-            progressDialog.show();
-        else
-            progressDialog.dismiss();
-    }
 }

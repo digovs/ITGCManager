@@ -1,12 +1,8 @@
 package com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.SparseBooleanArray;
@@ -21,22 +17,19 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.parse.ParseException;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
+import com.vieira.rodrigo.itgcmanager.AddEditOrViewControlActivity;
 import com.vieira.rodrigo.itgcmanager.R;
-import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.Utils.ParseUtils;
-import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.Project;
-import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.SystemApp;
 
 import java.util.ArrayList;
 
 
 public class ControlSystemScopeTabFragment extends Fragment {
 
-    ArrayList<CharSequence> projectSystemCharSequenceList;
-    private ArrayList projectSystemObjectList;
-    private ArrayList selectedSystemObjects = new ArrayList();
+    public static final String SYSTEM_SCOPE_ARGS_SELECTED_NAME_LIST = "system_scope_args_selected_name_list";
+    public static final String SYSTEM_LIST_CONTENT = "system_list_content";
+
+    ArrayList<String> systemNameList;
+    private ArrayList selectedSystemNames = new ArrayList();
 
     ListView systemListView;
     RelativeLayout formView;
@@ -44,7 +37,8 @@ public class ControlSystemScopeTabFragment extends Fragment {
     ProgressBar progressBar;
 
     TextView emptyText;
-
+    int mode;
+    Bundle systemScopeArgs;
 
     Button saveButton;
     private OnFragmentInteractionListener mListener;
@@ -56,6 +50,9 @@ public class ControlSystemScopeTabFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        systemScopeArgs = getArguments();
+        mode = systemScopeArgs.getInt(AddEditOrViewControlActivity.MODE_FLAG, AddEditOrViewControlActivity.ADD_MODE);
     }
 
     @Override
@@ -64,29 +61,24 @@ public class ControlSystemScopeTabFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_control_system_scope, container, false);
 
         formView = (RelativeLayout) rootView.findViewById(R.id.control_system_multichoice_relative_layout);
-        systemListView = (ListView) rootView.findViewById(R.id.control_system_multichoice_list);
         progressBar = (ProgressBar) rootView.findViewById(R.id.control_system_multichoice_progress_bar);
         emptyText = (TextView) rootView.findViewById(R.id.control_system_multichoice_empty_message);
 
-        loadProjectSystemList();
-        adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_multiple_choice, projectSystemCharSequenceList);
-
+        systemListView = (ListView) rootView.findViewById(R.id.control_system_multichoice_list);
         systemListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-        systemListView.setAdapter(adapter);
-
         systemListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (systemListView.getCheckedItemCount() > 0) {
                     SparseBooleanArray checked = systemListView.getCheckedItemPositions();
-                    ArrayList<ParseObject> tempSelectedSystemObjects = new ArrayList<>();
+                    ArrayList<String> tempSelectedSystemNames = new ArrayList<>();
                     for (int i = 0; i < checked.size(); i++) {
                         int index = checked.keyAt(i);
-                        if (checked.valueAt(i) == true)
-                            tempSelectedSystemObjects.add((ParseObject) projectSystemObjectList.get(index));
+                        if (checked.valueAt(i))
+                            tempSelectedSystemNames.add(systemNameList.get(index));
                     }
-                    selectedSystemObjects = tempSelectedSystemObjects;
-                    mListener.saveSelectedSystemsToActivityControl(selectedSystemObjects);
+                    selectedSystemNames = tempSelectedSystemNames;
+                    mListener.saveSelectedSystemsToActivityControl(selectedSystemNames);
                 }
             }
         });
@@ -97,14 +89,14 @@ public class ControlSystemScopeTabFragment extends Fragment {
             public void onClick(View v) {
                 if (systemListView.getCheckedItemCount() > 0) {
                     SparseBooleanArray checked = systemListView.getCheckedItemPositions();
-                    ArrayList<ParseObject> tempSelectecSystemObjects = new ArrayList<>();
+                    ArrayList<String> tempSelectedSystemObjects = new ArrayList<>();
                     for (int i = 0; i < checked.size(); i++) {
                         int position = checked.keyAt(i);
-                        if (checked.valueAt(i) == true)
-                            tempSelectecSystemObjects.add((ParseObject) projectSystemObjectList.get(position));
+                        if (checked.valueAt(i))
+                            tempSelectedSystemObjects.add(systemNameList.get(position));
                     }
-                    selectedSystemObjects = tempSelectecSystemObjects;
-                    mListener.saveSelectedSystemsToActivityControl(selectedSystemObjects);
+                    selectedSystemNames = tempSelectedSystemObjects;
+                    mListener.saveSelectedSystemsToActivityControl(selectedSystemNames);
                     mListener.onSaveButtonClicked();
                 } else {
                     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -118,69 +110,48 @@ public class ControlSystemScopeTabFragment extends Fragment {
             }
         });
 
+        switch (mode) {
+            case AddEditOrViewControlActivity.VIEW_MODE:
+                ArrayList<String> selectedSystemNameList = systemScopeArgs.getStringArrayList(SYSTEM_SCOPE_ARGS_SELECTED_NAME_LIST);
+                adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_multiple_choice, selectedSystemNameList);
+                systemListView.setAdapter(adapter);
+                for (int i  = 0; i < selectedSystemNameList.size(); i++)
+                    systemListView.setItemChecked(i, true);
+                systemListView.setEnabled(false);
+                saveButton.setVisibility(View.GONE);
+                break;
+
+            case AddEditOrViewControlActivity.EDIT_MODE:
+                loadSystemListContent();
+                loadActivityCurrentControlSystemScope();
+                break;
+
+            case AddEditOrViewControlActivity.ADD_MODE:
+                loadSystemListContent();
+                break;
+        }
+
         return rootView;
     }
 
-    private void loadProjectSystemList() {
-        showProgress(true);
-        String currentProjectId = ParseUtils.getStringFromSession(getActivity(), ParseUtils.PREFS_CURRENT_PROJECT_ID);
-        ParseQuery<ParseObject> getProjectCompanies = ParseQuery.getQuery(Project.TABLE_PROJECT);
-        getProjectCompanies.include(Project.KEY_SYSTEM_SCOPE_LIST);
-        try {
-            ParseObject project = getProjectCompanies.get(currentProjectId);
-            projectSystemObjectList = (ArrayList) project.getList(Project.KEY_SYSTEM_SCOPE_LIST);
-            projectSystemCharSequenceList = castObjectListToCharSequenceList(projectSystemObjectList);
-            showProgress(false);
-        } catch (ParseException e) {
-            ParseUtils.handleParseException(getActivity(), e);
-            showProgress(false);
-        }
+    private void loadSystemListContent() {
+        systemNameList = systemScopeArgs.getStringArrayList(SYSTEM_LIST_CONTENT);
+        adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_multiple_choice, systemNameList);
+        systemListView.setAdapter(adapter);
     }
 
-    private ArrayList<CharSequence> castObjectListToCharSequenceList(ArrayList<ParseObject> systemObjectList) {
-        if (systemObjectList != null) {
-            ArrayList<CharSequence> resultList = new ArrayList<>();
-            for (ParseObject obj : systemObjectList) {
-                resultList.add(obj.getString(SystemApp.KEY_SYSTEM_NAME));
+    private void loadActivityCurrentControlSystemScope() {
+        ArrayList<String> selectedSystemNameList = systemScopeArgs.getStringArrayList(SYSTEM_SCOPE_ARGS_SELECTED_NAME_LIST);
+        if (selectedSystemNameList != null) {
+            for (String systemName : selectedSystemNameList) {
+                int positionSelected = systemNameList.indexOf(systemName);
+                systemListView.setItemChecked(positionSelected, true);
             }
-            return resultList;
-        } else
-            return new ArrayList<>();
-    }
-
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
-    public void showProgress(final boolean show) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-            if (projectSystemObjectList == null || projectSystemObjectList.isEmpty())
-                emptyText.setVisibility(View.VISIBLE);
-            else
-                emptyText.setVisibility(View.GONE);
-
-            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
-
-            formView.setVisibility(show ? View.GONE : View.VISIBLE);
-            formView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    formView.setVisibility(show ? View.GONE : View.VISIBLE);
-                }
-            });
-
-            progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
-            progressBar.animate().setDuration(shortAnimTime).alpha(
-                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
-                }
-            });
         } else {
-            // The ViewPropertyAnimator APIs are not available, so simply show
-            // and hide the relevant UI components.
-            progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
-            formView.setVisibility(show ? View.GONE : View.VISIBLE);
+            adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_multiple_choice, new ArrayList<String>());
+            systemListView.setAdapter(adapter);
         }
+
     }
 
     @Override
@@ -202,15 +173,15 @@ public class ControlSystemScopeTabFragment extends Fragment {
 
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
-        if (!isVisibleToUser && mListener != null && !selectedSystemObjects.isEmpty()) {
-            mListener.saveSelectedSystemsToActivityControl(selectedSystemObjects);
+        if (!isVisibleToUser && mListener != null && !selectedSystemNames.isEmpty()) {
+            mListener.saveSelectedSystemsToActivityControl(selectedSystemNames);
         }
     }
 
     public interface OnFragmentInteractionListener {
 
         void onSaveButtonClicked();
-        void saveSelectedSystemsToActivityControl(ArrayList<ParseObject> selectedSystemItems);
+        void saveSelectedSystemsToActivityControl(ArrayList<String> selectedSystemItems);
     }
 
 }

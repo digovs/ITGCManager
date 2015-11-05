@@ -135,8 +135,8 @@ public class ProjectListFragment extends ListFragment{
                 AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
                 String title = getString(R.string.project_list_long_click_dialog_title);
                 String message = getString(R.string.project_list_long_click_dialog_message);
-                final String selectedPojectName = projectList.get(position).getString(Project.KEY_PROJECT_NAME);
-                message = message.replace("XXX", selectedPojectName);
+                final String selectedProjectName = projectList.get(position).getString(Project.KEY_PROJECT_NAME);
+                message = message.replace("XXX", selectedProjectName);
                 dialogBuilder.setTitle(title);
                 dialogBuilder.setMessage(message);
                 dialogBuilder.setPositiveButton(getString(R.string.confirmation_dialog_yes), new DialogInterface.OnClickListener() {
@@ -144,7 +144,7 @@ public class ProjectListFragment extends ListFragment{
                     public void onClick(DialogInterface dialog, int which) {
                         Intent intent = new Intent(getActivity(), CreateProjectActivity.class);
                         intent.putExtra(CreateProjectActivity.EDIT_MODE_FLAG, true);
-                        intent.putExtra(CreateProjectActivity.EDIT_MODE_PROJECT_NAME, selectedPojectName);
+                        intent.putExtra(CreateProjectActivity.EDIT_MODE_PROJECT_NAME, selectedProjectName);
                         startActivity(intent);
                     }
                 });

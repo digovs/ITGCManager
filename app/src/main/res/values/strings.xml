@@ -37,6 +37,10 @@
     <string name="project_list_long_click_dialog_title">Edit Project</string>
     <string name="project_list_long_click_dialog_message">Are you sure you want to edit Project XXX?</string>
 
+    <!-- Control List Fragment Long Click Dialog -->
+    <string name="control_list_long_click_dialog_title">Edit Control</string>
+    <string name="control_list_long_click_dialog_message">Are you sure you want to edit Control XXX?</string>
+
     <!-- Add Company Scope -->
 
     <string name="title_company_section">Company Scope</string>
@@ -217,8 +221,14 @@
     <string name="control_invalid_error_message_fields">XXX</string>
 
     <string name="dialog_message_saved_successfully">Saved successfully!</string>
+    <string name="edit_control_title">Edit </string>
 
+    <string name="loading_dialog_message_loading_control">Loading control...</string>
     <string name="loading_dialog_message_saving_control">Saving control...</string>
     <string name="loading_dialog_message_validating_information">Validating information...</string>
+    <string name="loading_dialog_message_loading_details">Loading control details...</string>
+    <string name="loading_dialog_message_loading_system_list">Loading system list...</string>
+    <string name="loading_dialog_message_loading_company_list">Loading company list...</string>
+    <string name="loading_dialog_message_loading_member_list">Loading member list...</string>
 
 </resources>

@@ -23,7 +23,6 @@ public class Control implements Serializable {
     public static final String KEY_CONTROL_MEMBER_RESPONSIBLE = "memberResponsible";
     public static final String KEY_CONTROL_SYSTEM_SCOPE = "systemScope";
     public static final String KEY_CONTROL_COMPANY_SCOPE = "companyScope";
-    public static final String KEY_NEW_CONTROL = "newControl";
 
     public static final String TABLE_CONTROL_FREQUENCY = "ControlFrequency";
     public static final String TABLE_CONTROL_NATURE = "ControlNature";
@@ -43,11 +42,25 @@ public class Control implements Serializable {
     ParseObject natureObject;
     ParseObject typeObject;
     ParseUser memberResponsible;
-    ArrayList<ParseObject> companyList = new ArrayList<>();
-    ArrayList<ParseObject> systemList = new ArrayList<>();
+    ArrayList companyList = new ArrayList<>();
+    ArrayList systemList = new ArrayList<>();
 
 
     public Control() {
+    }
+
+    public Control(ParseObject controlLoadedFromParse) {
+        this.name = controlLoadedFromParse.getString(KEY_CONTROL_NAME);
+        this.description = controlLoadedFromParse.getString(KEY_CONTROL_DESCRIPTION);
+        this.population = controlLoadedFromParse.getString(KEY_CONTROL_POPULATION);
+        this.owner = controlLoadedFromParse.getString(KEY_CONTROL_OWNER);
+        this.riskClassificationObject = controlLoadedFromParse.getParseObject(KEY_CONTROL_RISK);
+        this.frequencyObject = controlLoadedFromParse.getParseObject(KEY_CONTROL_FREQUENCY);
+        this.natureObject = controlLoadedFromParse.getParseObject(KEY_CONTROL_NATURE);
+        this.typeObject = controlLoadedFromParse.getParseObject(KEY_CONTROL_TYPE);
+        this.memberResponsible = controlLoadedFromParse.getParseUser(KEY_CONTROL_MEMBER_RESPONSIBLE);
+        this.companyList = (ArrayList) controlLoadedFromParse.getList(KEY_CONTROL_COMPANY_SCOPE);
+        this.systemList = (ArrayList) controlLoadedFromParse.getList(KEY_CONTROL_SYSTEM_SCOPE);
     }
 
     public String getName() {
@@ -114,7 +127,7 @@ public class Control implements Serializable {
         this.typeObject = typeObject;
     }
 
-    public ArrayList<ParseObject> getSystemScopeList() {
+    public ArrayList getSystemScopeList() {
         return systemList;
     }
 
@@ -122,7 +135,7 @@ public class Control implements Serializable {
         this.systemList = systemList;
     }
 
-    public ArrayList<ParseObject> getCompanyScopeList() {
+    public ArrayList getCompanyScopeList() {
         return companyList;
     }
 
