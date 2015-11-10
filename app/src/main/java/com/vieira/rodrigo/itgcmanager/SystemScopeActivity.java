@@ -27,7 +27,7 @@ import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.*;
 import java.util.ArrayList;
 
 
-public class AddSystemScopeActivity extends ActionBarActivity {
+public class SystemScopeActivity extends ActionBarActivity {
 
     public static final String EDIT_MODE_FLAG = "EDIT_MODE_FLAG";
     public static final String EDIT_MODE_SYSTEM_NAME = "EDIT_MODE_SYSTEM_NAME";

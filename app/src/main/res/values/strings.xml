@@ -202,6 +202,16 @@
     <string name="title_activity_add_edit_or_view_control">Add Control</string>
 
     <string name="title_section1">Section 1</string>
+    
+    <!-- Test Activity -->
+    <string name="test_list_empty_string">You have no tests, to add one, click the button "Add test" at the right top of the screen</string>
+    <string name="title_test_section">Tests</string>
+    <string name="test_fragment_add_test_action">Add test</string>
+    <string name="test_activity_section_details">Details</string>
+    <string name="test_activity_section_company_scope">Company Scope</string>
+    <string name="test_activity_section_system_scope">System Scope</string>
+    <string name="test_activity_section_member_responsible">Member Responsible</string>
+    <string name="test_activity_section_exceptions">Exceptions</string>
 
     <!-- Save Control Error Messages -->
     <string name="field_frequency_required">Frequency</string>
@@ -230,5 +240,6 @@
     <string name="loading_dialog_message_loading_system_list">Loading system list...</string>
     <string name="loading_dialog_message_loading_company_list">Loading company list...</string>
     <string name="loading_dialog_message_loading_member_list">Loading member list...</string>
+    <string name="title_activity_test">TestActivity</string>
 
 </resources>

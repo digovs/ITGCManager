@@ -14,7 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.vieira.rodrigo.itgcmanager.CreateProjectActivity;
+import com.vieira.rodrigo.itgcmanager.ProjectActivity;
 import com.vieira.rodrigo.itgcmanager.ProjectDashboardActivity;
 import com.vieira.rodrigo.itgcmanager.R;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.Utils.ParseUtils;
@@ -78,9 +78,9 @@ public class ProjectDetailsFragment extends Fragment {
             item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                 @Override
                 public boolean onMenuItemClick(MenuItem item) {
-                    Intent intent = new Intent(getActivity(), CreateProjectActivity.class);
-                    intent.putExtra(CreateProjectActivity.EDIT_MODE_FLAG, true);
-                    intent.putExtra(CreateProjectActivity.EDIT_MODE_PROJECT_NAME, currentProjectName);
+                    Intent intent = new Intent(getActivity(), ProjectActivity.class);
+                    intent.putExtra(ProjectActivity.EDIT_MODE_FLAG, true);
+                    intent.putExtra(ProjectActivity.EDIT_MODE_PROJECT_NAME, currentProjectName);
                     startActivity(intent);
                     return true;
                 }

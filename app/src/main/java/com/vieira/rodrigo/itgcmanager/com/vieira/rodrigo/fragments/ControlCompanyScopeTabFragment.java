@@ -17,7 +17,7 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.vieira.rodrigo.itgcmanager.AddEditOrViewControlActivity;
+import com.vieira.rodrigo.itgcmanager.ControlActivity;
 import com.vieira.rodrigo.itgcmanager.R;
 
 import java.util.ArrayList;
@@ -52,7 +52,7 @@ public class ControlCompanyScopeTabFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         companyArgs = getArguments();
-        mode = companyArgs.getInt(AddEditOrViewControlActivity.MODE_FLAG, AddEditOrViewControlActivity.ADD_MODE);
+        mode = companyArgs.getInt(ControlActivity.MODE_FLAG, ControlActivity.ADD_MODE);
     }
 
     @Override
@@ -111,7 +111,7 @@ public class ControlCompanyScopeTabFragment extends Fragment {
         });
 
         switch (mode) {
-            case AddEditOrViewControlActivity.VIEW_MODE:
+            case ControlActivity.VIEW_MODE:
                 ArrayList<String> selectedCompanyNameList = companyArgs.getStringArrayList(COMPANY_SCOPE_ARGS_SELECTED_NAME_LIST);
                 adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_multiple_choice, selectedCompanyNameList);
                 companyListView.setAdapter(adapter);
@@ -122,14 +122,14 @@ public class ControlCompanyScopeTabFragment extends Fragment {
                 saveButton.setVisibility(View.GONE);
                 break;
 
-            case AddEditOrViewControlActivity.EDIT_MODE:
+            case ControlActivity.EDIT_MODE:
                 companyNameList = companyArgs.getStringArrayList(COMPANY_LIST_CONTENT);
                 adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_multiple_choice, companyNameList);
                 companyListView.setAdapter(adapter);
                 loadActivityCurrentControlCompanyScope();
                 break;
 
-            case AddEditOrViewControlActivity.ADD_MODE:
+            case ControlActivity.ADD_MODE:
                 companyNameList = companyArgs.getStringArrayList(COMPANY_LIST_CONTENT);
                 adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_multiple_choice, companyNameList);
                 break;

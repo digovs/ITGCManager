@@ -26,9 +26,8 @@ import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
-import com.parse.ParseRelation;
 import com.parse.ParseUser;
-import com.vieira.rodrigo.itgcmanager.CreateProjectActivity;
+import com.vieira.rodrigo.itgcmanager.ProjectActivity;
 import com.vieira.rodrigo.itgcmanager.ProjectDashboardActivity;
 import com.vieira.rodrigo.itgcmanager.R;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.Utils.ParseUtils;
@@ -113,7 +112,7 @@ public class ProjectListFragment extends ListFragment{
             item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                 @Override
                 public boolean onMenuItemClick(MenuItem item) {
-                startActivity(new Intent(getActivity(), CreateProjectActivity.class));
+                startActivity(new Intent(getActivity(), ProjectActivity.class));
                 return true;
                 }
             });
@@ -142,9 +141,9 @@ public class ProjectListFragment extends ListFragment{
                 dialogBuilder.setPositiveButton(getString(R.string.confirmation_dialog_yes), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Intent intent = new Intent(getActivity(), CreateProjectActivity.class);
-                        intent.putExtra(CreateProjectActivity.EDIT_MODE_FLAG, true);
-                        intent.putExtra(CreateProjectActivity.EDIT_MODE_PROJECT_NAME, selectedProjectName);
+                        Intent intent = new Intent(getActivity(), ProjectActivity.class);
+                        intent.putExtra(ProjectActivity.EDIT_MODE_FLAG, true);
+                        intent.putExtra(ProjectActivity.EDIT_MODE_PROJECT_NAME, selectedProjectName);
                         startActivity(intent);
                     }
                 });

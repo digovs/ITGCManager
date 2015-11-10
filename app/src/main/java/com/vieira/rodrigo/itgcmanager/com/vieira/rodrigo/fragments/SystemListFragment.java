@@ -25,7 +25,7 @@ import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
-import com.vieira.rodrigo.itgcmanager.AddSystemScopeActivity;
+import com.vieira.rodrigo.itgcmanager.SystemScopeActivity;
 import com.vieira.rodrigo.itgcmanager.ProjectDashboardActivity;
 import com.vieira.rodrigo.itgcmanager.R;
 
@@ -109,7 +109,7 @@ public class SystemListFragment extends ListFragment {
             item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                 @Override
                 public boolean onMenuItemClick(MenuItem item) {
-                    startActivity(new Intent(getActivity(), AddSystemScopeActivity.class));
+                    startActivity(new Intent(getActivity(), SystemScopeActivity.class));
                     return true;
                 }
             });
@@ -139,10 +139,10 @@ public class SystemListFragment extends ListFragment {
                 dialogBuilder.setPositiveButton(getString(R.string.confirmation_dialog_yes), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Intent intent = new Intent(getActivity(), AddSystemScopeActivity.class);
-                        intent.putExtra(AddSystemScopeActivity.EDIT_MODE_FLAG, true);
-                        intent.putExtra(AddSystemScopeActivity.EDIT_MODE_SYSTEM_NAME, selectedSystemName);
-                        intent.putExtra(AddSystemScopeActivity.EDIT_MODE_SYSTEM_OBJECT_ID, selectedSystemObjectId);
+                        Intent intent = new Intent(getActivity(), SystemScopeActivity.class);
+                        intent.putExtra(SystemScopeActivity.EDIT_MODE_FLAG, true);
+                        intent.putExtra(SystemScopeActivity.EDIT_MODE_SYSTEM_NAME, selectedSystemName);
+                        intent.putExtra(SystemScopeActivity.EDIT_MODE_SYSTEM_OBJECT_ID, selectedSystemObjectId);
                         startActivity(intent);
                     }
                 });

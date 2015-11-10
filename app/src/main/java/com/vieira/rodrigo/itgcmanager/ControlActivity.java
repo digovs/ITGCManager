@@ -1,9 +1,7 @@
 package com.vieira.rodrigo.itgcmanager;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -23,7 +21,6 @@ import android.view.MenuItem;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
-import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -39,10 +36,9 @@ import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.Company;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.Control;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.Project;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.SystemApp;
-import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.User;
 
 
-public class AddEditOrViewControlActivity extends ActionBarActivity implements ActionBar.TabListener,
+public class ControlActivity extends ActionBarActivity implements ActionBar.TabListener,
         ControlDetailsTabFragment.OnFragmentInteractionListener, ControlSystemScopeTabFragment.OnFragmentInteractionListener,
         ControlCompanyScopeTabFragment.OnFragmentInteractionListener, ControlMemberResponsibleTabFragment.OnFragmentInteractionListener {
 
@@ -155,7 +151,7 @@ public class AddEditOrViewControlActivity extends ActionBarActivity implements A
     }
 
     private void loadControlContents() {
-        ProgressDialog progressDialog = new ProgressDialog(AddEditOrViewControlActivity.this);
+        ProgressDialog progressDialog = new ProgressDialog(ControlActivity.this);
         progressDialog.show();
         loadCurrentProjectObject();
 
@@ -176,7 +172,7 @@ public class AddEditOrViewControlActivity extends ActionBarActivity implements A
 
     private void loadActivityCurrentControl(String controlId) {
         relativeLayout.setAlpha(0.5f);
-        ProgressDialog progressDialog = new ProgressDialog(AddEditOrViewControlActivity.this);
+        ProgressDialog progressDialog = new ProgressDialog(ControlActivity.this);
         progressDialog.setMessage(getString(R.string.loading_dialog_message_loading_control));
         progressDialog.setCancelable(false);
         progressDialog.show();
@@ -241,7 +237,7 @@ public class AddEditOrViewControlActivity extends ActionBarActivity implements A
     @Override
     public void onSaveButtonClicked() {
         if (controlIsValid() && currentProjectObject != null) {
-            final ProgressDialog progressDialog = ProgressDialog.show(AddEditOrViewControlActivity.this, "",getString(R.string.loading_dialog_message_saving_control), true, false);
+            final ProgressDialog progressDialog = ProgressDialog.show(ControlActivity.this, "",getString(R.string.loading_dialog_message_saving_control), true, false);
             progressDialog.setCancelable(false);
 
             ParseObject parseObjectControl;
@@ -268,10 +264,10 @@ public class AddEditOrViewControlActivity extends ActionBarActivity implements A
                 public void done(ParseException e) {
                     progressDialog.dismiss();
                     if (e == null) {
-                        Toast successToast = Toast.makeText(AddEditOrViewControlActivity.this, R.string.dialog_message_saved_successfully, Toast.LENGTH_LONG);
+                        Toast successToast = Toast.makeText(ControlActivity.this, R.string.dialog_message_saved_successfully, Toast.LENGTH_LONG);
                         successToast.setGravity(Gravity.CENTER, 0, 0);
                         successToast.show();
-                        Intent intent = new Intent(AddEditOrViewControlActivity.this, ProjectDashboardActivity.class);
+                        Intent intent = new Intent(ControlActivity.this, ProjectDashboardActivity.class);
                         intent.putExtra(ProjectDashboardActivity.KEY_COMING_FROM_ACTIVITY, ProjectDashboardActivity.COMING_FROM_CREATE_CONTROL);
                         startActivity(intent);
                         finish();
@@ -291,7 +287,7 @@ public class AddEditOrViewControlActivity extends ActionBarActivity implements A
         try {
             currentProjectObject = getCurrentProjectQuery.get(currentProjectId);
         } catch (ParseException e) {
-            ParseUtils.handleParseException(AddEditOrViewControlActivity.this, e);
+            ParseUtils.handleParseException(ControlActivity.this, e);
         }
     }
 
@@ -317,7 +313,7 @@ public class AddEditOrViewControlActivity extends ActionBarActivity implements A
             typeDescriptionList = castParseObjectListToStringList(typeObjectList, Control.KEY_CONTROL_GENERIC_DESCRIPTION);
             typeDescriptionList.add(0, getString(R.string.add_control_details_type_label));
         } catch (ParseException e) {
-            ParseUtils.handleParseException(AddEditOrViewControlActivity.this, e);
+            ParseUtils.handleParseException(ControlActivity.this, e);
         }
     }
 
@@ -341,7 +337,7 @@ public class AddEditOrViewControlActivity extends ActionBarActivity implements A
             } else
                 memberNameList = new ArrayList();
         } catch (ParseException e) {
-            ParseUtils.handleParseException(AddEditOrViewControlActivity.this, e);
+            ParseUtils.handleParseException(ControlActivity.this, e);
         }
     }
 
@@ -364,7 +360,7 @@ public class AddEditOrViewControlActivity extends ActionBarActivity implements A
     }
 
     private boolean controlIsValid() {
-        ProgressDialog progressDialog = ProgressDialog.show(AddEditOrViewControlActivity.this, "",getString(R.string.loading_dialog_message_validating_information), true, false);
+        ProgressDialog progressDialog = ProgressDialog.show(ControlActivity.this, "",getString(R.string.loading_dialog_message_validating_information), true, false);
         progressDialog.setCancelable(false);
 
         int count = 0;
@@ -459,7 +455,7 @@ public class AddEditOrViewControlActivity extends ActionBarActivity implements A
                 errorMessage = getString(R.string.control_invalid_error_message_single);
 
             String finalMessage = errorMessage.concat(fieldsRequired);
-            AlertDialog.Builder builder = new AlertDialog.Builder(AddEditOrViewControlActivity.this);
+            AlertDialog.Builder builder = new AlertDialog.Builder(ControlActivity.this);
             builder.setTitle(R.string.add_control_error_fragment_title)
                     .setMessage(finalMessage)
                     .setNeutralButton(R.string.add_control_error_fragment_ok_button, new DialogInterface.OnClickListener() {

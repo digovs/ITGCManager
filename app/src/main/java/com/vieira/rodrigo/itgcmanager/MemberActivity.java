@@ -10,7 +10,7 @@ import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.Utils.ParseUtils;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.Project;
 
 
-public class AddMemberActivity extends ActionBarActivity {
+public class MemberActivity extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

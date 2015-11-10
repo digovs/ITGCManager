@@ -1,0 +1,9 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.vieira.rodrigo.fragments.ControlListFragment" >
+
+
+    <item android:id="@+id/action_add_test" android:title="@string/test_fragment_add_test_action"
+        app:showAsAction="withText|ifRoom" />
+</menu>

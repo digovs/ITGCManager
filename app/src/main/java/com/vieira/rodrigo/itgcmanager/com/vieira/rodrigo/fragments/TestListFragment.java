@@ -31,30 +31,31 @@ import com.parse.ParseUser;
 import com.vieira.rodrigo.itgcmanager.ControlActivity;
 import com.vieira.rodrigo.itgcmanager.ProjectDashboardActivity;
 import com.vieira.rodrigo.itgcmanager.R;
+import com.vieira.rodrigo.itgcmanager.TestActivity;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.Utils.ParseUtils;
-import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.adapters.ControlListAdapter;
+import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.adapters.TestListAdapter;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.Control;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.Project;
+import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ControlListFragment extends ListFragment {
+public class TestListFragment extends ListFragment {
 
 
-    public ControlListFragment() {
+    public TestListFragment() {
         // Required empty public constructor
     }
 
-
-    private ControlListAdapter adapter;
+    private TestListAdapter adapter;
     private Context context;
 
     private ParseObject currentProjectObject;
     private ListView listView;
     private ProgressBar progressBar;
     private TextView emptyTextView;
-    private ArrayList<ParseObject> controlList = new ArrayList<>();
+    private ArrayList<ParseObject> testList = new ArrayList<>();
 
 
     @Override
@@ -63,7 +64,7 @@ public class ControlListFragment extends ListFragment {
 
         context = getActivity();
         loadCurrentProjectObject();
-        loadControlList();
+        loadTestList();
     }
 
     private void loadCurrentProjectObject() {
@@ -79,18 +80,18 @@ public class ControlListFragment extends ListFragment {
         }
     }
 
-    private void loadControlList() {
+    private void loadTestList() {
         showProgress(true);
-        ParseQuery<ParseObject> getUserControls = ParseQuery.getQuery(Control.TABLE_CONTROL);
-        ParseUser currentUser = ParseUser.getCurrentUser();
-        //getUserControls.whereEqualTo(Control.KEY_CONTROL_MEMBER_RESPONSIBLE, ParseUser.getCurrentUser());
-        getUserControls.whereEqualTo(Control.KEY_CONTROL_PROJECT, currentProjectObject);
-        getUserControls.findInBackground(new FindCallback<ParseObject>() {
+        ParseQuery<ParseObject> getProjectTests = ParseQuery.getQuery(Test.TABLE_TEST);
+        getProjectTests.whereEqualTo(Test.KEY_TEST_PROJECT, currentProjectObject);
+        getProjectTests.include(Test.KEY_TEST_CONTROL);
+        getProjectTests.include(Test.KEY_TEST_PROJECT);
+        getProjectTests.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> list, ParseException e) {
                 if (e == null){
-                    controlList = (ArrayList) list;
-                    adapter = new ControlListAdapter(context, controlList);
+                    testList = (ArrayList) list;
+                    adapter = new TestListAdapter(testList, getActivity());
                     setListAdapter(adapter);
                 }
                 else{
@@ -104,10 +105,10 @@ public class ControlListFragment extends ListFragment {
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         if (adapter != null) {
-            String selectedControlId = controlList.get(position).getObjectId();
-            Intent intent = new Intent(getActivity(), ControlActivity.class);
-            intent.putExtra(ControlActivity.MODE_FLAG, ControlActivity.VIEW_MODE);
-            intent.putExtra(Control.KEY_CONTROL_ID, selectedControlId);
+            String selectedTestId = testList.get(position).getObjectId();
+            Intent intent = new Intent(getActivity(), TestActivity.class);
+            intent.putExtra(TestActivity.MODE_FLAG, TestActivity.VIEW_MODE);
+            intent.putExtra(Test.KEY_TEST_OBJECT_ID, selectedTestId);
             startActivity(intent);
         }
     }
@@ -121,18 +122,18 @@ public class ControlListFragment extends ListFragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.menu_control_fragment, menu);
+        inflater.inflate(R.menu.menu_test_fragment, menu);
     }
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-        MenuItem item = menu.findItem(R.id.action_add_control);
+        MenuItem item = menu.findItem(R.id.action_add_test);
         if (item != null) {
             item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                 @Override
                 public boolean onMenuItemClick(MenuItem item) {
-                    Intent intent = new Intent(getActivity(), ControlActivity.class);
-                    intent.putExtra(ControlActivity.MODE_FLAG, ControlActivity.ADD_MODE);
+                    Intent intent = new Intent(getActivity(), TestActivity.class);
+                    intent.putExtra(TestActivity.MODE_FLAG, TestActivity.ADD_MODE);
                     startActivity(intent);
                     return true;
                 }
@@ -143,18 +144,18 @@ public class ControlListFragment extends ListFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_control_list, container, false);
+        View view = inflater.inflate(R.layout.fragment_test, container, false);
         listView = (ListView) view.findViewById(android.R.id.list);
-        progressBar = (ProgressBar) view.findViewById(R.id.control_list_progress_bar);
-        emptyTextView = (TextView) view.findViewById(R.id.control_list_empty_message);
+        progressBar = (ProgressBar) view.findViewById(R.id.test_list_progress_bar);
+        emptyTextView = (TextView) view.findViewById(R.id.test_list_empty_message);
 
-        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+        /*listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
                 AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
                 String title = getString(R.string.control_list_long_click_dialog_title);
                 String message = getString(R.string.control_list_long_click_dialog_message);
-                final String selectedControlName = controlList.get(position).getString(Control.KEY_CONTROL_NAME);
+                final String selectedControlName = testList.get(position).getString(Control.KEY_CONTROL_NAME);
                 message = message.replace("XXX", selectedControlName);
 
                 dialogBuilder.setTitle(title);
@@ -164,7 +165,7 @@ public class ControlListFragment extends ListFragment {
                     public void onClick(DialogInterface dialog, int which) {
                         Intent intent = new Intent(getActivity(), ControlActivity.class);
                         intent.putExtra(ControlActivity.MODE_FLAG, ControlActivity.EDIT_MODE);
-                        intent.putExtra(Control.KEY_CONTROL_ID, controlList.get(position).getObjectId());
+                        intent.putExtra(Control.KEY_CONTROL_ID, testList.get(position).getObjectId());
                         startActivity(intent);
                     }
                 });
@@ -178,15 +179,15 @@ public class ControlListFragment extends ListFragment {
 
                 return true;
             }
-        });
+        });*/
         return view;
     }
 
     @Override
     public void onResume() {
         if (adapter != null) {
-            controlList = new ArrayList<>();
-            loadControlList();
+            testList = new ArrayList<>();
+            loadTestList();
             adapter.notifyDataSetChanged();
         }
 
@@ -197,7 +198,7 @@ public class ControlListFragment extends ListFragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         ((ProjectDashboardActivity) activity).onSectionAttached(
-                ProjectDashboardActivity.CONTROLS_SECTION);
+                ProjectDashboardActivity.TESTS_SECTION);
     }
 
     @Override
@@ -214,7 +215,7 @@ public class ControlListFragment extends ListFragment {
         if (isAdded()) {
             if (emptyTextView != null && show)
                 setEmptyText(false);
-            else if (controlList.isEmpty())
+            else if (testList.isEmpty())
                 setEmptyText(true);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {

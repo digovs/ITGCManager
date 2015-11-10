@@ -17,7 +17,7 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.vieira.rodrigo.itgcmanager.AddEditOrViewControlActivity;
+import com.vieira.rodrigo.itgcmanager.ControlActivity;
 import com.vieira.rodrigo.itgcmanager.R;
 
 import java.util.ArrayList;
@@ -52,7 +52,7 @@ public class ControlSystemScopeTabFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         systemScopeArgs = getArguments();
-        mode = systemScopeArgs.getInt(AddEditOrViewControlActivity.MODE_FLAG, AddEditOrViewControlActivity.ADD_MODE);
+        mode = systemScopeArgs.getInt(ControlActivity.MODE_FLAG, ControlActivity.ADD_MODE);
     }
 
     @Override
@@ -111,7 +111,7 @@ public class ControlSystemScopeTabFragment extends Fragment {
         });
 
         switch (mode) {
-            case AddEditOrViewControlActivity.VIEW_MODE:
+            case ControlActivity.VIEW_MODE:
                 ArrayList<String> selectedSystemNameList = systemScopeArgs.getStringArrayList(SYSTEM_SCOPE_ARGS_SELECTED_NAME_LIST);
                 adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_multiple_choice, selectedSystemNameList);
                 systemListView.setAdapter(adapter);
@@ -121,12 +121,12 @@ public class ControlSystemScopeTabFragment extends Fragment {
                 saveButton.setVisibility(View.GONE);
                 break;
 
-            case AddEditOrViewControlActivity.EDIT_MODE:
+            case ControlActivity.EDIT_MODE:
                 loadSystemListContent();
                 loadActivityCurrentControlSystemScope();
                 break;
 
-            case AddEditOrViewControlActivity.ADD_MODE:
+            case ControlActivity.ADD_MODE:
                 loadSystemListContent();
                 break;
         }

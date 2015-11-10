@@ -12,12 +12,10 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.parse.ParseUser;
-import com.vieira.rodrigo.itgcmanager.AddEditOrViewControlActivity;
+import com.vieira.rodrigo.itgcmanager.ControlActivity;
 import com.vieira.rodrigo.itgcmanager.R;
 
 import java.util.ArrayList;
@@ -49,7 +47,7 @@ public class ControlMemberResponsibleTabFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         memberResponsibleArgs = getArguments();
-        mode = memberResponsibleArgs.getInt(AddEditOrViewControlActivity.MODE_FLAG, AddEditOrViewControlActivity.ADD_MODE);
+        mode = memberResponsibleArgs.getInt(ControlActivity.MODE_FLAG, ControlActivity.ADD_MODE);
     }
 
     @Override
@@ -92,7 +90,7 @@ public class ControlMemberResponsibleTabFragment extends Fragment {
         });
 
         switch (mode) {
-            case AddEditOrViewControlActivity.VIEW_MODE:
+            case ControlActivity.VIEW_MODE:
                 ArrayList<String> tempSelectedMemberResponsible = new ArrayList<>();
                 tempSelectedMemberResponsible.add(memberResponsibleArgs.getString(MEMBER_RESPONSIBLE_ARGS_SELECTED_NAME));
                 adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_single_choice, tempSelectedMemberResponsible);
@@ -102,12 +100,12 @@ public class ControlMemberResponsibleTabFragment extends Fragment {
                 saveButton.setVisibility(View.GONE);
                 break;
 
-            case AddEditOrViewControlActivity.EDIT_MODE:
+            case ControlActivity.EDIT_MODE:
                 loadMemberListContent();
                 loadActivityCurrentControlMemberResponsible();
                 break;
 
-            case AddEditOrViewControlActivity.ADD_MODE:
+            case ControlActivity.ADD_MODE:
                 loadMemberListContent();
                 break;
         }

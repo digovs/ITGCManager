@@ -33,7 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class CreateProjectActivity extends ActionBarActivity {
+public class ProjectActivity extends ActionBarActivity {
 
     public static final String EDIT_MODE_FLAG = "EDIT_MODE_FLAG";
     public static final String EDIT_MODE_PROJECT_NAME = "EDIT_MODE_PROJECT_NAME";
@@ -153,7 +153,7 @@ public class CreateProjectActivity extends ActionBarActivity {
                 if (e == null) {
                     ParseUtils.saveStringToSession(getApplicationContext(), ParseUtils.PREFS_CURRENT_PROJECT_ID, newProjectObject.getObjectId());
                     ParseUtils.saveStringToSession(getApplicationContext(), ParseUtils.PREFS_CURRENT_PROJECT_NAME, newProjectObject.getString(Project.KEY_PROJECT_NAME));
-                    startActivity(new Intent(getApplicationContext(), AddMemberActivity.class));
+                    startActivity(new Intent(getApplicationContext(), MemberActivity.class));
                     finish();
                 } else {
                     handleParseException(e);

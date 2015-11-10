@@ -27,7 +27,7 @@ import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.*;
 import java.util.ArrayList;
 
 
-public class AddCompanyScopeActivity extends ActionBarActivity {
+public class CompanyScopeActivity extends ActionBarActivity {
 
     public static final String EDIT_MODE_FLAG = "EDIT_MODE_FLAG";
     public static final String EDIT_MODE_COMPANY_NAME = "EDIT_MODE_COMPANY_NAME";

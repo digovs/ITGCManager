@@ -16,6 +16,7 @@ import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments.ProjectDashbo
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments.ProjectDetailsFragment;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments.SystemListFragment;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments.TeamMemberListFragment;
+import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments.TestListFragment;
 
 public class ProjectDashboardActivity extends ActionBarActivity
         implements ProjectDashboardNavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -25,12 +26,14 @@ public class ProjectDashboardActivity extends ActionBarActivity
     public static final int SYSTEM_SCOPE_SECTION = 3;
     public static final int COMPANY_SCOPE_SECTION = 4;
     public static final int CONTROLS_SECTION = 5;
-    public static final int LOG_OUT_SECTION = 6;
+    public static final int TESTS_SECTION = 6;
+    public static final int LOG_OUT_SECTION = 7;
 
     public static final int COMING_FROM_CREATE_SYSTEM = 0;
     public static final int COMING_FROM_CREATE_COMPANY = 1;
     public static final int COMING_FROM_CREATE_TEAM_MEMBER = 2;
     public static final int COMING_FROM_CREATE_CONTROL = 3;
+    public static final int COMING_FROM_CREATE_TEST = 4;
 
     public static final String KEY_COMING_FROM_ACTIVITY = "KEY_COMING_FROM_ACTIVITY";
 
@@ -63,7 +66,7 @@ public class ProjectDashboardActivity extends ActionBarActivity
 
         FragmentManager fragmentManager = getSupportFragmentManager();
 
-        projectEditMode = getIntent().getBooleanExtra(CreateProjectActivity.EDIT_MODE_FLAG, false);
+        projectEditMode = getIntent().getBooleanExtra(ProjectActivity.EDIT_MODE_FLAG, false);
         if (projectEditMode) {
             ProjectDetailsFragment detailsFragment = new ProjectDetailsFragment();
             fragmentManager.beginTransaction()
@@ -100,6 +103,7 @@ public class ProjectDashboardActivity extends ActionBarActivity
                         .replace(R.id.container, teamMemberListFragment)
                         .commit();
                 break;
+
         }
     }
 
@@ -143,6 +147,13 @@ public class ProjectDashboardActivity extends ActionBarActivity
                         .commit();
                 break;
 
+            case TESTS_SECTION:
+                TestListFragment testListFragment = new TestListFragment();
+                fragmentManager.beginTransaction()
+                        .replace(R.id.container, testListFragment)
+                        .commit();
+                break;
+
             case LOG_OUT_SECTION:
                 ParseUser.logOut();
                 Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
@@ -170,6 +181,9 @@ public class ProjectDashboardActivity extends ActionBarActivity
                 break;
             case CONTROLS_SECTION:
                 mTitle = getString(R.string.title_control_section);
+                break;
+            case TESTS_SECTION:
+                mTitle = getString(R.string.title_test_section);
                 break;
         }
     }

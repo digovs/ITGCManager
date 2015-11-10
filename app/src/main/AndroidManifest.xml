@@ -47,7 +47,7 @@
             android:windowSoftInputMode="adjustResize|stateVisible" >
         </activity>
         <activity
-            android:name=".CreateProjectActivity"
+            android:name=".ProjectActivity"
             android:label="@string/title_activity_create_project" >
         </activity>
         <activity
@@ -56,7 +56,7 @@
             android:launchMode="singleTop" >
         </activity>
         <activity
-            android:name=".AddMemberActivity"
+            android:name=".MemberActivity"
             android:label="@string/title_activity_add_member" >
         </activity>
         <activity
@@ -66,20 +66,20 @@
             android:theme="@style/Theme.AppCompat.Light.Dialog" >
         </activity>
         <activity
-            android:name=".AddSystemScopeActivity"
+            android:name=".SystemScopeActivity"
             android:label="@string/title_activity_add_system_scope" >
         </activity>
         <activity
-            android:name=".AddCompanyScopeActivity"
+            android:name=".CompanyScopeActivity"
             android:label="@string/title_activity_add_company_scope" >
         </activity>
         <activity
-            android:name=".AddTestActivity"
-            android:label="@string/title_activity_add_test" >
+            android:name=".ControlActivity"
+            android:label="@string/title_activity_add_edit_or_view_control" >
         </activity>
         <activity
-            android:name=".AddEditOrViewControlActivity"
-            android:label="@string/title_activity_add_edit_or_view_control" >
+            android:name=".TestActivity"
+            android:label="@string/title_activity_test" >
         </activity>
     </application>
 

@@ -16,7 +16,7 @@ import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.Spinner;
 
-import com.vieira.rodrigo.itgcmanager.AddEditOrViewControlActivity;
+import com.vieira.rodrigo.itgcmanager.ControlActivity;
 import com.vieira.rodrigo.itgcmanager.R;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.Control;
 
@@ -71,7 +71,7 @@ public class ControlDetailsTabFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         controlDetailsArgs = getArguments();
-        mode = controlDetailsArgs.getInt(AddEditOrViewControlActivity.MODE_FLAG, AddEditOrViewControlActivity.ADD_MODE);
+        mode = controlDetailsArgs.getInt(ControlActivity.MODE_FLAG, ControlActivity.ADD_MODE);
         progressDialog = new ProgressDialog(getActivity());
     }
 
@@ -109,18 +109,18 @@ public class ControlDetailsTabFragment extends Fragment {
         });
 
         switch (mode) {
-            case AddEditOrViewControlActivity.VIEW_MODE:
+            case ControlActivity.VIEW_MODE:
                 loadSpinnersContentsWithActivityControlDetails();
                 loadActivityCurrentControlDetails();
                 lockViewsFromEdit();
                 break;
 
-            case AddEditOrViewControlActivity.EDIT_MODE:
+            case ControlActivity.EDIT_MODE:
                 loadDetailListsContents();
                 loadActivityCurrentControlDetails();
                 break;
 
-            case AddEditOrViewControlActivity.ADD_MODE:
+            case ControlActivity.ADD_MODE:
                 loadDetailListsContents();
                 break;
         }

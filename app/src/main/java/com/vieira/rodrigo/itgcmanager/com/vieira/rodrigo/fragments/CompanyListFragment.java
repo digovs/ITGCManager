@@ -25,7 +25,7 @@ import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
-import com.vieira.rodrigo.itgcmanager.AddCompanyScopeActivity;
+import com.vieira.rodrigo.itgcmanager.CompanyScopeActivity;
 import com.vieira.rodrigo.itgcmanager.ProjectDashboardActivity;
 import com.vieira.rodrigo.itgcmanager.R;
 
@@ -109,7 +109,7 @@ public class CompanyListFragment extends ListFragment {
             item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                 @Override
                 public boolean onMenuItemClick(MenuItem item) {
-                    startActivity(new Intent(getActivity(), AddCompanyScopeActivity.class));
+                    startActivity(new Intent(getActivity(), CompanyScopeActivity.class));
                     return true;
                 }
             });
@@ -139,10 +139,10 @@ public class CompanyListFragment extends ListFragment {
                 dialogBuilder.setPositiveButton(getString(R.string.confirmation_dialog_yes), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Intent intent = new Intent(getActivity(), AddCompanyScopeActivity.class);
-                        intent.putExtra(AddCompanyScopeActivity.EDIT_MODE_FLAG, true);
-                        intent.putExtra(AddCompanyScopeActivity.EDIT_MODE_COMPANY_NAME, selectedCompanyName);
-                        intent.putExtra(AddCompanyScopeActivity.EDIT_MODE_COMPANY_OBJECT_ID, selectedCompanyObjectId);
+                        Intent intent = new Intent(getActivity(), CompanyScopeActivity.class);
+                        intent.putExtra(CompanyScopeActivity.EDIT_MODE_FLAG, true);
+                        intent.putExtra(CompanyScopeActivity.EDIT_MODE_COMPANY_NAME, selectedCompanyName);
+                        intent.putExtra(CompanyScopeActivity.EDIT_MODE_COMPANY_OBJECT_ID, selectedCompanyObjectId);
                         startActivity(intent);
                     }
                 });
