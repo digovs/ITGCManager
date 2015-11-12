@@ -573,8 +573,8 @@ public class ControlActivity extends ActionBarActivity implements ActionBar.TabL
                         detailsArgs.putString(ControlDetailsTabFragment.DETAILS_ARGS_TYPE, activityCurrentControl.getTypeObject().getString(Control.KEY_CONTROL_GENERIC_DESCRIPTION));
                         detailsArgs.putString(ControlDetailsTabFragment.DETAILS_ARGS_NATURE, activityCurrentControl.getNatureObject().getString(Control.KEY_CONTROL_GENERIC_DESCRIPTION));
                         detailsArgs.putString(ControlDetailsTabFragment.DETAILS_ARGS_RISK, activityCurrentControl.getRiskClassificationObject().getString(Control.KEY_CONTROL_GENERIC_DESCRIPTION));
-                        detailsFragment.setArguments(detailsArgs);
                     }
+                    detailsFragment.setArguments(detailsArgs);
                     return detailsFragment;
 
                 case TAB_SYSTEM_SCOPE:
@@ -591,8 +591,8 @@ public class ControlActivity extends ActionBarActivity implements ActionBar.TabL
                             currentSystemScopeNameList.add(system.getString(SystemApp.KEY_SYSTEM_NAME));
                         }
                         systemScopeArgs.putStringArrayList(ControlSystemScopeTabFragment.SYSTEM_SCOPE_ARGS_SELECTED_NAME_LIST, currentSystemScopeNameList);
-                        systemScopeFragment.setArguments(systemScopeArgs);
                     }
+                    systemScopeFragment.setArguments(systemScopeArgs);
                     return systemScopeFragment;
 
                 case TAB_COMPANY_SCOPE:
@@ -609,8 +609,8 @@ public class ControlActivity extends ActionBarActivity implements ActionBar.TabL
                             currentCompanyScopeNameList.add(company.getString(Company.KEY_COMPANY_NAME));
                         }
                         companyScopeArgs.putStringArrayList(ControlCompanyScopeTabFragment.COMPANY_SCOPE_ARGS_SELECTED_NAME_LIST, currentCompanyScopeNameList);
-                        companyScopeFragment.setArguments(companyScopeArgs);
                     }
+                    companyScopeFragment.setArguments(companyScopeArgs);
                     return companyScopeFragment;
 
                 case TAB_RESPONSIBLE:
@@ -622,8 +622,8 @@ public class ControlActivity extends ActionBarActivity implements ActionBar.TabL
                     }
                     if (mode == VIEW_MODE || mode == EDIT_MODE) {
                         memberResponsibleArgs.putString(ControlMemberResponsibleTabFragment.MEMBER_RESPONSIBLE_ARGS_SELECTED_NAME, activityCurrentControl.getMemberResponsibleObject().getUsername());
-                        responsibleFragment.setArguments(memberResponsibleArgs);
                     }
+                    responsibleFragment.setArguments(memberResponsibleArgs);
                     return responsibleFragment;
             }
             return null;

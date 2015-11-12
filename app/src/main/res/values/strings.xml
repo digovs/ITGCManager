@@ -212,6 +212,31 @@
     <string name="test_activity_section_system_scope">System Scope</string>
     <string name="test_activity_section_member_responsible">Member Responsible</string>
     <string name="test_activity_section_exceptions">Exceptions</string>
+    <string name="add_test_details_status_label">Status</string>
+    <string name="add_test_details_type_label">test type</string>
+    <string name="test_activity_details_name_hint">Name</string>
+    <string name="test_activity_details_description_hint">Description</string>
+    <string name="test_activity_details_population_hint">Population</string>
+    <string name="test_activity_details_sample_hint">Sample</string>
+    <string name="test_activity_details_coverage_date_hint">Coverage Date</string>
+    <string name="test_activity_details_coverage_date_button_text">Set Date</string>
+    <string name="test_activity_details_save_button_text">Save</string>
+    <string name="test_activity_details_error_fields_required">The fields Control, Type and Status are required</string>
+    <string name="test_activity_details_type_label">Type</string>
+    <string name="test_activity_details_status_label">Status</string>
+    <string name="test_activity_details_control_label">Control</string>
+    <string name="test_activity_add_test_title">Add Test</string>
+    <string name="test_field_name_required">Name</string>
+    <string name="test_field_description_required">Description</string>
+    <string name="test_field_population_required">Population</string>
+    <string name="test_field_sample_required">Sample</string>
+    <string name="test_field_coverage_date_required">Coverage Date</string>
+    <string name="test_field_control_required">Control</string>
+    <string name="test_field_type_required">Type</string>
+    <string name="test_field_status_required">Status</string>
+    <string name="test_field_error_sample_bigger_then_population">Sample cannot be bigger then Population!</string>
+    <string name="test_list_long_click_dialog_title">Edit Test</string>
+    <string name="test_list_long_click_dialog_message">Are you sure you want to edit Test XXX?</string>
 
     <!-- Save Control Error Messages -->
     <string name="field_frequency_required">Frequency</string>
@@ -240,6 +265,11 @@
     <string name="loading_dialog_message_loading_system_list">Loading system list...</string>
     <string name="loading_dialog_message_loading_company_list">Loading company list...</string>
     <string name="loading_dialog_message_loading_member_list">Loading member list...</string>
+    <string name="loading_dialog_message_loading_test">Loading test...</string>
+    <string name="loading_dialog_message_saving_test">Saving test...</string>
+
+
+
     <string name="title_activity_test">TestActivity</string>
 
 </resources>

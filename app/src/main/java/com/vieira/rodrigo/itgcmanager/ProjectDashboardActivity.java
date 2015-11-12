@@ -104,6 +104,13 @@ public class ProjectDashboardActivity extends ActionBarActivity
                         .commit();
                 break;
 
+            case COMING_FROM_CREATE_TEST:
+                TestListFragment testListFragment = new TestListFragment();
+                fragmentManager.beginTransaction()
+                        .replace(R.id.container, testListFragment)
+                        .commit();
+                break;
+
         }
     }
 

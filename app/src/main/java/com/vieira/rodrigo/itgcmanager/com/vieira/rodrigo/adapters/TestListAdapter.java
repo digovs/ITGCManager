@@ -18,12 +18,10 @@ public class TestListAdapter extends BaseAdapter{
 
     private LayoutInflater inflater;
     private ArrayList<ParseObject> testList;
-    private Context context;
 
     public TestListAdapter(ArrayList<ParseObject> testList, Context context) {
         this.inflater = LayoutInflater.from(context);
         this.testList = testList;
-        this.context = context;
     }
 
     @Override
@@ -35,7 +33,10 @@ public class TestListAdapter extends BaseAdapter{
 
     @Override
     public Object getItem(int position) {
-        return null;
+        if (testList != null)
+            return testList.get(position);
+        else
+            return 0;
     }
 
     @Override

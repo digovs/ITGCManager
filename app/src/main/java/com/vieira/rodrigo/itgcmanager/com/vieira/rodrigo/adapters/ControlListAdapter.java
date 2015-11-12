@@ -20,11 +20,9 @@ public class ControlListAdapter extends BaseAdapter{
 
     private LayoutInflater inflater;
     private ArrayList<ParseObject> controlList;
-    private Context context;
 
     public ControlListAdapter(Context context, ArrayList<ParseObject> controlList) {
         this.controlList = controlList;
-        this.context = context;
 
         inflater = LayoutInflater.from(context);
     }

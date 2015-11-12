@@ -1,14 +1,18 @@
 package com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models;
 
 import com.parse.ParseObject;
+import com.parse.ParseUser;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 public class Test {
 
-    public static final String KEY_TEST_OBJECT_ID = "objectId";
     public static final String TABLE_TEST = "Test";
+    public static final String TABLE_TEST_TYPE = "TestType";
+    public static final String TABLE_TEST_STATUS = "TestStatus";
+    public static final String KEY_TEST_ID = "testId";
     public static final String KEY_TEST_NAME = "name";
     public static final String KEY_TEST_DESCRIPTION = "description";
     public static final String KEY_TEST_COVERAGE_DATE = "coverageDate";
@@ -22,9 +26,12 @@ public class Test {
     public static final String KEY_TEST_TYPE = "type";
     public static final String KEY_TEST_PROJECT = "project";
 
+    public static final String KEY_GENERIC_DESCRIPTION = "description";
+    public static final String KEY_GENERAL_DESCRIPTION_BR = "description_br";
+
     String name;
     String description;
-    Date coverageDate;
+    GregorianCalendar coverageDate;
     int population;
     int sample;
 
@@ -32,9 +39,32 @@ public class Test {
     ParseObject controlObject;
     ArrayList<ParseObject> systemScopeObject;
     ArrayList<ParseObject> companyScopeObject;
-    ParseObject memberResponsible;
+    ParseUser memberResponsible;
     ParseObject typeObject;
     ParseObject projectObject;
+
+    public Test() {
+
+    }
+
+    public Test(ParseObject testObject) {
+        this.name = testObject.getString(KEY_TEST_NAME);
+        this.description = testObject.getString(KEY_TEST_DESCRIPTION);
+        Date date = testObject.getDate(KEY_TEST_COVERAGE_DATE);
+        this.coverageDate = new GregorianCalendar();
+        this.coverageDate.setTime(date);
+
+        this.population = testObject.getInt(KEY_TEST_POPULATION);
+        this.sample = testObject.getInt(KEY_TEST_SAMPLE);
+
+        this.statusObject = testObject.getParseObject(KEY_TEST_STATUS);
+        this.controlObject = testObject.getParseObject(KEY_TEST_CONTROL);
+        this.systemScopeObject = (ArrayList) testObject.getList(KEY_TEST_SYSTEM_SCOPE);
+        this.companyScopeObject = (ArrayList) testObject.getList(KEY_TEST_COMPANY_SCOPE);
+        this.memberResponsible = testObject.getParseUser(KEY_TEST_MEMBER_RESPONSIBLE);
+        this.typeObject = testObject.getParseObject(KEY_TEST_TYPE);
+        this.projectObject = testObject.getParseObject(KEY_TEST_PROJECT);
+    }
 
     public String getName() {
         return name;
@@ -52,11 +82,11 @@ public class Test {
         this.description = description;
     }
 
-    public Date getCoverageDate() {
+    public GregorianCalendar getCoverageDate() {
         return coverageDate;
     }
 
-    public void setCoverageDate(Date coverageDate) {
+    public void setCoverageDate(GregorianCalendar coverageDate) {
         this.coverageDate = coverageDate;
     }
 
@@ -88,7 +118,7 @@ public class Test {
         return memberResponsible;
     }
 
-    public void setMemberResponsible(ParseObject memberResponsible) {
+    public void setMemberResponsible(ParseUser memberResponsible) {
         this.memberResponsible = memberResponsible;
     }
 
