@@ -214,6 +214,7 @@ public class TestListFragment extends ListFragment {
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     public void showProgress(final boolean show) {
         if (isAdded()) {
+
             if (emptyTextView != null && show)
                 setEmptyText(false);
             else if (testList.isEmpty())

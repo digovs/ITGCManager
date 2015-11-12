@@ -138,19 +138,19 @@ public class Test {
         this.typeObject = typeObject;
     }
 
-    public ArrayList<ParseObject> getSystemScopeObject() {
+    public ArrayList<ParseObject> getSystemScopeObjectList() {
         return systemScopeObject;
     }
 
-    public void setSystemScopeObject(ArrayList<ParseObject> systemScopeObject) {
+    public void setSystemScopeObjectList(ArrayList<ParseObject> systemScopeObject) {
         this.systemScopeObject = systemScopeObject;
     }
 
-    public ArrayList<ParseObject> getCompanyScopeObject() {
+    public ArrayList<ParseObject> getCompanyScopeObjectList() {
         return companyScopeObject;
     }
 
-    public void setCompanyScopeObject(ArrayList<ParseObject> companyScopeObject) {
+    public void setCompanyScopeObjectList(ArrayList<ParseObject> companyScopeObject) {
         this.companyScopeObject = companyScopeObject;
     }
 

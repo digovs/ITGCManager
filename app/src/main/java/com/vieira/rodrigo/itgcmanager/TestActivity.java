@@ -3,6 +3,7 @@ package com.vieira.rodrigo.itgcmanager;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Locale;
 
 import android.app.AlertDialog;
@@ -20,6 +21,8 @@ import android.support.v4.view.ViewPager;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.parse.ParseException;
@@ -27,7 +30,9 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.SaveCallback;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.Utils.ParseUtils;
+import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments.TestCompanyScopeFragment;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments.TestDetailsFragment;
+import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments.TestSystemScopeFragment;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.Company;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.Control;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.Project;
@@ -35,7 +40,8 @@ import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.SystemApp;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.Test;
 
 
-public class TestActivity extends ActionBarActivity implements ActionBar.TabListener, TestDetailsFragment.OnFragmentInteractionListener {
+public class TestActivity extends ActionBarActivity implements ActionBar.TabListener, TestDetailsFragment.OnFragmentInteractionListener,
+        TestSystemScopeFragment.OnFragmentInteractionListener, TestCompanyScopeFragment.OnFragmentInteractionListener {
 
     public static final int TAB_DETAILS = 0;
     public static final int TAB_SYSTEM = 1;
@@ -72,6 +78,8 @@ public class TestActivity extends ActionBarActivity implements ActionBar.TabList
     SectionsPagerAdapter mSectionsPagerAdapter;
 
     ViewPager mViewPager;
+    ProgressBar progressBar;
+    TextView loadingText;
     ActionBar actionBar;
     private ParseObject activityCurrentTestObject;
 
@@ -87,6 +95,7 @@ public class TestActivity extends ActionBarActivity implements ActionBar.TabList
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+
 
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.test_pager);
@@ -139,6 +148,7 @@ public class TestActivity extends ActionBarActivity implements ActionBar.TabList
     private void loadTestContents() {
         loadCurrentProjectObject();
         loadDetailsSpinnerContents();
+
     }
 
     private void loadCurrentProjectObject() {
@@ -148,11 +158,12 @@ public class TestActivity extends ActionBarActivity implements ActionBar.TabList
                 .include(Project.KEY_COMPANY_SCOPE_LIST);
         try {
             currentProjectObject = getCurrentProjectQuery.get(currentProjectId);
-
-            systemScopeObjectList = (ArrayList) currentProjectObject.getList(Project.KEY_SYSTEM_SCOPE_LIST);
+            List<ParseObject> sysList = currentProjectObject.getList(Project.KEY_SYSTEM_SCOPE_LIST);
+            systemScopeObjectList = new ArrayList<>(sysList);
             systemScopeNameList = castParseObjectListToStringList(systemScopeObjectList, SystemApp.KEY_SYSTEM_NAME);
 
-            companyScopeObjectList = (ArrayList) currentProjectObject.getList(Project.KEY_COMPANY_SCOPE_LIST);
+            List<ParseObject> comList = currentProjectObject.getList(Project.KEY_COMPANY_SCOPE_LIST);
+            companyScopeObjectList = new ArrayList<>(comList);
             companyScopeNameList = castParseObjectListToStringList(companyScopeObjectList, Company.KEY_COMPANY_NAME);
         } catch (ParseException e) {
             ParseUtils.handleParseException(TestActivity.this, e);
@@ -176,11 +187,11 @@ public class TestActivity extends ActionBarActivity implements ActionBar.TabList
         ParseQuery<ParseObject> getCurrentProjectControlScope = ParseQuery.getQuery(Control.TABLE_CONTROL);
         getCurrentProjectControlScope.whereEqualTo(Control.KEY_CONTROL_PROJECT, currentProjectObject);
         try {
-            statusObjectList = (ArrayList) getStatusDescription.find();
+            statusObjectList = (ArrayList<ParseObject>) getStatusDescription.find();
             statusDescriptionList = castParseObjectListToStringList(statusObjectList, Test.KEY_GENERIC_DESCRIPTION);
             statusDescriptionList.add(0, getString(R.string.test_activity_details_status_label));
 
-            typeObjectList = (ArrayList) getTypeDescription.find();
+            typeObjectList = (ArrayList<ParseObject>) getTypeDescription.find();
             typeDescriptionList = castParseObjectListToStringList(typeObjectList, Test.KEY_GENERIC_DESCRIPTION);
             typeDescriptionList.add(0, getString(R.string.test_activity_details_type_label));
 
@@ -301,6 +312,9 @@ public class TestActivity extends ActionBarActivity implements ActionBar.TabList
             parseObjectTest.put(Test.KEY_TEST_TYPE, activityCurrentTest.getTypeObject());
             parseObjectTest.put(Test.KEY_TEST_STATUS, activityCurrentTest.getStatusObject());
 
+            parseObjectTest.put(Test.KEY_TEST_SYSTEM_SCOPE, activityCurrentTest.getSystemScopeObjectList());
+            parseObjectTest.put(Test.KEY_TEST_COMPANY_SCOPE, activityCurrentTest.getCompanyScopeObjectList());
+
             parseObjectTest.saveInBackground(new SaveCallback() {
                 @Override
                 public void done(ParseException e) {
@@ -318,6 +332,30 @@ public class TestActivity extends ActionBarActivity implements ActionBar.TabList
                 }
             });
             progressDialog.dismiss();
+        }
+    }
+
+    @Override
+    public void saveSelectedCompaniesToActivityTest(ArrayList<String> selectedCompanyItems) {
+        if (selectedCompanyItems != null) {
+            ArrayList<ParseObject> tempSelectedCompanyObjectList = new ArrayList<>();
+            for (String companyName : selectedCompanyItems) {
+                int position = companyScopeNameList.indexOf(companyName);
+                tempSelectedCompanyObjectList.add(companyScopeObjectList.get(position));
+            }
+            activityCurrentTest.setCompanyScopeObjectList(tempSelectedCompanyObjectList);
+        }
+    }
+
+    @Override
+    public void saveSelectedSystemsToActivityTest(ArrayList<String> selectedSystemItems) {
+        if (selectedSystemItems != null) {
+            ArrayList<ParseObject> tempSelectedSystemObjectList = new ArrayList<>();
+            for (String systemName : selectedSystemItems) {
+                int position = systemScopeNameList.indexOf(systemName);
+                tempSelectedSystemObjectList.add(systemScopeObjectList.get(position));
+            }
+            activityCurrentTest.setSystemScopeObjectList(tempSelectedSystemObjectList);
         }
     }
 
@@ -372,6 +410,15 @@ public class TestActivity extends ActionBarActivity implements ActionBar.TabList
             fieldsRequired = fieldsRequired.concat(getString(R.string.test_field_status_required));
         }
 
+        if (activityCurrentTest.getSystemScopeObjectList() == null || activityCurrentTest.getSystemScopeObjectList().size() == 0) {
+            count++;
+            fieldsRequired = fieldsRequired.concat(getString(R.string.test_field_system_scope_required));
+        }
+
+        if (activityCurrentTest.getCompanyScopeObjectList() == null || activityCurrentTest.getCompanyScopeObjectList().size() == 0) {
+            count++;
+            fieldsRequired = fieldsRequired.concat(getString(R.string.test_field_system_scope_required));
+        }
 
         if (count == 0) {
             return true;
@@ -404,18 +451,20 @@ public class TestActivity extends ActionBarActivity implements ActionBar.TabList
 
     @Override
     public void saveTestPopulation(String population) {
-        if (population != null) {
+        if (population != null && !population.isEmpty()) {
             int pop = Integer.parseInt(population);
             activityCurrentTest.setPopulation(pop);
-        }
+        } else
+            activityCurrentTest.setPopulation(0);
     }
 
     @Override
     public void saveTestSample(String sample) {
-        if (sample != null) {
+        if (sample != null && !sample.isEmpty()) {
             int sam = Integer.parseInt(sample);
             activityCurrentTest.setSample(sam);
-        }
+        } else
+            activityCurrentTest.setSample(0);
     }
 
     @Override
@@ -453,23 +502,51 @@ public class TestActivity extends ActionBarActivity implements ActionBar.TabList
                     detailsArgs.putStringArrayList(TestDetailsFragment.STATUS_LIST_CONTENT, statusDescriptionList);
                     detailsArgs.putStringArrayList(TestDetailsFragment.TYPE_LIST_CONTENT, typeDescriptionList);
                     detailsArgs.putStringArrayList(TestDetailsFragment.CONTROL_LIST_CONTENT, projectControlScopeNameList);
-                    detailsArgs.putString(TestDetailsFragment.DETAILS_ARGS_NAME, activityCurrentTest.getName());
-                    detailsArgs.putString(TestDetailsFragment.DETAILS_ARGS_DESCRIPTION, activityCurrentTest.getDescription());
-                    detailsArgs.putString(TestDetailsFragment.DETAILS_ARGS_POPULATION, String.valueOf(activityCurrentTest.getPopulation()));
-                    detailsArgs.putString(TestDetailsFragment.DETAILS_ARGS_SAMPLE, String.valueOf(activityCurrentTest.getSample()));
-                    detailsArgs.putLong(TestDetailsFragment.DETAILS_ARGS_COVERAGE_DATE, activityCurrentTest.getCoverageDate().getTimeInMillis());
+                    if (mode != ADD_MODE) {
+                        detailsArgs.putString(TestDetailsFragment.DETAILS_ARGS_NAME, activityCurrentTest.getName());
+                        detailsArgs.putString(TestDetailsFragment.DETAILS_ARGS_DESCRIPTION, activityCurrentTest.getDescription());
+                        detailsArgs.putString(TestDetailsFragment.DETAILS_ARGS_POPULATION, String.valueOf(activityCurrentTest.getPopulation()));
+                        detailsArgs.putString(TestDetailsFragment.DETAILS_ARGS_SAMPLE, String.valueOf(activityCurrentTest.getSample()));
+                        detailsArgs.putLong(TestDetailsFragment.DETAILS_ARGS_COVERAGE_DATE, activityCurrentTest.getCoverageDate().getTimeInMillis());
 
-                    detailsArgs.putString(TestDetailsFragment.DETAILS_ARGS_TYPE, activityCurrentTest.getTypeObject().getString(Test.KEY_GENERIC_DESCRIPTION));
-                    detailsArgs.putString(TestDetailsFragment.DETAILS_ARGS_STATUS, activityCurrentTest.getStatusObject().getString(Test.KEY_GENERIC_DESCRIPTION));
-                    detailsArgs.putString(TestDetailsFragment.DETAILS_ARGS_CONTROL, activityCurrentTest.getControlObject().getString(Control.KEY_CONTROL_NAME));
+                        detailsArgs.putString(TestDetailsFragment.DETAILS_ARGS_TYPE, activityCurrentTest.getTypeObject().getString(Test.KEY_GENERIC_DESCRIPTION));
+                        detailsArgs.putString(TestDetailsFragment.DETAILS_ARGS_STATUS, activityCurrentTest.getStatusObject().getString(Test.KEY_GENERIC_DESCRIPTION));
+                        detailsArgs.putString(TestDetailsFragment.DETAILS_ARGS_CONTROL, activityCurrentTest.getControlObject().getString(Control.KEY_CONTROL_NAME));
+                    }
                     detailsFragment.setArguments(detailsArgs);
                     return detailsFragment;
 
                 case TAB_SYSTEM:
-                    break;
+                    TestSystemScopeFragment systemScopeFragment = new TestSystemScopeFragment();
+                    Bundle systemScopeArgs = new Bundle();
+                    systemScopeArgs.putInt(MODE_FLAG, mode);
+                    systemScopeArgs.putStringArrayList(TestSystemScopeFragment.SYSTEM_LIST_CONTENT, systemScopeNameList);
+                    if (mode != ADD_MODE) {
+                        ArrayList<ParseObject> currentSystemScope = activityCurrentTest.getSystemScopeObjectList();
+                        ArrayList<String> currentSystemScopeNameList = new ArrayList<>();
+                        for (ParseObject system : currentSystemScope) {
+                            currentSystemScopeNameList.add(system.getString(SystemApp.KEY_SYSTEM_NAME));
+                        }
+                        systemScopeArgs.putStringArrayList(TestSystemScopeFragment.SYSTEM_SCOPE_ARGS_SELECTED_NAME_LIST, currentSystemScopeNameList);
+                    }
+                    systemScopeFragment.setArguments(systemScopeArgs);
+                    return systemScopeFragment;
 
                 case TAB_COMPANY:
-                    break;
+                    TestCompanyScopeFragment companyScopeFragment = new TestCompanyScopeFragment();
+                    Bundle companyScopeArgs = new Bundle();
+                    companyScopeArgs.putInt(MODE_FLAG, mode);
+                    companyScopeArgs.putStringArrayList(TestCompanyScopeFragment.COMPANY_LIST_CONTENT, companyScopeNameList);
+                    if (mode != ADD_MODE) {
+                        ArrayList<ParseObject> currentSystemScope = activityCurrentTest.getCompanyScopeObjectList();
+                        ArrayList<String> currentCompanyScopeNameList = new ArrayList<>();
+                        for (ParseObject company : currentSystemScope) {
+                            currentCompanyScopeNameList.add(company.getString(Company.KEY_COMPANY_NAME));
+                        }
+                        companyScopeArgs.putStringArrayList(TestCompanyScopeFragment.COMPANY_SCOPE_ARGS_SELECTED_NAME_LIST, currentCompanyScopeNameList);
+                    }
+                    companyScopeFragment.setArguments(companyScopeArgs);
+                    return companyScopeFragment;
 
                 case TAB_MEMBER:
                     break;
@@ -482,7 +559,7 @@ public class TestActivity extends ActionBarActivity implements ActionBar.TabList
 
         @Override
         public int getCount() {
-            return 1;
+            return 3;
         }
 
         @Override
@@ -503,5 +580,6 @@ public class TestActivity extends ActionBarActivity implements ActionBar.TabList
             return null;
         }
     }
+
 
 }

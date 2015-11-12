@@ -234,6 +234,8 @@
     <string name="test_field_control_required">Control</string>
     <string name="test_field_type_required">Type</string>
     <string name="test_field_status_required">Status</string>
+    <string name="test_field_system_scope_required">System Scope</string>
+    <string name="test_field_company_scope_required">Company Scope</string>
     <string name="test_field_error_sample_bigger_then_population">Sample cannot be bigger then Population!</string>
     <string name="test_list_long_click_dialog_title">Edit Test</string>
     <string name="test_list_long_click_dialog_message">Are you sure you want to edit Test XXX?</string>
