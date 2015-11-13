@@ -21,27 +21,31 @@ import android.support.v4.view.ViewPager;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.ParseRelation;
+import com.parse.ParseUser;
 import com.parse.SaveCallback;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.Utils.ParseUtils;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments.TestCompanyScopeFragment;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments.TestDetailsFragment;
+import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments.TestExceptionFragment;
+import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments.TestMemberResponsibleFragment;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments.TestSystemScopeFragment;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.Company;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.Control;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.Project;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.SystemApp;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.Test;
+import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.TestException;
 
 
 public class TestActivity extends ActionBarActivity implements ActionBar.TabListener, TestDetailsFragment.OnFragmentInteractionListener,
-        TestSystemScopeFragment.OnFragmentInteractionListener, TestCompanyScopeFragment.OnFragmentInteractionListener {
+        TestSystemScopeFragment.OnFragmentInteractionListener, TestCompanyScopeFragment.OnFragmentInteractionListener,
+        TestMemberResponsibleFragment.OnFragmentInteractionListener, TestExceptionFragment.OnFragmentInteractionListener{
 
     public static final int TAB_DETAILS = 0;
     public static final int TAB_SYSTEM = 1;
@@ -59,9 +63,10 @@ public class TestActivity extends ActionBarActivity implements ActionBar.TabList
     private ArrayList<ParseObject> statusObjectList;
     private ArrayList<ParseObject> systemScopeObjectList;
     private ArrayList<ParseObject> companyScopeObjectList;
-    private ArrayList<ParseObject> memberObjectList;
+    private ArrayList<ParseUser> memberObjectList;
     private ArrayList<ParseObject> typeObjectList;
     private ArrayList<ParseObject> projectControlObjectList;
+    private ParseObject testExceptionObject;
 
     private ArrayList<String> statusDescriptionList;
     private ArrayList<String> systemScopeNameList;
@@ -78,8 +83,6 @@ public class TestActivity extends ActionBarActivity implements ActionBar.TabList
     SectionsPagerAdapter mSectionsPagerAdapter;
 
     ViewPager mViewPager;
-    ProgressBar progressBar;
-    TextView loadingText;
     ActionBar actionBar;
     private ParseObject activityCurrentTestObject;
 
@@ -117,6 +120,7 @@ public class TestActivity extends ActionBarActivity implements ActionBar.TabList
                 loadTestContents();
                 loadCurrentControlObject();
                 loadActivityCurrentTest(getIntent().getStringExtra(Test.KEY_TEST_ID));
+
                 break;
         }
 
@@ -148,7 +152,39 @@ public class TestActivity extends ActionBarActivity implements ActionBar.TabList
     private void loadTestContents() {
         loadCurrentProjectObject();
         loadDetailsSpinnerContents();
+        loadMemberListContents();
 
+    }
+
+    private void loadTestException() {
+        if (mode == ADD_MODE) {
+            testExceptionObject = new ParseObject(TestException.TABLE_TEST_EXCEPTION);
+        } else {
+            ParseQuery<ParseObject> getTestException = ParseQuery.getQuery(TestException.TABLE_TEST_EXCEPTION);
+            getTestException.include(TestException.KEY_TEST_OBJECT);
+            getTestException.whereEqualTo(TestException.KEY_TEST_OBJECT, activityCurrentTestObject);
+            try {
+                testExceptionObject = getTestException.getFirst();
+            } catch (ParseException e) {
+                e.printStackTrace();
+                testExceptionObject = new ParseObject(TestException.TABLE_TEST_EXCEPTION);
+            }
+        }
+    }
+
+    private void loadMemberListContents() {
+        ParseRelation<ParseUser> projectUserRelation = currentProjectObject.getRelation(Project.KEY_PROJECT_USER_RELATION);
+        ParseQuery<ParseUser> getProjectUserList = projectUserRelation.getQuery();
+        try {
+            List<ParseUser> list = getProjectUserList.find();
+            memberObjectList = new ArrayList<>(list);
+            if (!memberObjectList.isEmpty()) {
+                memberNameList = castParseUserListToStringList(memberObjectList);
+            } else
+                memberNameList = new ArrayList<>();
+        } catch (ParseException e) {
+            ParseUtils.handleParseException(TestActivity.this, e);
+        }
     }
 
     private void loadCurrentProjectObject() {
@@ -223,6 +259,7 @@ public class TestActivity extends ActionBarActivity implements ActionBar.TabList
             activityCurrentTestObject = getCurrentTest.get(testId);
             activityCurrentTest = new Test(activityCurrentTestObject);
             actionBar.setTitle(activityCurrentTest.getName());
+            loadTestException();
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -235,6 +272,15 @@ public class TestActivity extends ActionBarActivity implements ActionBar.TabList
         for (ParseObject obj : parseObjectList){
             String desc = obj.getString(tableField);
             output.add(desc);
+        }
+        return output;
+    }
+
+    private ArrayList<String> castParseUserListToStringList(ArrayList<ParseUser> parseObjectList) {
+        ArrayList<String> output = new ArrayList<>();
+        for (ParseUser user : parseObjectList){
+            String userName = user.getUsername();
+            output.add(userName);
         }
         return output;
     }
@@ -289,6 +335,16 @@ public class TestActivity extends ActionBarActivity implements ActionBar.TabList
     }
 
     @Override
+    public void saveTestException(ParseObject testException) {
+        if (testException != null) {
+            activityCurrentTest.setHasExceptions(true);
+            testExceptionObject = testException;
+        }
+        else
+            activityCurrentTest.setHasExceptions(false);
+    }
+
+    @Override
     public void onSaveButtonClicked() {
         if (testIsValid() && currentProjectObject != null) {
             final ProgressDialog progressDialog = ProgressDialog.show(TestActivity.this, "", getString(R.string.loading_dialog_message_saving_test));
@@ -314,12 +370,31 @@ public class TestActivity extends ActionBarActivity implements ActionBar.TabList
 
             parseObjectTest.put(Test.KEY_TEST_SYSTEM_SCOPE, activityCurrentTest.getSystemScopeObjectList());
             parseObjectTest.put(Test.KEY_TEST_COMPANY_SCOPE, activityCurrentTest.getCompanyScopeObjectList());
+            parseObjectTest.put(Test.KEY_TEST_MEMBER_RESPONSIBLE, activityCurrentTest.getMemberResponsible());
+            parseObjectTest.put(Test.KEY_TEST_HAS_EXCEPTIONS, activityCurrentTest.isHasExceptions());
 
             parseObjectTest.saveInBackground(new SaveCallback() {
                 @Override
                 public void done(ParseException e) {
+                    if (mode == ADD_MODE) {
+                        //ParseObject testExceptionParseObject = new Par
+                    }
                     progressDialog.dismiss();
                     if (e == null) {
+                        if (activityCurrentTest.isHasExceptions()) {
+                            try {
+                                testExceptionObject.put(TestException.KEY_TEST_OBJECT, activityCurrentTestObject);
+                                testExceptionObject.save();
+                            } catch (ParseException e1) {
+                                e1.printStackTrace();
+                            }
+                        } else {
+                            try {
+                                testExceptionObject.delete();
+                            } catch (ParseException e1) {
+                                e1.printStackTrace();
+                            }
+                        }
                         Toast successToast = Toast.makeText(TestActivity.this, R.string.dialog_message_saved_successfully, Toast.LENGTH_LONG);
                         successToast.setGravity(Gravity.CENTER, 0, 0);
                         successToast.show();
@@ -333,6 +408,12 @@ public class TestActivity extends ActionBarActivity implements ActionBar.TabList
             });
             progressDialog.dismiss();
         }
+    }
+
+    @Override
+    public void saveSelectedMemberResponsibleToActivityTest(String selectedMemberResponsibleName) {
+        if (selectedMemberResponsibleName != null)
+            activityCurrentTest.setMemberResponsible(memberObjectList.get(memberNameList.indexOf(selectedMemberResponsibleName)));
     }
 
     @Override
@@ -415,9 +496,9 @@ public class TestActivity extends ActionBarActivity implements ActionBar.TabList
             fieldsRequired = fieldsRequired.concat(getString(R.string.test_field_system_scope_required));
         }
 
-        if (activityCurrentTest.getCompanyScopeObjectList() == null || activityCurrentTest.getCompanyScopeObjectList().size() == 0) {
+        if (activityCurrentTest.getMemberResponsible() == null) {
             count++;
-            fieldsRequired = fieldsRequired.concat(getString(R.string.test_field_system_scope_required));
+            fieldsRequired = fieldsRequired.concat(getString(R.string.test_field_member_responsible_required));
         }
 
         if (count == 0) {
@@ -549,17 +630,43 @@ public class TestActivity extends ActionBarActivity implements ActionBar.TabList
                     return companyScopeFragment;
 
                 case TAB_MEMBER:
-                    break;
+                    TestMemberResponsibleFragment responsibleFragment = new TestMemberResponsibleFragment();
+                    Bundle memberResponsibleArgs = new Bundle();
+                    memberResponsibleArgs.putInt(MODE_FLAG, mode);
+                    if (mode == EDIT_MODE || mode == ADD_MODE) {
+                        memberResponsibleArgs.putStringArrayList(TestMemberResponsibleFragment.MEMBER_LIST_CONTENT, memberNameList);
+                    }
+                    if (mode == VIEW_MODE || mode == EDIT_MODE) {
+                        memberResponsibleArgs.putString(TestMemberResponsibleFragment.MEMBER_RESPONSIBLE_ARGS_SELECTED_NAME, activityCurrentTest.getMemberResponsible().getUsername());
+                    }
+                    responsibleFragment.setArguments(memberResponsibleArgs);
+                    return responsibleFragment;
 
                 case TAB_EXCEPTIONS:
-                    break;
+                    TestExceptionFragment testExceptionFragment = new TestExceptionFragment();
+                    Bundle testExceptionArgs = new Bundle();
+                    testExceptionArgs.putInt(MODE_FLAG, mode);
+                    testExceptionArgs.putBoolean(TestExceptionFragment.EXCEPTION_ARGS_HAS_EXCEPTION, activityCurrentTest.isHasExceptions());
+                    if (mode == ADD_MODE) {
+
+                    } else {
+                        testExceptionArgs.putString(TestExceptionFragment.EXCEPTION_ARGS_TITLE, testExceptionObject.getString(TestException.KEY_TEST_EXCEPTION_TITLE));
+                        testExceptionArgs.putString(TestExceptionFragment.EXCEPTION_ARGS_DESCRIPTION, testExceptionObject.getString(TestException.KEY_TEST_EXCEPTION_DESCRIPTION));
+                        testExceptionArgs.putString(TestExceptionFragment.EXCEPTION_ARGS_NUMBER_OF_EXCEPTIONS, String.valueOf(testExceptionObject.getInt(TestException.KEY_TEST_EXCEPTION_NUMBER_OF_EXCEPTIONS)));
+                        testExceptionArgs.putString(TestExceptionFragment.EXCEPTION_ARGS_REMEDIATION_RACIONALE, testExceptionObject.getString(TestException.KEY_TEST_EXCEPTION_REMEDIATION_RATIONALE));
+
+                        testExceptionArgs.putBoolean(TestExceptionFragment.EXCEPTION_ARGS_IS_REMEDIATED, testExceptionObject.getBoolean(TestException.KEY_TEST_EXCEPTION_IS_REMEDIATED));
+                        testExceptionArgs.putBoolean(TestExceptionFragment.EXCEPTION_ARGS_IS_SIGNIFICANT, testExceptionObject.getBoolean(TestException.KEY_TEST_EXCEPTION_IS_SIGNIFICANT));
+                    }
+                    testExceptionFragment.setArguments(testExceptionArgs);
+                    return testExceptionFragment;
             }
             return null;
         }
 
         @Override
         public int getCount() {
-            return 3;
+            return 5;
         }
 
         @Override

@@ -1,0 +1,46 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/test_define_member_responsible_form_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/add_test_margin_form"
+    tools:context="com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments.TestMemberResponsibleTabFragment">
+
+    <ListView
+        android:id="@+id/test_define_member_responsible_list_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:dividerHeight="10dp"
+        android:layout_above="@+id/test_define_member_responsible_save_button"
+        android:layout_alignParentTop="true">
+    </ListView>
+
+    <ProgressBar
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/test_define_member_responsible_progress_bar"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:visibility="gone"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:id="@+id/test_define_member_responsible_empty_text"
+        android:text="@string/control_define_member_responsible_not_found_message"
+        android:layout_marginTop="10dp"
+        android:layout_centerHorizontal="true"
+        android:visibility="gone"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="?android:attr/buttonBarButtonStyle"
+        android:text="@string/add_test_save_button_text"
+        android:id="@+id/test_define_member_responsible_save_button"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
+
+</RelativeLayout>

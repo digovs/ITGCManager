@@ -107,7 +107,7 @@ public class TestListFragment extends ListFragment {
             String selectedControlTestId = testList.get(position).getParseObject(Test.KEY_TEST_CONTROL).getObjectId();
             String selectedTestId = testList.get(position).getObjectId();
             Intent intent = new Intent(getActivity(), TestActivity.class);
-            intent.putExtra(TestActivity.MODE_FLAG, TestActivity.VIEW_MODE);
+            intent.putExtra(TestActivity.MODE_FLAG, TestActivity.EDIT_MODE);
             intent.putExtra(Test.KEY_TEST_ID, selectedTestId);
             intent.putExtra(Control.KEY_CONTROL_ID, selectedControlTestId);
             startActivity(intent);
@@ -150,7 +150,7 @@ public class TestListFragment extends ListFragment {
         progressBar = (ProgressBar) view.findViewById(R.id.test_list_progress_bar);
         emptyTextView = (TextView) view.findViewById(R.id.test_list_empty_message);
 
-        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+        /*listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
                 AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
@@ -180,7 +180,7 @@ public class TestListFragment extends ListFragment {
 
                 return true;
             }
-        });
+        });*/
         return view;
     }
 

@@ -106,7 +106,7 @@ public class ControlListFragment extends ListFragment {
         if (adapter != null) {
             String selectedControlId = controlList.get(position).getObjectId();
             Intent intent = new Intent(getActivity(), ControlActivity.class);
-            intent.putExtra(ControlActivity.MODE_FLAG, ControlActivity.VIEW_MODE);
+            intent.putExtra(ControlActivity.MODE_FLAG, ControlActivity.EDIT_MODE);
             intent.putExtra(Control.KEY_CONTROL_ID, selectedControlId);
             startActivity(intent);
         }
@@ -148,7 +148,7 @@ public class ControlListFragment extends ListFragment {
         progressBar = (ProgressBar) view.findViewById(R.id.control_list_progress_bar);
         emptyTextView = (TextView) view.findViewById(R.id.control_list_empty_message);
 
-        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+        /*listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
                 AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
@@ -178,7 +178,7 @@ public class ControlListFragment extends ListFragment {
 
                 return true;
             }
-        });
+        });*/
         return view;
     }
 

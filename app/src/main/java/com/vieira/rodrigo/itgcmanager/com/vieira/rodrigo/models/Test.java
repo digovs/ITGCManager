@@ -23,6 +23,7 @@ public class Test {
     public static final String KEY_TEST_SYSTEM_SCOPE = "systemScope";
     public static final String KEY_TEST_COMPANY_SCOPE = "companyScope";
     public static final String KEY_TEST_MEMBER_RESPONSIBLE = "memberResponsible";
+    public static final String KEY_TEST_HAS_EXCEPTIONS = "hasExceptions";
     public static final String KEY_TEST_TYPE = "type";
     public static final String KEY_TEST_PROJECT = "project";
 
@@ -34,6 +35,7 @@ public class Test {
     GregorianCalendar coverageDate;
     int population;
     int sample;
+    boolean hasExceptions;
 
     ParseObject statusObject;
     ParseObject controlObject;
@@ -53,6 +55,7 @@ public class Test {
         Date date = testObject.getDate(KEY_TEST_COVERAGE_DATE);
         this.coverageDate = new GregorianCalendar();
         this.coverageDate.setTime(date);
+        this.hasExceptions = testObject.getBoolean(KEY_TEST_HAS_EXCEPTIONS);
 
         this.population = testObject.getInt(KEY_TEST_POPULATION);
         this.sample = testObject.getInt(KEY_TEST_SAMPLE);
@@ -114,7 +117,7 @@ public class Test {
         this.controlObject = controlObject;
     }
 
-    public ParseObject getMemberResponsible() {
+    public ParseUser getMemberResponsible() {
         return memberResponsible;
     }
 
@@ -160,5 +163,29 @@ public class Test {
 
     public void setProjectObject(ParseObject projectObject) {
         this.projectObject = projectObject;
+    }
+
+    public boolean isHasExceptions() {
+        return hasExceptions;
+    }
+
+    public void setHasExceptions(boolean hasExceptions) {
+        this.hasExceptions = hasExceptions;
+    }
+
+    public ArrayList<ParseObject> getSystemScopeObject() {
+        return systemScopeObject;
+    }
+
+    public void setSystemScopeObject(ArrayList<ParseObject> systemScopeObject) {
+        this.systemScopeObject = systemScopeObject;
+    }
+
+    public ArrayList<ParseObject> getCompanyScopeObject() {
+        return companyScopeObject;
+    }
+
+    public void setCompanyScopeObject(ArrayList<ParseObject> companyScopeObject) {
+        this.companyScopeObject = companyScopeObject;
     }
 }
