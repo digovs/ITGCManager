@@ -13,7 +13,6 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 
-import com.parse.ParseObject;
 import com.vieira.rodrigo.itgcmanager.R;
 import com.vieira.rodrigo.itgcmanager.TestActivity;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.TestException;
@@ -27,6 +26,7 @@ public class TestExceptionFragment extends Fragment {
     public static final String EXCEPTION_ARGS_REMEDIATION_RACIONALE = "exception_args_remediation_rationale";
     public static final String EXCEPTION_ARGS_IS_SIGNIFICANT = "exception_args_is_significant";
     public static final String EXCEPTION_ARGS_HAS_EXCEPTION = "exception_args_has_exception";
+    public static final String EXCEPTION_ARGS_OBJECT_ID = "exception_args_object_id";
 
     private static OnFragmentInteractionListener mListener;
 
@@ -34,9 +34,9 @@ public class TestExceptionFragment extends Fragment {
         // Required empty public constructor
     }
 
-    RadioGroup exceptionFoundRadioGroup;
-    RadioButton exceptionFoundButtonYes;
-    RadioButton exceptionFoundButtonNo;
+    RadioGroup testHasExceptionRadioGroup;
+    RadioButton testHasExceptionButtonYes;
+    RadioButton testHasExceptionButtonNo;
 
     RelativeLayout exceptionFoundDetailsRelativeLayout;
     EditText exceptionTitleView;
@@ -54,11 +54,11 @@ public class TestExceptionFragment extends Fragment {
     int mode;
     Bundle testExceptionArgs;
 
-    boolean exceptionFound;
+    boolean testHasException;
     boolean exceptionIsRemediated;
     boolean exceptionIsSignificant;
 
-    ParseObject testExceptionObject;
+    TestException testException;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,9 +71,9 @@ public class TestExceptionFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_test_exception, container, false);
 
-        exceptionFoundRadioGroup = (RadioGroup) rootView.findViewById(R.id.test_activity_exception_found_radio_group);
-        exceptionFoundButtonYes = (RadioButton) rootView.findViewById(R.id.test_activity_exception_found_radio_button_yes);
-        exceptionFoundButtonNo = (RadioButton) rootView.findViewById(R.id.test_activity_exception_found_radio_button_no);
+        testHasExceptionRadioGroup = (RadioGroup) rootView.findViewById(R.id.test_activity_exception_test_has_exception_radio_group);
+        testHasExceptionButtonYes = (RadioButton) rootView.findViewById(R.id.test_activity_exception_test_has_exception_radio_button_yes);
+        testHasExceptionButtonNo = (RadioButton) rootView.findViewById(R.id.test_activity_exception_test_has_exception_radio_button_no);
 
         exceptionFoundDetailsRelativeLayout = (RelativeLayout) rootView.findViewById(R.id.test_activity_exception_found_details_relative_layout);
 
@@ -90,16 +90,17 @@ public class TestExceptionFragment extends Fragment {
         exceptionIsSignificantButtonYes = (RadioButton) rootView.findViewById(R.id.test_activity_exception_is_significant_radio_yes);
         exceptionIsSignificantButtonNo = (RadioButton) rootView.findViewById(R.id.test_activity_exception_is_significant_radio_no);
 
-        exceptionFoundRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+        testHasExceptionRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if (checkedId == R.id.test_activity_exception_found_radio_button_yes) {
+                if (checkedId == R.id.test_activity_exception_test_has_exception_radio_button_yes) {
                     exceptionFoundDetailsRelativeLayout.setVisibility(View.VISIBLE);
-                    exceptionFound = true;
-                } else if (checkedId == R.id.test_activity_exception_found_radio_button_no) {
+                    testHasException = true;
+                } else if (checkedId == R.id.test_activity_exception_test_has_exception_radio_button_no) {
                     exceptionFoundDetailsRelativeLayout.setVisibility(View.GONE);
-                    exceptionFound = false;
+                    testHasException = false;
                 }
+                mListener.saveTestHasException(testHasException);
             }
         });
 
@@ -128,16 +129,9 @@ public class TestExceptionFragment extends Fragment {
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (exceptionFound) {
-                    testExceptionObject = new ParseObject(TestException.TABLE_TEST_EXCEPTION);
-                    testExceptionObject.put(TestException.KEY_TEST_EXCEPTION_TITLE, exceptionTitleView.getText().toString());
-                    testExceptionObject.put(TestException.KEY_TEST_EXCEPTION_DESCRIPTION, exceptionDescriptionView.getText().toString());
-                    testExceptionObject.put(TestException.KEY_TEST_EXCEPTION_NUMBER_OF_EXCEPTIONS, Integer.parseInt(exceptionNumberOfExceptionsView.getText().toString()));
-                    testExceptionObject.put(TestException.KEY_TEST_EXCEPTION_REMEDIATION_RATIONALE, exceptionRemediationRationaleView.getText().toString());
-                    testExceptionObject.put(TestException.KEY_TEST_EXCEPTION_IS_REMEDIATED, exceptionIsRemediated);
-                    testExceptionObject.put(TestException.KEY_TEST_EXCEPTION_IS_SIGNIFICANT, exceptionIsSignificant);
-
-                    mListener.saveTestException(testExceptionObject);
+                if (testHasException) {
+                    populateTestException();
+                    mListener.saveTestException(testException);
                 } else {
                     mListener.saveTestException(null);
                 }
@@ -154,14 +148,15 @@ public class TestExceptionFragment extends Fragment {
     }
 
     private void loadExceptionTestFromActivity() {
-        exceptionFound = testExceptionArgs.getBoolean(EXCEPTION_ARGS_HAS_EXCEPTION);
-        if (exceptionFound) {
-            exceptionFoundButtonYes.setChecked(true);
+        testHasException = testExceptionArgs.getBoolean(EXCEPTION_ARGS_HAS_EXCEPTION);
+        if (testHasException) {
+            testHasExceptionButtonYes.setChecked(true);
             exceptionFoundDetailsRelativeLayout.setVisibility(View.VISIBLE);
 
             exceptionTitleView.setText(testExceptionArgs.getString(EXCEPTION_ARGS_TITLE));
             exceptionDescriptionView.setText(testExceptionArgs.getString(EXCEPTION_ARGS_DESCRIPTION));
-            exceptionNumberOfExceptionsView.setText(testExceptionArgs.getString(EXCEPTION_ARGS_NUMBER_OF_EXCEPTIONS));
+            int i = testExceptionArgs.getInt(EXCEPTION_ARGS_NUMBER_OF_EXCEPTIONS);
+            exceptionNumberOfExceptionsView.setText(String.valueOf(i));
             exceptionRemediationRationaleView.setText(testExceptionArgs.getString(EXCEPTION_ARGS_REMEDIATION_RACIONALE));
 
             exceptionIsRemediated = testExceptionArgs.getBoolean(EXCEPTION_ARGS_IS_REMEDIATED);
@@ -177,7 +172,7 @@ public class TestExceptionFragment extends Fragment {
                 exceptionIsSignificantButtonNo.setChecked(true);
 
         } else {
-            exceptionFoundButtonNo.setChecked(true);
+            testHasExceptionButtonNo.setChecked(true);
             exceptionFoundDetailsRelativeLayout.setVisibility(View.GONE);
         }
 
@@ -201,15 +196,33 @@ public class TestExceptionFragment extends Fragment {
         mListener = null;
     }
 
+    private void populateTestException() {
+        if (testException == null)
+            testException = new TestException();
+
+        testException.setTitle(exceptionTitleView.getText().toString());
+        testException.setDescription(exceptionDescriptionView.getText().toString());
+        testException.setNumberOfExceptions(Integer.parseInt(exceptionNumberOfExceptionsView.getText().toString()));
+        testException.setRemediationRationale(exceptionRemediationRationaleView.getText().toString());
+
+        testException.setIsSignificant(exceptionIsSignificant);
+        testException.setIsRemediated(exceptionIsRemediated);
+    }
+
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         if (!isVisibleToUser && mListener != null) {
-            mListener.saveTestException(testExceptionObject);
+            if (testHasException) {
+                populateTestException();
+                mListener.saveTestException(testException);
+            } else
+                mListener.saveTestException(null);
         }
     }
 
     public interface OnFragmentInteractionListener {
-        void saveTestException(ParseObject testException);
+        void saveTestException(TestException testException);
+        void saveTestHasException(boolean hasException);
         void onSaveButtonClicked();
     }
 

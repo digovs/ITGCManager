@@ -34,6 +34,19 @@ public class TestException {
         this.testObject = testExceptionObject.getParseObject(KEY_TEST_OBJECT);
     }
 
+
+    public ParseObject getTestExceptionObjectWithId(ParseObject currentTestExceptionObject) {
+        currentTestExceptionObject.put(KEY_TEST_EXCEPTION_TITLE, this.title);
+        currentTestExceptionObject.put(KEY_TEST_EXCEPTION_DESCRIPTION, this.description);
+        currentTestExceptionObject.put(KEY_TEST_EXCEPTION_NUMBER_OF_EXCEPTIONS, this.numberOfExceptions);
+        currentTestExceptionObject.put(KEY_TEST_EXCEPTION_REMEDIATION_RATIONALE, this.remediationRationale);
+
+        currentTestExceptionObject.put(KEY_TEST_EXCEPTION_IS_REMEDIATED, this.isRemediated);
+        currentTestExceptionObject.put(KEY_TEST_EXCEPTION_IS_SIGNIFICANT, this.isSignificant);
+
+        return currentTestExceptionObject;
+    }
+
     public ParseObject getTestObject() {
         return testObject;
     }

@@ -17,24 +17,24 @@
         android:layout_alignParentLeft="true"
         android:orientation="horizontal"
         android:layout_marginBottom="@dimen/add_control_margin_form"
-        android:id="@+id/test_activity_exception_found_radio_group">
+        android:id="@+id/test_activity_exception_test_has_exception_radio_group">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/test_activity_exception_exception_found_radio_button_label"/>
+            android:text="@string/test_activity_exception_test_has_exception_radio_button_label"/>
 
         <RadioButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/test_activity_exception_radio_button_yes_text"
-            android:id="@+id/test_activity_exception_found_radio_button_yes" />
+            android:id="@+id/test_activity_exception_test_has_exception_radio_button_yes" />
 
         <RadioButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/test_activity_exception_radio_button_no_text"
-            android:id="@+id/test_activity_exception_found_radio_button_no"
+            android:id="@+id/test_activity_exception_test_has_exception_radio_button_no"
             android:layout_gravity="center_horizontal" />
     </RadioGroup>
 
@@ -42,11 +42,11 @@
         android:id="@+id/test_activity_exception_found_details_relative_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/test_activity_exception_found_radio_group"
-        android:layout_alignRight="@+id/test_activity_exception_found_radio_group"
-        android:layout_alignEnd="@+id/test_activity_exception_found_radio_group"
-        android:layout_alignLeft="@+id/test_activity_exception_found_radio_group"
-        android:layout_alignStart="@+id/test_activity_exception_found_radio_group">
+        android:layout_below="@+id/test_activity_exception_test_has_exception_radio_group"
+        android:layout_alignRight="@+id/test_activity_exception_test_has_exception_radio_group"
+        android:layout_alignEnd="@+id/test_activity_exception_test_has_exception_radio_group"
+        android:layout_alignLeft="@+id/test_activity_exception_test_has_exception_radio_group"
+        android:layout_alignStart="@+id/test_activity_exception_test_has_exception_radio_group">
 
         <EditText
             android:layout_width="wrap_content"

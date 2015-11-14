@@ -335,13 +335,17 @@ public class TestActivity extends ActionBarActivity implements ActionBar.TabList
     }
 
     @Override
-    public void saveTestException(ParseObject testException) {
+    public void saveTestException(TestException testException) {
         if (testException != null) {
             activityCurrentTest.setHasExceptions(true);
-            testExceptionObject = testException;
+            testExceptionObject = testException.getTestExceptionObjectWithId(testExceptionObject);
         }
         else
             activityCurrentTest.setHasExceptions(false);
+    }
+
+    public void saveTestHasException(boolean testHasException) {
+        activityCurrentTest.setHasExceptions(testHasException);
     }
 
     @Override
@@ -350,7 +354,7 @@ public class TestActivity extends ActionBarActivity implements ActionBar.TabList
             final ProgressDialog progressDialog = ProgressDialog.show(TestActivity.this, "", getString(R.string.loading_dialog_message_saving_test));
             progressDialog.setCancelable(false);
 
-            ParseObject parseObjectTest;
+            final ParseObject parseObjectTest;
             if (mode == EDIT_MODE)
                 parseObjectTest = activityCurrentTestObject;
             else
@@ -371,42 +375,57 @@ public class TestActivity extends ActionBarActivity implements ActionBar.TabList
             parseObjectTest.put(Test.KEY_TEST_SYSTEM_SCOPE, activityCurrentTest.getSystemScopeObjectList());
             parseObjectTest.put(Test.KEY_TEST_COMPANY_SCOPE, activityCurrentTest.getCompanyScopeObjectList());
             parseObjectTest.put(Test.KEY_TEST_MEMBER_RESPONSIBLE, activityCurrentTest.getMemberResponsible());
-            parseObjectTest.put(Test.KEY_TEST_HAS_EXCEPTIONS, activityCurrentTest.isHasExceptions());
+            parseObjectTest.put(Test.KEY_TEST_HAS_EXCEPTIONS, activityCurrentTest.hasExceptions());
 
-            parseObjectTest.saveInBackground(new SaveCallback() {
-                @Override
-                public void done(ParseException e) {
-                    if (mode == ADD_MODE) {
-                        //ParseObject testExceptionParseObject = new Par
-                    }
-                    progressDialog.dismiss();
-                    if (e == null) {
-                        if (activityCurrentTest.isHasExceptions()) {
-                            try {
-                                testExceptionObject.put(TestException.KEY_TEST_OBJECT, activityCurrentTestObject);
-                                testExceptionObject.save();
-                            } catch (ParseException e1) {
-                                e1.printStackTrace();
-                            }
-                        } else {
-                            try {
-                                testExceptionObject.delete();
-                            } catch (ParseException e1) {
-                                e1.printStackTrace();
-                            }
-                        }
-                        Toast successToast = Toast.makeText(TestActivity.this, R.string.dialog_message_saved_successfully, Toast.LENGTH_LONG);
-                        successToast.setGravity(Gravity.CENTER, 0, 0);
-                        successToast.show();
-                        Intent intent = new Intent(TestActivity.this, ProjectDashboardActivity.class);
-                        intent.putExtra(ProjectDashboardActivity.KEY_COMING_FROM_ACTIVITY, ProjectDashboardActivity.COMING_FROM_CREATE_TEST);
-                        startActivity(intent);
-                        finish();
-                    } else
-                        ParseUtils.handleParseException(getApplicationContext(), e);
+            // Se no modo ADD, salvar o objeto do Teste
+            // Se tiver exceções, salvar o objeto exceções
+            if (mode == ADD_MODE) {
+                try {
+                    parseObjectTest.save();
+                } catch (ParseException e) {
+                    e.printStackTrace();
                 }
-            });
+                //Teste salvo, agora pergunta se tem exceções, se sim, salva a exceção com o objetoTest salvo, se não, passa direto
+                if (activityCurrentTest.hasExceptions()) {
+                    try {
+                        testExceptionObject.put(TestException.KEY_TEST_OBJECT, parseObjectTest);
+                        testExceptionObject.save();
+                    } catch (ParseException e1) {
+                        e1.printStackTrace();
+                    }
+                }
+            }
+            else if (mode == EDIT_MODE) {
+                if (!activityCurrentTest.hasExceptions() && testExceptionObject.getCreatedAt() != null) {
+                    try {
+                        testExceptionObject.delete();
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                }
+                else if (activityCurrentTest.hasExceptions()) {
+                    try {
+                        testExceptionObject.put(TestException.KEY_TEST_OBJECT, parseObjectTest);
+                        testExceptionObject.save();
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                }
+                try {
+                    parseObjectTest.save();
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            }
+
             progressDialog.dismiss();
+            Toast successToast = Toast.makeText(TestActivity.this, R.string.dialog_message_saved_successfully, Toast.LENGTH_LONG);
+            successToast.setGravity(Gravity.CENTER, 0, 0);
+            successToast.show();
+            Intent intent = new Intent(TestActivity.this, ProjectDashboardActivity.class);
+            intent.putExtra(ProjectDashboardActivity.KEY_COMING_FROM_ACTIVITY, ProjectDashboardActivity.COMING_FROM_CREATE_TEST);
+            startActivity(intent);
+            finish();
         }
     }
 
@@ -646,13 +665,15 @@ public class TestActivity extends ActionBarActivity implements ActionBar.TabList
                     TestExceptionFragment testExceptionFragment = new TestExceptionFragment();
                     Bundle testExceptionArgs = new Bundle();
                     testExceptionArgs.putInt(MODE_FLAG, mode);
-                    testExceptionArgs.putBoolean(TestExceptionFragment.EXCEPTION_ARGS_HAS_EXCEPTION, activityCurrentTest.isHasExceptions());
+                    testExceptionArgs.putBoolean(TestExceptionFragment.EXCEPTION_ARGS_HAS_EXCEPTION, activityCurrentTest.hasExceptions());
                     if (mode == ADD_MODE) {
 
                     } else {
+                        testExceptionArgs.putString(TestExceptionFragment.EXCEPTION_ARGS_OBJECT_ID, testExceptionObject.getObjectId());
                         testExceptionArgs.putString(TestExceptionFragment.EXCEPTION_ARGS_TITLE, testExceptionObject.getString(TestException.KEY_TEST_EXCEPTION_TITLE));
                         testExceptionArgs.putString(TestExceptionFragment.EXCEPTION_ARGS_DESCRIPTION, testExceptionObject.getString(TestException.KEY_TEST_EXCEPTION_DESCRIPTION));
-                        testExceptionArgs.putString(TestExceptionFragment.EXCEPTION_ARGS_NUMBER_OF_EXCEPTIONS, String.valueOf(testExceptionObject.getInt(TestException.KEY_TEST_EXCEPTION_NUMBER_OF_EXCEPTIONS)));
+                        int i = testExceptionObject.getInt(TestException.KEY_TEST_EXCEPTION_NUMBER_OF_EXCEPTIONS);
+                        testExceptionArgs.putInt(TestExceptionFragment.EXCEPTION_ARGS_NUMBER_OF_EXCEPTIONS, i);
                         testExceptionArgs.putString(TestExceptionFragment.EXCEPTION_ARGS_REMEDIATION_RACIONALE, testExceptionObject.getString(TestException.KEY_TEST_EXCEPTION_REMEDIATION_RATIONALE));
 
                         testExceptionArgs.putBoolean(TestExceptionFragment.EXCEPTION_ARGS_IS_REMEDIATED, testExceptionObject.getBoolean(TestException.KEY_TEST_EXCEPTION_IS_REMEDIATED));

@@ -69,6 +69,7 @@ public class Test {
         this.projectObject = testObject.getParseObject(KEY_TEST_PROJECT);
     }
 
+
     public String getName() {
         return name;
     }
@@ -165,7 +166,7 @@ public class Test {
         this.projectObject = projectObject;
     }
 
-    public boolean isHasExceptions() {
+    public boolean hasExceptions() {
         return hasExceptions;
     }
 
