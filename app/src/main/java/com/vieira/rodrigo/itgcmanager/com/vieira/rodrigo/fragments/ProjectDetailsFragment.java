@@ -3,6 +3,7 @@ package com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
@@ -21,6 +22,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.parse.CountCallback;
+import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -29,7 +31,11 @@ import com.vieira.rodrigo.itgcmanager.ProjectActivity;
 import com.vieira.rodrigo.itgcmanager.ProjectDashboardActivity;
 import com.vieira.rodrigo.itgcmanager.R;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.Utils.ParseUtils;
+import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.Control;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.Project;
+import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.Test;
+
+import java.util.List;
 
 
 /**
@@ -121,6 +127,8 @@ public class ProjectDetailsFragment extends Fragment {
     private void loadContent() {
         loadProjectObject();
         loadNumberOfMembers();
+        loadNumberOfControls();
+        loadTests();
     }
 
     private void loadProjectObject() {
@@ -145,12 +153,90 @@ public class ProjectDetailsFragment extends Fragment {
         query.countInBackground(new CountCallback() {
             @Override
             public void done(int i, ParseException e) {
-                if (e == null)
+                if (e != null)
                     numberOfMembersView.setText(numberOfMembersLabel + "0");
                 else
                     numberOfMembersView.setText(numberOfMembersLabel + i);
             }
         });
+    }
+
+    private void loadNumberOfControls() {
+        ParseQuery<ParseObject> getNumberOfControls = ParseQuery.getQuery(Control.TABLE_CONTROL);
+        getNumberOfControls.whereEqualTo(Control.KEY_CONTROL_PROJECT, projectObject);
+        getNumberOfControls.countInBackground(new CountCallback() {
+            @Override
+            public void done(int i, ParseException e) {
+                if (e != null)
+                    numberOfControlsView.setText(numberOfControlsLabel + "0");
+                else
+                    numberOfControlsView.setText(numberOfControlsLabel + i);
+            }
+        });
+    }
+
+    private void loadTests() {
+        ParseQuery<ParseObject> getTests = ParseQuery.getQuery(Test.TABLE_TEST);
+        getTests.whereEqualTo(Test.KEY_TEST_PROJECT, projectObject);
+        getTests.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> list, ParseException e) {
+                if (e != null) {
+                    numberOfTestsView.setText(numberOfTestsLabel + 0);
+                    numberOfTestsTestedView.setText(numberOfTestedTestsLabel + 0);
+                    numberOfTestsPendingView.setText(numberOfPendingTestsLabel + 0);
+                    numberOfTestsFinishedView.setText(numberOfFinishedTestsLabel + 0);
+                    numberOfTestsOnProgressView.setText(numberOfOnProgressTestsLabel + 0);
+                    numberOfTestsReturnedView.setText(numberOfReturnedTestsLabel + 0);
+                    numberOfTestsReceivedView.setText(numberOfReceivedTestsLabel + 0);
+                } else {
+                    loadNumberOfTestsByStatus(list);
+                }
+            }
+        });
+    }
+
+    @SuppressLint("SetTextI18n")
+    private void loadNumberOfTestsByStatus(List<ParseObject> listOfTests) {
+        int pending = 0;
+        int received = 0;
+        int returned = 0;
+        int onProgress = 0;
+        int tested = 0;
+        int finished = 0;
+
+        for (ParseObject testObject : listOfTests) {
+            ParseObject testStatus = testObject.getParseObject(Test.KEY_TEST_STATUS);
+            String statusId = testStatus.getObjectId();
+
+            String STATUS_PENDING = "b7r0mMiU6W";
+            String STATUS_RETURNED = "BsbmlUkpW8";
+            String STATUS_RECEIVED = "bbpeaXnOWG";
+            String STATUS_TESTED = "PZVCp92znl";
+            String STATUS_ON_PROGRESS = "ZYJriLARa0";
+            String STATUS_FINISHED = "yHecbwLCJL";
+
+            if (statusId.equals(STATUS_FINISHED))
+                finished++;
+            else if (statusId.equals(STATUS_ON_PROGRESS))
+                onProgress++;
+            else if (statusId.equals(STATUS_PENDING))
+                pending++;
+            else if (statusId.equals(STATUS_RECEIVED))
+                received++;
+            else if (statusId.equals(STATUS_RETURNED))
+                returned++;
+            else if (statusId.equals(STATUS_TESTED))
+                tested++;
+        }
+
+        numberOfTestsView.setText(numberOfTestsLabel + listOfTests.size());
+        numberOfTestsTestedView.setText(numberOfTestedTestsLabel + tested);
+        numberOfTestsPendingView.setText(numberOfPendingTestsLabel + pending);
+        numberOfTestsFinishedView.setText(numberOfFinishedTestsLabel + finished);
+        numberOfTestsOnProgressView.setText(numberOfOnProgressTestsLabel + onProgress);
+        numberOfTestsReturnedView.setText(numberOfReturnedTestsLabel + returned);
+        numberOfTestsReceivedView.setText(numberOfReceivedTestsLabel + received);
     }
 
     @Override
