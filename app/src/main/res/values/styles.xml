@@ -1,7 +1,7 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light">
         <!-- Customize your theme here. -->
     </style>
 
@@ -23,10 +23,5 @@
 
     <!-- Backward-compatible version of ?android:attr/buttonBarButtonStyle -->
     <style name="ButtonBarButton" />
-
-    <style name="MyAppTheme" parent="@style/Theme.AppCompat.Light.NoActionBar" >
-        <item name="colorPrimary">@color/primary_material_dark_1</item>
-        <item name="android:colorBackground">@color/background_material_dark</item>
-    </style>
 
 </resources>

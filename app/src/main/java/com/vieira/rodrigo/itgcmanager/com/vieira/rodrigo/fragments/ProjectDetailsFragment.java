@@ -145,7 +145,10 @@ public class ProjectDetailsFragment extends Fragment {
         query.countInBackground(new CountCallback() {
             @Override
             public void done(int i, ParseException e) {
-                numberOfMembersView.setText(i);
+                if (e == null)
+                    numberOfMembersView.setText(numberOfMembersLabel + "0");
+                else
+                    numberOfMembersView.setText(numberOfMembersLabel + i);
             }
         });
     }

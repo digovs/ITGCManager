@@ -2,15 +2,6 @@
 
     <color name="black_overlay">#66000000</color>
     <color name="blue_selected">#4182dc</color>
-    <color name="primary_material_dark_1">#e8ffffff</color>
-    <color name="primary_dark_material_dark">#571b02</color>
-    <color name="background_material_dark">#e9eaf3</color>
-    <color name="blue">#2759b4</color>
-    <color name="foreground_material_dark">#ffffff</color>
-    <color name="primary_text_default_material_dark">#ffffff</color>
-    <color name="statusBarColor">#07307b</color>
-    <color name="primary_text_default_material_light">#ffffff</color>
-    <color name="primary_text_material_light">#d6000000</color>
-    <color name="accent_material_light">#06799c</color>
+    <color name="blue">#CEEBF5</color>
 
 </resources>
