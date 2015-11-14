@@ -28,7 +28,6 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseRelation;
 import com.parse.ParseUser;
-import com.parse.SaveCallback;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.Utils.ParseUtils;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments.TestCompanyScopeFragment;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments.TestDetailsFragment;

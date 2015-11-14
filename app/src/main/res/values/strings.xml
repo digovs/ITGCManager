@@ -32,6 +32,17 @@
     <string name="action_edit_project_text">Edit Project</string>
     <string name="edit_project_title">Edit Project</string>
     <string name="edit_project_button_text">Save Project</string>
+    <string name="project_details_number_of_members_label">Team members: </string>
+    <string name="project_details_number_of_companies_label">Companies in scope: </string>
+    <string name="project_details_number_of_systems_label">Systems in scope: </string>
+    <string name="project_details_number_of_controls_label">Number os Controls: </string>
+    <string name="project_details_number_of_tests_label">Total of Tests: </string>
+    <string name="project_details_number_of_tests_pending_label">Pending: </string>
+    <string name="project_details_number_of_tests_returned_label">Returned: </string>
+    <string name="project_details_number_of_tests_received_label">Received: </string>
+    <string name="project_details_number_of_tests_on_progress_label">On Progress: </string>
+    <string name="project_details_number_of_tests_tested_label">Tested: </string>
+    <string name="project_details_number_of_tests_finished_label">Finished: </string>
 
     <!-- Project List Fragment Long Click Dialog -->
     <string name="project_list_long_click_dialog_title">Edit Project</string>
@@ -281,6 +292,8 @@
     <string name="loading_dialog_message_loading_member_list">Loading member list...</string>
     <string name="loading_dialog_message_loading_test">Loading test...</string>
     <string name="loading_dialog_message_saving_test">Saving test...</string>
+    <string name="loading_dialog_message_loading_project_details">Loading project details...</string>
+    <string name="loading_message">Loading...</string>
 
 
 
