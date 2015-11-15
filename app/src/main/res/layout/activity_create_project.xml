@@ -16,6 +16,14 @@
         android:visibility="gone"
         android:indeterminate="false" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/create_project_loading_message"
+        android:visibility="gone"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/create_project_progress_bar"/>
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">

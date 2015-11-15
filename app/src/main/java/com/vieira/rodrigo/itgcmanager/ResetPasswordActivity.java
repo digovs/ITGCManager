@@ -3,7 +3,8 @@ package com.vieira.rodrigo.itgcmanager;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
-import android.content.Intent;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Build;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
@@ -19,7 +20,6 @@ import android.widget.ProgressBar;
 import com.parse.ParseException;
 import com.parse.ParseUser;
 import com.parse.RequestPasswordResetCallback;
-import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.dialogs.ErrorMessageDialogActivity;
 
 
 public class ResetPasswordActivity extends ActionBarActivity {
@@ -57,7 +57,15 @@ public class ResetPasswordActivity extends ActionBarActivity {
                         public void done(ParseException e) {
                             showProgress(false);
                             if (e == null) {
-                                callErrorDialogWithMessage(getString(R.string.reset_password_successful));
+                                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(ResetPasswordActivity.this);
+                                dialogBuilder.setMessage(getString(R.string.reset_password_successful));
+                                dialogBuilder.setNeutralButton(R.string.add_control_error_fragment_ok_button, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                });
+                                dialogBuilder.create().show();
                             } else {
                                 handleParseException(e);
                             }
@@ -89,9 +97,10 @@ public class ResetPasswordActivity extends ActionBarActivity {
     }
 
     private void callErrorDialogWithMessage(String message) {
-        Intent i = new Intent(getApplicationContext(), ErrorMessageDialogActivity.class);
-        i.putExtra(ErrorMessageDialogActivity.KEY_MESSAGE_TEXT, message);
-        startActivity(i);
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(ResetPasswordActivity.this);
+        alertDialog.setTitle(getString(R.string.add_control_error_fragment_title));
+        alertDialog.setMessage(message);
+        alertDialog.create().show();
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)

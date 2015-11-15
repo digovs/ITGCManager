@@ -1,13 +1,6 @@
 <resources>
     <string name="app_name">ITGC Manager</string>
 
-
-    <!-- Error Message Dialog Activity Strings -->
-    <string name="title_activity_error_message_dialog">ErrorMessageDialogActivity</string>
-    <string name="error_message_dialog_text"> Message </string>
-    <string name="error_message_dialog_button_text">OK</string>
-    <string name="incorrect_login_or_password">Incorrect Login or Password.</string>
-
     <!-- General Error messages -->
     <string name="connection_failed">Connection failed, please check your internet connection and try again later.</string>
     <string name="connection_timeout">The server is taking too long to respond, please try again later.</string>
@@ -61,8 +54,7 @@
     <string name="add_company_duplicated_name_error">Duplicated Company Name</string>
 
     <string name="action_title_add_company">Add company</string>
-    <string name="company_list_empty_string">You have no companies, to add one, click the button "Add Company" at the right top of the screen</string>
-    <string name="title_activity_selector_dialog">SelectorDialogActivity</string>
+    <string name="company_list_empty_string">You have not registered any company yet, to add one go to the "Control" section and click the button "Add Company" at the right top of the screen.</string>
 
     <string name="edit_company_title">Edit Company</string>
 
@@ -115,7 +107,6 @@
 
     <string name="add_member_search_hint">Search User by login or name</string>
     <string name="add_member_not_found_message">Your search returned no results.</string>
-    <string name="title_activity_confirmation_dialog">ConfirmationDialogActivity</string>
 
     <!-- Confirmation dialog activity -->
     <string name="confirmation_dialog_yes">YES</string>
@@ -131,7 +122,7 @@
     <string name="add_system_scope_button_text">Save</string>
     <string name="add_system_duplicated_name_error">Duplicated System Name</string>
     <string name="action_title_add_system">Add system</string>
-    <string name="system_list_empty_string">You have no systems, to add one, click the button "Add System" at the right top of the screen</string>
+    <string name="system_list_empty_string">You have not registered any system yet, to add one go to the "System" section and click the button "Add System" at the right top of the screen</string>
 
 
 
@@ -283,20 +274,28 @@
     <string name="dialog_message_saved_successfully">Saved successfully!</string>
     <string name="edit_control_title">Edit </string>
 
-    <string name="loading_dialog_message_loading_control">Loading control...</string>
-    <string name="loading_dialog_message_saving_control">Saving control...</string>
-    <string name="loading_dialog_message_validating_information">Validating information...</string>
-    <string name="loading_dialog_message_loading_details">Loading control details...</string>
-    <string name="loading_dialog_message_loading_system_list">Loading system list...</string>
-    <string name="loading_dialog_message_loading_company_list">Loading company list...</string>
-    <string name="loading_dialog_message_loading_member_list">Loading member list...</string>
-    <string name="loading_dialog_message_loading_test">Loading test...</string>
-    <string name="loading_dialog_message_saving_test">Saving test...</string>
-    <string name="loading_dialog_message_loading_project_details">Loading project details...</string>
-    <string name="loading_message">Loading...</string>
+    <string name="loading_dialog_message_loading_control">Loading control…</string>
+    <string name="loading_dialog_message_loading_control_list">Loading control list…</string>
+    <string name="loading_dialog_message_saving_control">Saving control…</string>
+    <string name="loading_dialog_message_validating_information">Validating information…</string>
+    <string name="loading_dialog_message_loading_details">Loading control details…</string>
+    <string name="loading_dialog_message_loading_system_list">Loading system list…</string>
+    <string name="loading_dialog_message_loading_company_list">Loading company list…</string>
+    <string name="loading_dialog_message_saving_member_to_project">Saving member to project…</string>
+    <string name="loading_dialog_message_searching">Searching…</string>
+    <string name="loading_dialog_message_loading_member_list">Loading member list…</string>
+    <string name="loading_dialog_message_loading_test">Loading test…</string>
+    <string name="loading_dialog_message_loading_test_list">Loading test list…</string>
+    <string name="loading_dialog_message_saving_test">Saving test…</string>
+    <string name="loading_dialog_message_saving_system">Saving system…</string>
+    <string name="loading_dialog_message_loading_project_details">Loading project details…</string>
+    <string name="loading_message">Loading…</string>
+    <string name="loading_dialog_message_logging_in">Logging in…</string>
+    <string name="loading_dialog_message_loading_project_list">Loading Project list…</string>
+    <string name="loading_dialog_message_loading_form">Loading form…</string>
+    <string name="loading_dialog_message_saving_project">Saving project…</string>
 
-
-
+    <string name="system_list_on_item_click_message">To edit the system name stay clicking</string>
     <string name="title_activity_test">TestActivity</string>
 
 </resources>

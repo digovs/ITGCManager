@@ -1,14 +1,11 @@
 package com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.Utils;
 
+import android.app.AlertDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 
 import com.parse.ParseException;
-import com.parse.ParseObject;
 import com.vieira.rodrigo.itgcmanager.R;
-import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.dialogs.ErrorMessageDialogActivity;
-import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.Project;
 
 public abstract class ParseUtils {
 
@@ -35,9 +32,10 @@ public abstract class ParseUtils {
     }
 
     public static void callErrorDialogWithMessage(Context context, String message) {
-        Intent i = new Intent(context, ErrorMessageDialogActivity.class);
-        i.putExtra(ErrorMessageDialogActivity.KEY_MESSAGE_TEXT, message);
-        context.startActivity(i);
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
+        alertDialog.setTitle(context.getString(R.string.add_control_error_fragment_title));
+        alertDialog.setMessage(message);
+        alertDialog.create().show();
     }
 
     public static void saveStringToSession(Context context, String key, String value) {

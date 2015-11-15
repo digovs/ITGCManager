@@ -4,6 +4,4 @@
     tools:context="com.vieira.rodrigo.itgcmanager.HomeActivity">
     <item android:id="@+id/action_create_project" android:title="@string/action_create_project"
         app:showAsAction="withText|ifRoom" />
-    <item android:id="@+id/action_settings" android:title="@string/action_settings"
-        android:orderInCategory="100" app:showAsAction="never" />
 </menu>

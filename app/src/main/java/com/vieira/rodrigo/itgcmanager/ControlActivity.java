@@ -319,12 +319,21 @@ public class ControlActivity extends ActionBarActivity implements ActionBar.TabL
 
     private void loadProjectSystemListContents() {
         systemObjectList = (ArrayList) currentProjectObject.getList(Project.KEY_SYSTEM_SCOPE_LIST);
-        systemNameList = castParseObjectListToStringList(systemObjectList, SystemApp.KEY_SYSTEM_NAME);
+        if (systemObjectList == null) {
+            systemObjectList = new ArrayList<>();
+            systemNameList = new ArrayList<>();
+        } else
+            systemNameList = castParseObjectListToStringList(systemObjectList, SystemApp.KEY_SYSTEM_NAME);
     }
 
     private void loadProjectCompanyListContents() {
         companyObjectList = (ArrayList) currentProjectObject.getList(Project.KEY_COMPANY_SCOPE_LIST);
-        companyNameList = castParseObjectListToStringList(companyObjectList, Company.KEY_COMPANY_NAME);
+        if (companyObjectList == null) {
+            companyNameList = new ArrayList<>();
+            companyObjectList = new ArrayList<>();
+        }
+        else
+            companyNameList = castParseObjectListToStringList(companyObjectList, Company.KEY_COMPANY_NAME);
     }
 
     private void loadMemberListContents() {
@@ -342,6 +351,9 @@ public class ControlActivity extends ActionBarActivity implements ActionBar.TabL
     }
 
     private ArrayList<String> castParseObjectListToStringList(ArrayList<ParseObject> parseObjectList, String tableField) {
+        if (parseObjectList == null) {
+            return new ArrayList<>();
+        }
         ArrayList<String> output = new ArrayList<>();
         for (ParseObject obj : parseObjectList){
             String desc = obj.getString(tableField);
@@ -351,6 +363,8 @@ public class ControlActivity extends ActionBarActivity implements ActionBar.TabL
     }
 
     private ArrayList<String> castParseUserListToStringList(ArrayList<ParseUser> parseObjectList) {
+        if (parseObjectList == null)
+            return new ArrayList<>();
         ArrayList<String> output = new ArrayList<>();
         for (ParseUser user : parseObjectList){
             String userName = user.getUsername();

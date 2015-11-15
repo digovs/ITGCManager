@@ -94,6 +94,7 @@ public class TestActivity extends ActionBarActivity implements ActionBar.TabList
         // Set up the action bar.
         actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        actionBar.setDisplayHomeAsUpEnabled(true);
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
@@ -195,12 +196,22 @@ public class TestActivity extends ActionBarActivity implements ActionBar.TabList
         try {
             currentProjectObject = getCurrentProjectQuery.get(currentProjectId);
             List<ParseObject> sysList = currentProjectObject.getList(Project.KEY_SYSTEM_SCOPE_LIST);
-            systemScopeObjectList = new ArrayList<>(sysList);
-            systemScopeNameList = castParseObjectListToStringList(systemScopeObjectList, SystemApp.KEY_SYSTEM_NAME);
+            if (sysList != null) {
+                systemScopeObjectList = new ArrayList<>(sysList);
+                systemScopeNameList = castParseObjectListToStringList(systemScopeObjectList, SystemApp.KEY_SYSTEM_NAME);
+            } else {
+                systemScopeObjectList = new ArrayList<>();
+                systemScopeNameList = new ArrayList<>();
+            }
 
             List<ParseObject> comList = currentProjectObject.getList(Project.KEY_COMPANY_SCOPE_LIST);
-            companyScopeObjectList = new ArrayList<>(comList);
-            companyScopeNameList = castParseObjectListToStringList(companyScopeObjectList, Company.KEY_COMPANY_NAME);
+            if (comList != null) {
+                companyScopeObjectList = new ArrayList<>(comList);
+                companyScopeNameList = castParseObjectListToStringList(companyScopeObjectList, Company.KEY_COMPANY_NAME);
+            } else {
+                companyScopeObjectList = new ArrayList<>();
+                companyScopeNameList = new ArrayList<>();
+            }
         } catch (ParseException e) {
             ParseUtils.handleParseException(TestActivity.this, e);
         }
@@ -294,16 +305,6 @@ public class TestActivity extends ActionBarActivity implements ActionBar.TabList
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
         return super.onOptionsItemSelected(item);
     }
 

@@ -7,6 +7,9 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -53,6 +56,21 @@ public class ControlCompanyScopeTabFragment extends Fragment {
         super.onCreate(savedInstanceState);
         companyArgs = getArguments();
         mode = companyArgs.getInt(ControlActivity.MODE_FLAG, ControlActivity.ADD_MODE);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                getActivity().finish();
+        }
+        return true;
     }
 
     @Override
@@ -106,6 +124,7 @@ public class ControlCompanyScopeTabFragment extends Fragment {
                                 public void onClick(DialogInterface dialog, int id) {
                                 }
                             });
+                    builder.create().show();
                 }
             }
         });
@@ -134,6 +153,11 @@ public class ControlCompanyScopeTabFragment extends Fragment {
                 adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_multiple_choice, companyNameList);
                 break;
         }
+
+        if (companyNameList.isEmpty())
+            emptyText.setVisibility(View.VISIBLE);
+        else
+            emptyText.setVisibility(View.GONE);
 
         return rootView;
     }

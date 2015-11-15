@@ -43,6 +43,7 @@ public class ProjectListFragment extends ListFragment{
 
     private ListView listView;
     private ProgressBar progressBar;
+    private TextView loadingMessage;
     private TextView emptyTextView;
     private ArrayList<ParseObject> projectList = new ArrayList<>();
     private Activity myActivity;
@@ -125,6 +126,7 @@ public class ProjectListFragment extends ListFragment{
         View view = inflater.inflate(R.layout.fragment_project, container, false);
         listView = (ListView) view.findViewById(android.R.id.list);
         progressBar = (ProgressBar) view.findViewById(R.id.project_list_progress_bar);
+        loadingMessage = (TextView) view.findViewById(R.id.project_list_loading_message);
         emptyTextView = (TextView) view.findViewById(R.id.project_list_empty_message);
 
         listView.setLongClickable(true);
@@ -213,10 +215,19 @@ public class ProjectListFragment extends ListFragment{
                         progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
                     }
                 });
+                loadingMessage.setVisibility(show ? View.VISIBLE : View.GONE);
+                loadingMessage.animate().setDuration(shortAnimTime).alpha(
+                        show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        loadingMessage.setVisibility(show ? View.VISIBLE : View.GONE);
+                    }
+                });
             } else {
                 // The ViewPropertyAnimator APIs are not available, so simply show
                 // and hide the relevant UI components.
                 progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
+                loadingMessage.setVisibility(show ? View.VISIBLE : View.GONE);
                 listView.setVisibility(show ? View.GONE : View.VISIBLE);
             }
         }

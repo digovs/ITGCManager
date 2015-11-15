@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 
 import android.os.Build;
@@ -12,12 +13,12 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
 
-import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.dialogs.ErrorMessageDialogActivity;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.User;
 
 /**
@@ -29,6 +30,7 @@ public class LoginActivity extends Activity {
     private EditText userNameView;
     private EditText passwordView;
     private View progressView;
+    private TextView loadingMessageVIew;
     private View loginFormView;
 
     @Override
@@ -67,6 +69,7 @@ public class LoginActivity extends Activity {
 
         loginFormView = findViewById(R.id.login_form);
         progressView = findViewById(R.id.login_progress);
+        loadingMessageVIew = (TextView) findViewById(R.id.login_loading_message);
     }
 
     private void startSignUpActivity() {
@@ -91,11 +94,8 @@ public class LoginActivity extends Activity {
         passwordView.setError(null);
 
         // Store values at the time of the login attempt.
-        //String userName = userNameView.getText().toString();
-        //String password = passwordView.getText().toString();
-
-        String userName = "digovs";
-        String password = "678413";
+        String userName = userNameView.getText().toString();
+        String password = passwordView.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
@@ -136,7 +136,7 @@ public class LoginActivity extends Activity {
                         finish();
                     } else {
                         showProgress(false);
-                        callErrorDialogWithMessage(getString(R.string.incorrect_login_or_password));
+                        callErrorDialogWithMessage(getString(R.string.login_failed));
                     }
                 } else{
                     showProgress(false);
@@ -147,9 +147,10 @@ public class LoginActivity extends Activity {
     }
 
     private void callErrorDialogWithMessage(String message) {
-        Intent i = new Intent(getApplicationContext(), ErrorMessageDialogActivity.class);
-        i.putExtra(ErrorMessageDialogActivity.KEY_MESSAGE_TEXT, message);
-        startActivity(i);
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(LoginActivity.this);
+        alertDialog.setTitle(getString(R.string.add_control_error_fragment_title));
+        alertDialog.setMessage(message);
+        alertDialog.create().show();
     }
 
     private void handleParseException(ParseException exception) {
@@ -198,10 +199,19 @@ public class LoginActivity extends Activity {
                     progressView.setVisibility(show ? View.VISIBLE : View.GONE);
                 }
             });
+            loadingMessageVIew.setVisibility(show ? View.VISIBLE : View.GONE);
+            loadingMessageVIew.animate().setDuration(shortAnimTime).alpha(
+                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    loadingMessageVIew.setVisibility(show ? View.VISIBLE : View.GONE);
+                }
+            });
         } else {
             // The ViewPropertyAnimator APIs are not available, so simply show
             // and hide the relevant UI components.
             progressView.setVisibility(show ? View.VISIBLE : View.GONE);
+            loadingMessageVIew.setVisibility(show ? View.VISIBLE : View.GONE);
             loginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
         }
     }

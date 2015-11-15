@@ -131,6 +131,7 @@ public class ProjectDetailsFragment extends Fragment {
         loadTests();
     }
 
+    @SuppressLint("SetTextI18n")
     private void loadProjectObject() {
         showProgress(true);
         String projectId = ParseUtils.getStringFromSession(getActivity(), ParseUtils.PREFS_CURRENT_PROJECT_ID);
@@ -139,8 +140,19 @@ public class ProjectDetailsFragment extends Fragment {
         getProjectObject.include(Project.KEY_SYSTEM_SCOPE_LIST);
         try {
             projectObject = getProjectObject.get(projectId);
-            numberOfCompaniesView.setText(numberOfCompaniesLabel + projectObject.getList(Project.KEY_COMPANY_SCOPE_LIST).size());
-            numberOfSystemsView.setText(numberOfSystemsLabel + projectObject.getList(Project.KEY_SYSTEM_SCOPE_LIST).size());
+            List<ParseObject> companyList = projectObject.getList(Project.KEY_COMPANY_SCOPE_LIST);
+            if (companyList != null) {
+                numberOfCompaniesView.setText(numberOfCompaniesLabel + projectObject.getList(Project.KEY_COMPANY_SCOPE_LIST).size());
+            }
+            else {
+                numberOfCompaniesView.setText(numberOfCompaniesLabel + "0");
+            }
+
+            List<ParseObject> systemList = projectObject.getList(Project.KEY_SYSTEM_SCOPE_LIST);
+            if (systemList != null)
+                numberOfSystemsView.setText(numberOfSystemsLabel + projectObject.getList(Project.KEY_SYSTEM_SCOPE_LIST).size());
+            else
+                numberOfSystemsView.setText(numberOfSystemsLabel + "0");
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -151,6 +163,7 @@ public class ProjectDetailsFragment extends Fragment {
         ParseRelation relation = projectObject.getRelation(Project.KEY_PROJECT_USER_RELATION);
         ParseQuery query = relation.getQuery();
         query.countInBackground(new CountCallback() {
+            @SuppressLint("SetTextI18n")
             @Override
             public void done(int i, ParseException e) {
                 if (e != null)
@@ -165,6 +178,7 @@ public class ProjectDetailsFragment extends Fragment {
         ParseQuery<ParseObject> getNumberOfControls = ParseQuery.getQuery(Control.TABLE_CONTROL);
         getNumberOfControls.whereEqualTo(Control.KEY_CONTROL_PROJECT, projectObject);
         getNumberOfControls.countInBackground(new CountCallback() {
+            @SuppressLint("SetTextI18n")
             @Override
             public void done(int i, ParseException e) {
                 if (e != null)
@@ -179,6 +193,7 @@ public class ProjectDetailsFragment extends Fragment {
         ParseQuery<ParseObject> getTests = ParseQuery.getQuery(Test.TABLE_TEST);
         getTests.whereEqualTo(Test.KEY_TEST_PROJECT, projectObject);
         getTests.findInBackground(new FindCallback<ParseObject>() {
+            @SuppressLint("SetTextI18n")
             @Override
             public void done(List<ParseObject> list, ParseException e) {
                 if (e != null) {

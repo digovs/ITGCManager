@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.parse.GetCallback;
@@ -45,6 +46,7 @@ public class SystemScopeActivity extends ActionBarActivity {
     private EditText systemScopeNameView;
     private Button saveButton;
     private ProgressBar progressBar;
+    private TextView loadingMessage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +70,7 @@ public class SystemScopeActivity extends ActionBarActivity {
         systemScopeFormView = (RelativeLayout) findViewById(R.id.add_system_scope_form_view);
         systemScopeNameView = (EditText) findViewById(R.id.add_system_scope_name);
         progressBar = (ProgressBar) findViewById(R.id.add_system_scope_progress_bar);
+        loadingMessage = (TextView) findViewById(R.id.add_system_scope_loading_message);
         saveButton = (Button) findViewById(R.id.add_system_scope_button);
 
         if (editMode) {
@@ -79,6 +82,7 @@ public class SystemScopeActivity extends ActionBarActivity {
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 showProgress(true);
                 String systemName = systemScopeNameView.getText().toString();
                 if (systemName.isEmpty()){
@@ -166,8 +170,7 @@ public class SystemScopeActivity extends ActionBarActivity {
                         public void done(ParseException e) {
                             showProgress(false);
                             if (e == null){
-                                // TODO Mensagem de salvamento de Sistema
-                                Toast.makeText(getApplicationContext(), "Saved successfuly!", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getApplicationContext(), getString(R.string.dialog_message_saved_successfully), Toast.LENGTH_LONG).show();
                             } else {
                                 ParseUtils.handleParseException(getApplicationContext(), e);
                             }
@@ -223,10 +226,19 @@ public class SystemScopeActivity extends ActionBarActivity {
                     progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
                 }
             });
+            loadingMessage.setVisibility(show ? View.VISIBLE : View.GONE);
+            loadingMessage.animate().setDuration(shortAnimTime).alpha(
+                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    loadingMessage.setVisibility(show ? View.VISIBLE : View.GONE);
+                }
+            });
         } else {
             // The ViewPropertyAnimator APIs are not available, so simply show
             // and hide the relevant UI components.
             progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
+            loadingMessage.setVisibility(show ? View.VISIBLE : View.GONE);
             systemScopeFormView.setVisibility(show ? View.GONE : View.VISIBLE);
         }
     }

@@ -31,12 +31,6 @@
             android:windowSoftInputMode="adjustResize|stateVisible" >
         </activity>
         <activity
-            android:name=".com.vieira.rodrigo.dialogs.ErrorMessageDialogActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_error_message_dialog"
-            android:theme="@style/Theme.AppCompat.Light.Dialog" >
-        </activity>
-        <activity
             android:name=".HomeActivity"
             android:label="@string/title_activity_home"
             android:launchMode="singleTop" >
@@ -58,12 +52,6 @@
         <activity
             android:name=".MemberActivity"
             android:label="@string/title_activity_add_member" >
-        </activity>
-        <activity
-            android:name=".com.vieira.rodrigo.dialogs.ConfirmationDialogActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_confirmation_dialog"
-            android:theme="@style/Theme.AppCompat.Light.Dialog" >
         </activity>
         <activity
             android:name=".SystemScopeActivity"

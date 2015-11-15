@@ -5,9 +5,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -18,7 +16,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -53,6 +50,7 @@ public class TestListFragment extends ListFragment {
     private ParseObject currentControlObject;
     private ListView listView;
     private ProgressBar progressBar;
+    private TextView loadingMessage;
     private TextView emptyTextView;
     private ArrayList<ParseObject> testList = new ArrayList<>();
 
@@ -145,9 +143,10 @@ public class TestListFragment extends ListFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_test, container, false);
+        View view = inflater.inflate(R.layout.fragment_test_list, container, false);
         listView = (ListView) view.findViewById(android.R.id.list);
         progressBar = (ProgressBar) view.findViewById(R.id.test_list_progress_bar);
+        loadingMessage = (TextView) view.findViewById(R.id.test_list_loading_message);
         emptyTextView = (TextView) view.findViewById(R.id.test_list_empty_message);
 
         /*listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -240,10 +239,19 @@ public class TestListFragment extends ListFragment {
                         progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
                     }
                 });
+                loadingMessage.setVisibility(show ? View.VISIBLE : View.GONE);
+                loadingMessage.animate().setDuration(shortAnimTime).alpha(
+                        show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        loadingMessage.setVisibility(show ? View.VISIBLE : View.GONE);
+                    }
+                });
             } else {
                 // The ViewPropertyAnimator APIs are not available, so simply show
                 // and hide the relevant UI components.
                 progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
+                loadingMessage.setVisibility(show ? View.VISIBLE : View.GONE);
                 listView.setVisibility(show ? View.GONE : View.VISIBLE);
             }
         }

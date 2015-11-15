@@ -3,6 +3,7 @@ package com.vieira.rodrigo.itgcmanager;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Build;
 import android.support.v7.app.ActionBar;
@@ -15,6 +16,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.parse.FindCallback;
 import com.parse.GetCallback;
@@ -25,7 +27,6 @@ import com.parse.ParseRelation;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
-import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.dialogs.ErrorMessageDialogActivity;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.Utils.ParseUtils;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.Project;
 
@@ -46,6 +47,7 @@ public class ProjectActivity extends ActionBarActivity {
     Button createProjectBtn;
 
     ProgressBar progressBar;
+    TextView loadingMessage;
     RelativeLayout createProjectFormView;
 
     @Override
@@ -66,6 +68,7 @@ public class ProjectActivity extends ActionBarActivity {
 
         createProjectFormView = (RelativeLayout) findViewById(R.id.create_project_form_view);
         progressBar = (ProgressBar) findViewById(R.id.create_project_progress_bar);
+        loadingMessage = (TextView) findViewById(R.id.create_project_loading_message);
         createProjectBtn = (Button) findViewById(R.id.create_project_button);
         projectNameView = (EditText) findViewById(R.id.create_project_name);
         if (editMode){
@@ -97,7 +100,7 @@ public class ProjectActivity extends ActionBarActivity {
     }
 
     private void attemptEditProject(final String projectName) {
-        showProgress(true);
+        showProgress(true, getString(R.string.loading_dialog_message_saving_project));
         String currentProjectId = ParseUtils.getStringFromSession(getApplicationContext(), ParseUtils.PREFS_CURRENT_PROJECT_ID);
         ParseQuery<ParseObject> getProject = ParseQuery.getQuery(Project.TABLE_PROJECT);
         getProject.getInBackground(currentProjectId, new GetCallback<ParseObject>() {
@@ -107,7 +110,7 @@ public class ProjectActivity extends ActionBarActivity {
                     currentProjectParseObject.put(Project.KEY_PROJECT_NAME, projectName);
                     try {
                         currentProjectParseObject.save();
-                        showProgress(false);
+                        showProgress(false, "");
                         ParseUtils.saveStringToSession(getApplicationContext(), ParseUtils.PREFS_CURRENT_PROJECT_NAME, projectName);
                         Intent intent = new Intent(getApplicationContext(), ProjectDashboardActivity.class);
                         intent.putExtra(EDIT_MODE_FLAG, true);
@@ -126,7 +129,7 @@ public class ProjectActivity extends ActionBarActivity {
     }
 
     private void attemptSaveProject(String projectName) {
-        showProgress(true);
+        showProgress(true, getString(R.string.loading_dialog_message_saving_project));
         final ParseObject newProjectObject = new ParseObject(Project.TABLE_PROJECT);
         newProjectObject.put(Project.KEY_PROJECT_NAME, projectName);
         newProjectObject.saveInBackground(new SaveCallback() {
@@ -135,7 +138,7 @@ public class ProjectActivity extends ActionBarActivity {
                 if (e == null) {
                     attemptSaveProjectUserRelationship(newProjectObject);
                 } else {
-                    showProgress(false);
+                    showProgress(false, "");
                     handleParseException(e);
                 }
             }
@@ -149,11 +152,11 @@ public class ProjectActivity extends ActionBarActivity {
         newProjectObject.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
-                showProgress(false);
+                showProgress(false, "");
                 if (e == null) {
                     ParseUtils.saveStringToSession(getApplicationContext(), ParseUtils.PREFS_CURRENT_PROJECT_ID, newProjectObject.getObjectId());
                     ParseUtils.saveStringToSession(getApplicationContext(), ParseUtils.PREFS_CURRENT_PROJECT_NAME, newProjectObject.getString(Project.KEY_PROJECT_NAME));
-                    startActivity(new Intent(getApplicationContext(), MemberActivity.class));
+                    startActivity(new Intent(getApplicationContext(), ProjectDashboardActivity.class));
                     finish();
                 } else {
                     handleParseException(e);
@@ -163,7 +166,7 @@ public class ProjectActivity extends ActionBarActivity {
     }
 
     private void loadListWIthUserProjects() {
-        showProgress(true);
+        showProgress(true, getString(R.string.loading_dialog_message_loading_form));
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery(Project.TABLE_PROJECT);
         query.whereEqualTo(Project.KEY_PROJECT_USER_RELATION, ParseUser.getCurrentUser());
@@ -171,7 +174,7 @@ public class ProjectActivity extends ActionBarActivity {
         query.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> list, ParseException e) {
-                showProgress(false);
+                showProgress(false, "");
                 if (e == null) {
                     for (ParseObject project : list) {
                         userProjectNameList.add(project.getString(Project.KEY_PROJECT_NAME));
@@ -203,9 +206,10 @@ public class ProjectActivity extends ActionBarActivity {
     }
 
     private void callErrorDialogWithMessage(String message) {
-        Intent i = new Intent(getApplicationContext(), ErrorMessageDialogActivity.class);
-        i.putExtra(ErrorMessageDialogActivity.KEY_MESSAGE_TEXT, message);
-        startActivity(i);
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(ProjectActivity.this);
+        alertDialog.setTitle(getString(R.string.add_control_error_fragment_title));
+        alertDialog.setMessage(message);
+        alertDialog.create().show();
     }
 
     private void handleParseException(ParseException exception) {
@@ -225,10 +229,8 @@ public class ProjectActivity extends ActionBarActivity {
      * Shows the progress UI and hides the login form.
      */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
-    public void showProgress(final boolean show) {
-        // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
-        // for very easy animations. If available, use these APIs to fade-in
-        // the progress spinner.
+    public void showProgress(final boolean show, String message) {
+        loadingMessage.setText(message);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
             int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
@@ -249,10 +251,19 @@ public class ProjectActivity extends ActionBarActivity {
                     progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
                 }
             });
+            loadingMessage.setVisibility(show ? View.VISIBLE : View.GONE);
+            loadingMessage.animate().setDuration(shortAnimTime).alpha(
+                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    loadingMessage.setVisibility(show ? View.VISIBLE : View.GONE);
+                }
+            });
         } else {
             // The ViewPropertyAnimator APIs are not available, so simply show
             // and hide the relevant UI components.
             progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
+            loadingMessage.setVisibility(show ? View.VISIBLE : View.GONE);
             createProjectFormView.setVisibility(show ? View.GONE : View.VISIBLE);
         }
     }

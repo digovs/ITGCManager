@@ -7,6 +7,9 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -53,6 +56,21 @@ public class TestSystemScopeFragment extends Fragment {
 
         systemScopeArgs = getArguments();
         mode = systemScopeArgs.getInt(TestActivity.MODE_FLAG, TestActivity.ADD_MODE);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                getActivity().finish();
+        }
+        return true;
     }
 
     @Override
@@ -106,6 +124,7 @@ public class TestSystemScopeFragment extends Fragment {
                                 public void onClick(DialogInterface dialog, int id) {
                                 }
                             });
+                    builder.create().show();
                 }
             }
         });
@@ -138,6 +157,10 @@ public class TestSystemScopeFragment extends Fragment {
         systemNameList = systemScopeArgs.getStringArrayList(SYSTEM_LIST_CONTENT);
         adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_multiple_choice, systemNameList);
         systemListView.setAdapter(adapter);
+        if (systemNameList.isEmpty())
+            emptyText.setVisibility(View.VISIBLE);
+        else
+            emptyText.setVisibility(View.GONE);
     }
 
     private void loadActivityCurrentTestSystemScope() {
