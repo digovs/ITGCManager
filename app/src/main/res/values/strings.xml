@@ -297,4 +297,6 @@
     <string name="system_list_on_item_click_message">To edit the system name stay clicking</string>
     <string name="title_activity_test">TestActivity</string>
 
+    <string name="test_item_list_has_exceptions">Exceptions: </string>
+
 </resources>

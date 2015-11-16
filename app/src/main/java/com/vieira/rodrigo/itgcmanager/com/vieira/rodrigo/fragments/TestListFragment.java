@@ -47,13 +47,15 @@ public class TestListFragment extends ListFragment {
     private Context context;
 
     private ParseObject currentProjectObject;
-    private ParseObject currentControlObject;
+    private TextView controlNameView;
     private ListView listView;
     private ProgressBar progressBar;
     private TextView loadingMessage;
     private TextView emptyTextView;
     private ArrayList<ParseObject> testList = new ArrayList<>();
 
+    boolean onControlFilterMode = false;
+    String controlId = "";
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -61,7 +63,14 @@ public class TestListFragment extends ListFragment {
 
         context = getActivity();
         loadCurrentProjectObject();
-        loadTestList();
+        Bundle args = getArguments();
+        if (args == null) {
+            loadTestList();
+        } else {
+            controlId = getArguments().getString(ProjectDashboardActivity.KEY_CONTROL_ID, "");
+            onControlFilterMode = true;
+            loadTestsOfControl(controlId);
+        }
     }
 
     private void loadCurrentProjectObject() {
@@ -82,7 +91,9 @@ public class TestListFragment extends ListFragment {
         ParseQuery<ParseObject> getProjectTests = ParseQuery.getQuery(Test.TABLE_TEST);
         getProjectTests.whereEqualTo(Test.KEY_TEST_PROJECT, currentProjectObject);
         getProjectTests.include(Test.KEY_TEST_CONTROL);
+        getProjectTests.include(Test.KEY_TEST_STATUS);
         getProjectTests.include(Test.KEY_TEST_PROJECT);
+        getProjectTests.include(Test.KEY_TEST_MEMBER_RESPONSIBLE);
         getProjectTests.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> list, ParseException e) {
@@ -97,6 +108,40 @@ public class TestListFragment extends ListFragment {
                 showProgress(false);
             }
         });
+    }
+
+    private void loadTestsOfControl(String controlId) {
+        showProgress(true);
+        ParseQuery getControl = ParseQuery.getQuery(Control.TABLE_CONTROL);
+        try {
+            final ParseObject controlObject = getControl.get(controlId);
+
+            ParseQuery<ParseObject> getProjectTests = ParseQuery.getQuery(Test.TABLE_TEST);
+            getProjectTests.whereEqualTo(Test.KEY_TEST_CONTROL, controlObject);
+            getProjectTests.include(Test.KEY_TEST_CONTROL);
+            getProjectTests.include(Test.KEY_TEST_STATUS);
+            getProjectTests.include(Test.KEY_TEST_PROJECT);
+            getProjectTests.include(Test.KEY_TEST_MEMBER_RESPONSIBLE);
+            getProjectTests.findInBackground(new FindCallback<ParseObject>() {
+                @Override
+                public void done(List<ParseObject> list, ParseException e) {
+                    if (e == null){
+                        testList = (ArrayList<ParseObject>) list;
+                        adapter = new TestListAdapter(testList, getActivity());
+                        setListAdapter(adapter);
+                        controlNameView.setText("Control: " + controlObject.getString(Control.KEY_CONTROL_NAME));
+                        controlNameView.setVisibility(View.VISIBLE);
+                    }
+                    else{
+                        ParseUtils.handleParseException(getActivity(), e);
+                    }
+                    showProgress(false);
+                }
+            });
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
     }
 
     @Override
@@ -144,6 +189,7 @@ public class TestListFragment extends ListFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_test_list, container, false);
+        controlNameView = (TextView) view.findViewById(R.id.test_list_control_name);
         listView = (ListView) view.findViewById(android.R.id.list);
         progressBar = (ProgressBar) view.findViewById(R.id.test_list_progress_bar);
         loadingMessage = (TextView) view.findViewById(R.id.test_list_loading_message);
@@ -187,7 +233,11 @@ public class TestListFragment extends ListFragment {
     public void onResume() {
         if (adapter != null) {
             testList = new ArrayList<>();
-            loadTestList();
+            if (onControlFilterMode)
+                loadTestsOfControl(controlId);
+            else
+                loadTestList();
+
             adapter.notifyDataSetChanged();
         }
 

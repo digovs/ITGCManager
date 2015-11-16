@@ -48,6 +48,11 @@ public class ControlListFragment extends ListFragment {
         // Required empty public constructor
     }
 
+    public interface OnControlItemClickedListener {
+        void onControlItemClicked(String controlId);
+    }
+
+    OnControlItemClickedListener mListener;
 
     private ControlListAdapter adapter;
     private Context context;
@@ -108,10 +113,7 @@ public class ControlListFragment extends ListFragment {
     public void onListItemClick(ListView l, View v, int position, long id) {
         if (adapter != null) {
             String selectedControlId = controlList.get(position).getObjectId();
-            Intent intent = new Intent(getActivity(), ControlActivity.class);
-            intent.putExtra(ControlActivity.MODE_FLAG, ControlActivity.EDIT_MODE);
-            intent.putExtra(Control.KEY_CONTROL_ID, selectedControlId);
-            startActivity(intent);
+            mListener.onControlItemClicked(selectedControlId);
         }
     }
 
@@ -177,7 +179,6 @@ public class ControlListFragment extends ListFragment {
                     }
                 });
                 dialogBuilder.create().show();
-
                 return true;
             }
         });
@@ -200,6 +201,12 @@ public class ControlListFragment extends ListFragment {
         super.onAttach(activity);
         ((ProjectDashboardActivity) activity).onSectionAttached(
                 ProjectDashboardActivity.CONTROLS_SECTION);
+        try {
+            mListener = (OnControlItemClickedListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement OnControlItemClickedListener");
+        }
     }
 
     @Override

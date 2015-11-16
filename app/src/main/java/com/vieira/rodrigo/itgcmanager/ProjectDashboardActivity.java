@@ -9,7 +9,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.support.v4.widget.DrawerLayout;
 
-import com.parse.ParseUser;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments.CompanyListFragment;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments.ControlListFragment;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments.ProjectDashboardNavigationDrawerFragment;
@@ -19,7 +18,7 @@ import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments.TeamMemberLis
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments.TestListFragment;
 
 public class ProjectDashboardActivity extends ActionBarActivity
-        implements ProjectDashboardNavigationDrawerFragment.NavigationDrawerCallbacks {
+        implements ProjectDashboardNavigationDrawerFragment.NavigationDrawerCallbacks, ControlListFragment.OnControlItemClickedListener {
 
     public static final int HOME_SECTION = 1;
     public static final int TEAM_SECTION = 2;
@@ -35,7 +34,8 @@ public class ProjectDashboardActivity extends ActionBarActivity
     public static final int COMING_FROM_CREATE_CONTROL = 3;
     public static final int COMING_FROM_CREATE_TEST = 4;
 
-    public static final String KEY_COMING_FROM_ACTIVITY = "KEY_COMING_FROM_ACTIVITY";
+    public static final String KEY_COMING_FROM_ACTIVITY = "key_coming_from_activity";
+    public static final String KEY_CONTROL_ID = "key_control_id";
 
     boolean projectEditMode = false;
     int comingFromActivity;
@@ -214,4 +214,16 @@ public class ProjectDashboardActivity extends ActionBarActivity
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onControlItemClicked(String controlId) {
+        Bundle testArgs = new Bundle();
+        testArgs.putString(KEY_CONTROL_ID, controlId);
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        TestListFragment testListFragment = new TestListFragment();
+        testListFragment.setArguments(testArgs);
+
+        fragmentManager.beginTransaction()
+                .replace(R.id.container, testListFragment)
+                .commit();
+    }
 }
