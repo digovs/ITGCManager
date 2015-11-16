@@ -11,6 +11,7 @@ import android.support.v4.widget.DrawerLayout;
 
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments.CompanyListFragment;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments.ControlListFragment;
+import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments.MemberDetailsFragment;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments.ProjectDashboardNavigationDrawerFragment;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments.ProjectDetailsFragment;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments.SystemListFragment;
@@ -18,7 +19,8 @@ import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments.TeamMemberLis
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments.TestListFragment;
 
 public class ProjectDashboardActivity extends ActionBarActivity
-        implements ProjectDashboardNavigationDrawerFragment.NavigationDrawerCallbacks, ControlListFragment.OnControlItemClickedListener {
+        implements ProjectDashboardNavigationDrawerFragment.NavigationDrawerCallbacks, ControlListFragment.OnControlItemClickedListener,
+        TeamMemberListFragment.OnMemberClickedListener{
 
     public static final int HOME_SECTION = 1;
     public static final int TEAM_SECTION = 2;
@@ -36,6 +38,7 @@ public class ProjectDashboardActivity extends ActionBarActivity
 
     public static final String KEY_COMING_FROM_ACTIVITY = "key_coming_from_activity";
     public static final String KEY_CONTROL_ID = "key_control_id";
+    public static final String KEY_MEMBER_ID = "key_member_id";
 
     boolean projectEditMode = false;
     int comingFromActivity;
@@ -224,6 +227,22 @@ public class ProjectDashboardActivity extends ActionBarActivity
 
         fragmentManager.beginTransaction()
                 .replace(R.id.container, testListFragment)
+                .commit();
+    }
+
+    @Override
+    public void onMemberCLicked(String memberId) {
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setTitle(getString(R.string.member_details_title));
+
+        Bundle testArgs = new Bundle();
+        testArgs.putString(KEY_MEMBER_ID, memberId);
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        MemberDetailsFragment memberDetailsListFragment = new MemberDetailsFragment();
+        memberDetailsListFragment.setArguments(testArgs);
+
+        fragmentManager.beginTransaction()
+                .replace(R.id.container, memberDetailsListFragment)
                 .commit();
     }
 }

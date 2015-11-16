@@ -45,7 +45,11 @@ import java.util.List;
  */
 public class TeamMemberListFragment extends ListFragment {
 
+    public interface OnMemberClickedListener {
+        void onMemberCLicked(String memberId);
+    }
 
+    OnMemberClickedListener mListener;
     private MemberListAdapter adapter;
     private String currentProjectId;
 
@@ -166,8 +170,8 @@ public class TeamMemberListFragment extends ListFragment {
         if (adapter != null) {
             ParseUtils.saveStringToSession(getActivity(), User.KEY_SELECTED_USER_ID, teamMemberList.get(position).getId());
             ParseUtils.saveStringToSession(getActivity(), User.KEY_SELECTED_USER_NAME, teamMemberList.get(position).getUserName());
-            // TODO dashboard de atividades de usuarios
-            startActivity(new Intent(getActivity(), ProjectDashboardActivity.class));
+
+            mListener.onMemberCLicked(teamMemberList.get(position).getId());
         }
     }
 
@@ -176,6 +180,13 @@ public class TeamMemberListFragment extends ListFragment {
         super.onAttach(activity);
         ((ProjectDashboardActivity) activity).onSectionAttached(
                 ProjectDashboardActivity.TEAM_SECTION);
+
+        try {
+            mListener = (OnMemberClickedListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement OnMemberClickedListener");
+        }
     }
 
     @Override

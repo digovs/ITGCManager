@@ -1,0 +1,124 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.fragments.memberDetailsFragment"
+    android:padding="@dimen/activity_horizontal_margin">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/loading_message"
+        android:gravity="center"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_marginBottom="@dimen/project_view_margin"
+        android:padding="@dimen/project_view_margin"
+        android:id="@+id/member_details_name"/>
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone"
+        android:id="@+id/member_details_progress_bar"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:layout_below="@id/member_details_progress_bar"
+        android:text="@string/loading_dialog_message_loading_member_details"
+        android:layout_centerHorizontal="true"
+        android:visibility="gone"
+        android:id="@+id/member_details_loading_message"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/member_details_linear_layout"
+        android:orientation="vertical"
+        android:visibility="visible"
+        android:layout_below="@id/member_details_name">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/loading_message"
+            android:padding="@dimen/project_view_margin"
+            android:background="@drawable/card_background_selector"
+            android:layout_marginBottom="@dimen/project_view_margin"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:id="@+id/member_details_number_of_controls"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/loading_message"
+            android:padding="@dimen/project_view_margin"
+            android:background="@drawable/card_background_selector"
+            android:layout_marginBottom="@dimen/project_view_margin"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:id="@+id/member_details_number_of_tests"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/loading_message"
+            android:padding="@dimen/project_view_margin"
+            android:background="@drawable/card_background_selector"
+            android:layout_marginBottom="@dimen/project_view_margin"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:id="@+id/member_details_number_of_tests_pending"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:text="@string/loading_message"
+            android:padding="@dimen/project_view_margin"
+            android:background="@drawable/card_background_selector"
+            android:layout_marginBottom="@dimen/project_view_margin"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:id="@+id/member_details_number_of_tests_received"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/loading_message"
+            android:padding="@dimen/project_view_margin"
+            android:background="@drawable/card_background_selector"
+            android:layout_marginBottom="@dimen/project_view_margin"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:id="@+id/member_details_number_of_tests_returned"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/loading_message"
+            android:padding="@dimen/project_view_margin"
+            android:background="@drawable/card_background_selector"
+            android:layout_marginBottom="@dimen/project_view_margin"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:id="@+id/member_details_number_of_tests_on_progress"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/loading_message"
+            android:padding="@dimen/project_view_margin"
+            android:background="@drawable/card_background_selector"
+            android:layout_marginBottom="@dimen/project_view_margin"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:id="@+id/member_details_number_of_tests_tested"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/loading_message"
+            android:padding="@dimen/project_view_margin"
+            android:background="@drawable/card_background_selector"
+            android:layout_marginBottom="@dimen/project_view_margin"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:id="@+id/member_details_number_of_tests_finished"/>
+
+    </LinearLayout>
+
+</RelativeLayout>
