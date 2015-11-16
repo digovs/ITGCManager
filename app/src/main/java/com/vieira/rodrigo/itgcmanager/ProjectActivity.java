@@ -36,14 +36,17 @@ import java.util.List;
 
 public class ProjectActivity extends ActionBarActivity {
 
-    public static final String EDIT_MODE_FLAG = "EDIT_MODE_FLAG";
-    public static final String EDIT_MODE_PROJECT_NAME = "EDIT_MODE_PROJECT_NAME";
+    public static final String EDIT_MODE_FLAG = "edit_mode_flag";
+    public static final String PROJECT_ARGS_NAME = "project_args_name";
+    public static final String PROJECT_ARGS_YEAR_COVERAGE = "project_args_year_coverage";
 
     boolean editMode;
     String editModeProjectName;
+    String editModeYearCoverage;
     ArrayList<String> userProjectNameList = new ArrayList<>();
 
     EditText projectNameView;
+    EditText yearCoverageView;
     Button createProjectBtn;
 
     ProgressBar progressBar;
@@ -60,7 +63,8 @@ public class ProjectActivity extends ActionBarActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
 
         editMode = getIntent().getBooleanExtra(EDIT_MODE_FLAG, false);
-        editModeProjectName = getIntent().getStringExtra(EDIT_MODE_PROJECT_NAME);
+        editModeProjectName = getIntent().getStringExtra(PROJECT_ARGS_NAME);
+        editModeYearCoverage = getIntent().getStringExtra(PROJECT_ARGS_YEAR_COVERAGE);
 
         if (editMode) {
             actionBar.setTitle(getString(R.string.edit_project_title));
@@ -71,25 +75,32 @@ public class ProjectActivity extends ActionBarActivity {
         loadingMessage = (TextView) findViewById(R.id.create_project_loading_message);
         createProjectBtn = (Button) findViewById(R.id.create_project_button);
         projectNameView = (EditText) findViewById(R.id.create_project_name);
+        yearCoverageView = (EditText) findViewById(R.id.create_project_year_coverage);
+
         if (editMode){
             projectNameView.setText(editModeProjectName);
+            yearCoverageView.setText(editModeYearCoverage);
             createProjectBtn.setText(getString(R.string.edit_project_button_text));
         }
         createProjectBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String projectName = projectNameView.getText().toString();
+                String yearCoverage = yearCoverageView.getText().toString();
                 if (projectName.isEmpty()) {
                     projectNameView.setError(getString(R.string.error_field_required));
-
-                } else if (userProjectNameList != null && userProjectNameList.contains(projectName)) {
+                } else if (userProjectNameList != null && userProjectNameList.contains(projectName+yearCoverage)) {
                     projectNameView.setError(getString(R.string.create_project_not_available_name_message));
+                    yearCoverageView.setError(getString(R.string.create_project_not_available_name_message));
+                } else if (yearCoverage == null || yearCoverage.isEmpty()) {
+                    yearCoverageView.setError(getString(R.string.error_field_required));
                 } else {
                     projectNameView.setError(null);
+                    yearCoverageView.setError(null);
                     if (editMode){
-                        attemptEditProject(projectName);
+                        attemptEditProject(projectName, yearCoverage);
                     } else {
-                        attemptSaveProject(projectName);
+                        attemptSaveProject(projectName, yearCoverage);
                     }
 
                 }
@@ -99,7 +110,7 @@ public class ProjectActivity extends ActionBarActivity {
         loadListWIthUserProjects();
     }
 
-    private void attemptEditProject(final String projectName) {
+    private void attemptEditProject(final String projectName, final String yearCoverage) {
         showProgress(true, getString(R.string.loading_dialog_message_saving_project));
         String currentProjectId = ParseUtils.getStringFromSession(getApplicationContext(), ParseUtils.PREFS_CURRENT_PROJECT_ID);
         ParseQuery<ParseObject> getProject = ParseQuery.getQuery(Project.TABLE_PROJECT);
@@ -108,10 +119,12 @@ public class ProjectActivity extends ActionBarActivity {
             public void done(ParseObject currentProjectParseObject, ParseException e) {
                 if (e == null){
                     currentProjectParseObject.put(Project.KEY_PROJECT_NAME, projectName);
+                    currentProjectParseObject.put(Project.KEY_PROJECT_YEAR_COVERAGE, yearCoverage);
                     try {
                         currentProjectParseObject.save();
                         showProgress(false, "");
                         ParseUtils.saveStringToSession(getApplicationContext(), ParseUtils.PREFS_CURRENT_PROJECT_NAME, projectName);
+                        ParseUtils.saveStringToSession(getApplicationContext(), ParseUtils.PREFS_CURRENT_PROJECT_YEAR_COVERAGE, yearCoverage);
                         Intent intent = new Intent(getApplicationContext(), ProjectDashboardActivity.class);
                         intent.putExtra(EDIT_MODE_FLAG, true);
                         startActivity(intent);
@@ -128,10 +141,11 @@ public class ProjectActivity extends ActionBarActivity {
         });
     }
 
-    private void attemptSaveProject(String projectName) {
+    private void attemptSaveProject(String projectName, String yearCoverage) {
         showProgress(true, getString(R.string.loading_dialog_message_saving_project));
         final ParseObject newProjectObject = new ParseObject(Project.TABLE_PROJECT);
         newProjectObject.put(Project.KEY_PROJECT_NAME, projectName);
+        newProjectObject.put(Project.KEY_PROJECT_YEAR_COVERAGE, yearCoverage);
         newProjectObject.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
@@ -156,6 +170,7 @@ public class ProjectActivity extends ActionBarActivity {
                 if (e == null) {
                     ParseUtils.saveStringToSession(getApplicationContext(), ParseUtils.PREFS_CURRENT_PROJECT_ID, newProjectObject.getObjectId());
                     ParseUtils.saveStringToSession(getApplicationContext(), ParseUtils.PREFS_CURRENT_PROJECT_NAME, newProjectObject.getString(Project.KEY_PROJECT_NAME));
+                    ParseUtils.saveStringToSession(getApplicationContext(), ParseUtils.PREFS_CURRENT_PROJECT_YEAR_COVERAGE, editModeYearCoverage);
                     startActivity(new Intent(getApplicationContext(), ProjectDashboardActivity.class));
                     finish();
                 } else {
@@ -177,10 +192,10 @@ public class ProjectActivity extends ActionBarActivity {
                 showProgress(false, "");
                 if (e == null) {
                     for (ParseObject project : list) {
-                        userProjectNameList.add(project.getString(Project.KEY_PROJECT_NAME));
+                        userProjectNameList.add(project.getString(Project.KEY_PROJECT_NAME)+project.getString(Project.KEY_PROJECT_YEAR_COVERAGE));
                     }
                     // If on edit mode, remove the name of the project from the verifying list
-                    userProjectNameList.remove(editModeProjectName);
+                    userProjectNameList.remove(editModeProjectName+editModeYearCoverage);
                 } else {
                     userProjectNameList = new ArrayList<>();
                     ParseUtils.handleParseException(getApplicationContext(), e);

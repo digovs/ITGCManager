@@ -119,7 +119,7 @@ public class TestSystemScopeFragment extends Fragment {
                 } else {
                     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                     builder.setTitle(getString(R.string.add_control_error_fragment_title))
-                            .setMessage(R.string.add_control_scope_error_fragment_message)
+                            .setMessage(R.string.add_control_system_scope_error_fragment_message)
                             .setNeutralButton(R.string.add_control_error_fragment_ok_button, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
                                 }

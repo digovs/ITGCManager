@@ -131,12 +131,10 @@ public class SystemListFragment extends ListFragment {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
-                String title = getString(R.string.system_list_long_click_dialog_title);
                 String message = getString(R.string.system_list_long_click_dialog_message);
                 final String selectedSystemName = systemList.get(position).getString(SystemApp.KEY_SYSTEM_NAME);
                 final String selectedSystemObjectId = systemList.get(position).getObjectId();
-                message = message.replace("XXX", selectedSystemName);
-                dialogBuilder.setTitle(title);
+                message = message.replace("XXX", selectedSystemName.toUpperCase());
                 dialogBuilder.setMessage(message);
                 dialogBuilder.setPositiveButton(getString(R.string.confirmation_dialog_yes), new DialogInterface.OnClickListener() {
                     @Override
@@ -155,7 +153,7 @@ public class SystemListFragment extends ListFragment {
                     }
                 });
                 dialogBuilder.create().show();
-                return false;
+                return true;
             }
         });
         return view;

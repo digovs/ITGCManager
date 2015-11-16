@@ -131,12 +131,10 @@ public class CompanyListFragment extends ListFragment {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
-                String title = getString(R.string.company_list_long_click_dialog_title);
                 String message = getString(R.string.company_list_long_click_dialog_message);
                 final String selectedCompanyName = companyList.get(position).getString(Company.KEY_COMPANY_NAME);
                 final String selectedCompanyObjectId = companyList.get(position).getObjectId();
                 message = message.replace("XXX", selectedCompanyName);
-                dialogBuilder.setTitle(title);
                 dialogBuilder.setMessage(message);
                 dialogBuilder.setPositiveButton(getString(R.string.confirmation_dialog_yes), new DialogInterface.OnClickListener() {
                     @Override
@@ -155,7 +153,7 @@ public class CompanyListFragment extends ListFragment {
                     }
                 });
                 dialogBuilder.create().show();
-                return false;
+                return true;
             }
         });
         return view;

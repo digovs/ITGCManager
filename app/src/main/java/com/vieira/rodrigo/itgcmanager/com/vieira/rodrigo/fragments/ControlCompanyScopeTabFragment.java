@@ -119,7 +119,7 @@ public class ControlCompanyScopeTabFragment extends Fragment {
                 } else {
                     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                     builder.setTitle(getString(R.string.add_control_error_fragment_title))
-                            .setMessage(R.string.add_control_scope_error_fragment_message)
+                            .setMessage(R.string.add_control_company_scope_error_fragment_message)
                             .setNeutralButton(R.string.add_control_error_fragment_ok_button, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
                                 }
@@ -142,24 +142,26 @@ public class ControlCompanyScopeTabFragment extends Fragment {
                 break;
 
             case ControlActivity.EDIT_MODE:
-                companyNameList = companyArgs.getStringArrayList(COMPANY_LIST_CONTENT);
-                adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_multiple_choice, companyNameList);
-                companyListView.setAdapter(adapter);
+                loadCompanyScopeContent();
                 loadActivityCurrentControlCompanyScope();
                 break;
 
             case ControlActivity.ADD_MODE:
-                companyNameList = companyArgs.getStringArrayList(COMPANY_LIST_CONTENT);
-                adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_multiple_choice, companyNameList);
+                loadCompanyScopeContent();
                 break;
         }
+        return rootView;
+    }
+
+    private void loadCompanyScopeContent() {
+        companyNameList = companyArgs.getStringArrayList(COMPANY_LIST_CONTENT);
+        adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_multiple_choice, companyNameList);
+        companyListView.setAdapter(adapter);
 
         if (companyNameList.isEmpty())
             emptyText.setVisibility(View.VISIBLE);
         else
             emptyText.setVisibility(View.GONE);
-
-        return rootView;
     }
 
     private void loadActivityCurrentControlCompanyScope() {

@@ -152,16 +152,14 @@ public class ControlListFragment extends ListFragment {
         loadingMessage = (TextView) view.findViewById(R.id.control_list_loading_message);
         emptyTextView = (TextView) view.findViewById(R.id.control_list_empty_message);
 
-        /*listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
                 AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
-                String title = getString(R.string.control_list_long_click_dialog_title);
                 String message = getString(R.string.control_list_long_click_dialog_message);
                 final String selectedControlName = controlList.get(position).getString(Control.KEY_CONTROL_NAME);
-                message = message.replace("XXX", selectedControlName);
+                message = message.replace("XXX", selectedControlName.toUpperCase());
 
-                dialogBuilder.setTitle(title);
                 dialogBuilder.setMessage(message);
                 dialogBuilder.setPositiveButton(getString(R.string.confirmation_dialog_yes), new DialogInterface.OnClickListener() {
                     @Override
@@ -182,7 +180,7 @@ public class ControlListFragment extends ListFragment {
 
                 return true;
             }
-        });*/
+        });
         return view;
     }
 

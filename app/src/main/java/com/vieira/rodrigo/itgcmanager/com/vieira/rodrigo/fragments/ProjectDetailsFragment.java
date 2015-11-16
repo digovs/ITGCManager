@@ -44,6 +44,7 @@ import java.util.List;
 public class ProjectDetailsFragment extends Fragment {
 
     private String currentProjectName;
+    private String currentProjectCoverage;
     private ParseObject projectObject;
     private TextView projectNameView;
 
@@ -91,9 +92,10 @@ public class ProjectDetailsFragment extends Fragment {
         linearLayout = (LinearLayout) view.findViewById(R.id.project_details_linear_layout);
 
         currentProjectName = ParseUtils.getStringFromSession(getActivity(), ParseUtils.PREFS_CURRENT_PROJECT_NAME);
+        currentProjectCoverage = ParseUtils.getStringFromSession(getActivity(), ParseUtils.PREFS_CURRENT_PROJECT_YEAR_COVERAGE);
 
         projectNameView = (TextView) view.findViewById(R.id.project_details_name);
-        projectNameView.setText(currentProjectName.toUpperCase());
+        projectNameView.setText(currentProjectName.toUpperCase() + "-" + currentProjectCoverage);
 
         numberOfMembersLabel = getString(R.string.project_details_number_of_members_label);
         numberOfControlsLabel = getString(R.string.project_details_number_of_controls_label);
@@ -287,7 +289,8 @@ public class ProjectDetailsFragment extends Fragment {
                 public boolean onMenuItemClick(MenuItem item) {
                     Intent intent = new Intent(getActivity(), ProjectActivity.class);
                     intent.putExtra(ProjectActivity.EDIT_MODE_FLAG, true);
-                    intent.putExtra(ProjectActivity.EDIT_MODE_PROJECT_NAME, currentProjectName);
+                    intent.putExtra(ProjectActivity.PROJECT_ARGS_NAME, currentProjectName);
+                    intent.putExtra(ProjectActivity.PROJECT_ARGS_YEAR_COVERAGE, currentProjectCoverage);
                     startActivity(intent);
                     return true;
                 }

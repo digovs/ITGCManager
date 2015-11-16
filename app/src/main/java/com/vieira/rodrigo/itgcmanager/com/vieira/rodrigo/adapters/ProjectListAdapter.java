@@ -55,6 +55,7 @@ public class ProjectListAdapter  extends BaseAdapter {
 
             holder = new ViewHolder();
             holder.projectNameView = (TextView) rowView.findViewById(R.id.project_list_item_project_name);
+            holder.projectYearView = (TextView) rowView.findViewById(R.id.project_list_item_project_year_coverage);
 
             rowView.setTag(holder);
         } else
@@ -62,11 +63,13 @@ public class ProjectListAdapter  extends BaseAdapter {
 
         ParseObject currentProject = projects.get(position);
         holder.projectNameView.setText(currentProject.getString(Project.KEY_PROJECT_NAME));
+        holder.projectYearView.setText("Coverage: " + currentProject.getString(Project.KEY_PROJECT_YEAR_COVERAGE));
 
         return rowView;
     }
 
     public static class ViewHolder {
         public TextView projectNameView;
+        public TextView projectYearView;
     }
 }

@@ -18,7 +18,8 @@
     <string name="title_activity_create_project">Create Project</string>
     <string name="create_project_name_hint">Project name</string>
     <string name="create_project_button_text">Create</string>
-    <string name="create_project_not_available_name_message">Duplicated Project Name</string>
+    <string name="create_project_year_coverage_hint">Year Coverage</string>
+    <string name="create_project_not_available_name_message">There is a Project with the same name and coverage</string>
     <string name="action_create_project">Create Project</string>
 
     <!-- Project Details Fragment -->
@@ -38,12 +39,10 @@
     <string name="project_details_number_of_tests_finished_label">Finished: </string>
 
     <!-- Project List Fragment Long Click Dialog -->
-    <string name="project_list_long_click_dialog_title">Edit Project</string>
-    <string name="project_list_long_click_dialog_message">Are you sure you want to edit Project XXX?</string>
+    <string name="project_list_long_click_dialog_message">Edit Project XXX?</string>
 
     <!-- Control List Fragment Long Click Dialog -->
-    <string name="control_list_long_click_dialog_title">Edit Control</string>
-    <string name="control_list_long_click_dialog_message">Are you sure you want to edit Control XXX?</string>
+    <string name="control_list_long_click_dialog_message">Edit Control XXX?</string>
 
     <!-- Add Company Scope -->
 
@@ -59,13 +58,11 @@
     <string name="edit_company_title">Edit Company</string>
 
     <!-- Company List Fragment Long Click Dialog -->
-    <string name="company_list_long_click_dialog_title">Edit Company</string>
-    <string name="company_list_long_click_dialog_message">Are you sure you want to edit Company XXX?</string>
+    <string name="company_list_long_click_dialog_message">Edit Company XXX?</string>
 
     <!-- System List Fragment Long Click Dialog -->
     <string name="edit_system_title">Edit System</string>
-    <string name="system_list_long_click_dialog_title">Edit System</string>
-    <string name="system_list_long_click_dialog_message">Are you sure you want to edit System XXX?</string>
+    <string name="system_list_long_click_dialog_message">Edit System XXX?</string>
 
 
     <string name="title_activity_home">Home</string>
@@ -155,7 +152,8 @@
     <string name="add_control_error_fragment_title">Error!</string>
     <string name="add_control_error_fragment_ok_button">OK</string>
     <string name="add_control_details_error_fragment_message">The fields Risk Class, Type, Frequency and Nature are required</string>
-    <string name="add_control_scope_error_fragment_message">You must define at least one Scope to continue</string>
+    <string name="add_control_system_scope_error_fragment_message">The control requires a definition of system scope</string>
+    <string name="add_control_company_scope_error_fragment_message">The control requires a definition of company scope</string>
 
 
     <!-- Add Control Activity Step Define Scope -->
@@ -181,6 +179,7 @@
 
 
     <string name="title_logout">Logout</string>
+    <string name="title_project_list">Project List</string>
     <string name="title_control_section">Controls</string>
     <string name="action_title_add_control">Add Control</string>
     <string name="control_list_empty_string">You have no controls, to add one, click the button "Add Control" at the right top of the screen</string>

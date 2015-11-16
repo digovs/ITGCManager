@@ -68,7 +68,7 @@ public class HomeActivity extends ActionBarActivity
                 Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
-                finish();
+                this.finishAffinity();
                 break;
         }
     }

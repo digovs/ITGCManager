@@ -22,10 +22,12 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.vieira.rodrigo.itgcmanager.R;
+import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.Utils.ParseUtils;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.Control;
 import com.vieira.rodrigo.itgcmanager.com.vieira.rodrigo.models.Test;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -137,17 +139,15 @@ public class ControlListAdapter extends BaseAdapter{
 
                     GregorianCalendar dateGreg = new GregorianCalendar();
                     dateGreg.setTime(latestCoverageDate);
-                    coverageDateView.setText("Date Covered: " + dateGreg.get(GregorianCalendar.YEAR) + "/" + dateGreg.get(GregorianCalendar.MONTH) + "/" + dateGreg.get(GregorianCalendar.DAY_OF_MONTH));
+                    coverageDateView.setText("Date Covered: " + dateGreg.get(GregorianCalendar.YEAR) + "/" + (dateGreg.get(GregorianCalendar.MONTH)+1) + "/" + dateGreg.get(GregorianCalendar.DAY_OF_MONTH));
                     numberOfTestsView.setText("Tests: " + list.size());
 
-                    GregorianCalendar currentDate  = new GregorianCalendar();
-                    currentDate.setTime(new Date());
-                    int currentYear = currentDate.get(GregorianCalendar.YEAR);
-                    GregorianCalendar lastDayOfYear = new GregorianCalendar();
-                    lastDayOfYear.set(currentYear, 12, 31);
-                    GregorianCalendar latestCoverageDateGreg = new GregorianCalendar();
-                    latestCoverageDateGreg.setTime(latestCoverageDate);
-                    boolean isYearCovered = lastDayOfYear.equals(latestCoverageDateGreg);
+                    String projectYearCoverage = ParseUtils.getStringFromSession(context, ParseUtils.PREFS_CURRENT_PROJECT_YEAR_COVERAGE);
+
+                    boolean isYearCovered = false;
+                    if (dateGreg.get(GregorianCalendar.YEAR) >= Integer.parseInt(projectYearCoverage) || (dateGreg.get(GregorianCalendar.YEAR) == Integer.parseInt(projectYearCoverage) &&
+                            dateGreg.get(GregorianCalendar.MONTH) == 11 && dateGreg.get(Calendar.DAY_OF_MONTH) == 31))
+                        isYearCovered = true;
 
                     List<ParseObject> controlSystemScope = control.getList(Control.KEY_CONTROL_SYSTEM_SCOPE);
                     List<ParseObject> controlCompanyScope = control.getList(Control.KEY_CONTROL_COMPANY_SCOPE);

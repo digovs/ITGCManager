@@ -101,6 +101,17 @@ public class TeamMemberListFragment extends ListFragment {
     }
 
     @Override
+    public void onResume() {
+        if (adapter != null) {
+            teamMemberList = new ArrayList<>();
+            loadTeamMemberList();
+            adapter.notifyDataSetChanged();
+        }
+
+        super.onResume();
+    }
+
+    @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
@@ -118,6 +129,7 @@ public class TeamMemberListFragment extends ListFragment {
                 if (e == null) {
                     ParseRelation relation = projectObject.getRelation(Project.KEY_PROJECT_USER_RELATION);
                     ParseQuery query = relation.getQuery();
+                    query.orderByAscending(User.KEY_USER_NAME);
                     query.findInBackground(new FindCallback() {
                         @Override
                         public void done(List list, ParseException e) {

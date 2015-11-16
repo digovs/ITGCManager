@@ -14,6 +14,7 @@ public class Project implements Serializable{
     public static final String KEY_PROJECT_STATUS = "status";
     public static final String KEY_PROJECT_USER_RELATION = "users";
     public static final String KEY_PROJECT_NAME = "projectName";
+    public static final String KEY_PROJECT_YEAR_COVERAGE = "coverage";
     public static final String KEY_SYSTEM_SCOPE_LIST = "systemScopeList";
     public static final String KEY_COMPANY_SCOPE_LIST = "companyScopeList";
 

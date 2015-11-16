@@ -27,7 +27,7 @@ public class ProjectDashboardActivity extends ActionBarActivity
     public static final int COMPANY_SCOPE_SECTION = 4;
     public static final int CONTROLS_SECTION = 5;
     public static final int TESTS_SECTION = 6;
-    public static final int LOG_OUT_SECTION = 7;
+    public static final int PROJECT_LIST = 7;
 
     public static final int COMING_FROM_CREATE_SYSTEM = 0;
     public static final int COMING_FROM_CREATE_COMPANY = 1;
@@ -161,11 +161,8 @@ public class ProjectDashboardActivity extends ActionBarActivity
                         .commit();
                 break;
 
-            case LOG_OUT_SECTION:
-                ParseUser.logOut();
-                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
+            case PROJECT_LIST:
+                startActivity(new Intent(getApplicationContext(), HomeActivity.class));
                 finish();
                 break;
         }

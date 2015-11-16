@@ -570,7 +570,7 @@ public class TestActivity extends ActionBarActivity implements ActionBar.TabList
 
     @Override
     public void saveCoverageDate(int year, int monthOfYear, int dayOfMonth) {
-        GregorianCalendar coverageDate = new GregorianCalendar(year, monthOfYear, dayOfMonth);
+        GregorianCalendar coverageDate = new GregorianCalendar(year, monthOfYear-1, dayOfMonth);
         activityCurrentTest.setCoverageDate(coverageDate);
     }
 

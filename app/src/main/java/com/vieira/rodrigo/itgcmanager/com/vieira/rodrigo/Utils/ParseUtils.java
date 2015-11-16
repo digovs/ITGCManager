@@ -12,6 +12,7 @@ public abstract class ParseUtils {
     public static final String PREFS_NAME = "MyPrefsFile";
     public static final String PREFS_CURRENT_PROJECT_ID = "currentProjectId";
     public static final String PREFS_CURRENT_PROJECT_NAME = "currentProjectName";
+    public static final String PREFS_CURRENT_PROJECT_YEAR_COVERAGE = "currentProjectYearCoverage";
 
     public static void handleParseException(Context context, ParseException exception) {
         int exceptionCode = exception.getCode();

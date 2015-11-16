@@ -87,9 +87,9 @@ public class ProjectListFragment extends ListFragment{
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         if (adapter != null) {
-            // TODO
             ParseUtils.saveStringToSession(getActivity(), ParseUtils.PREFS_CURRENT_PROJECT_ID, projectList.get(position).getObjectId());
             ParseUtils.saveStringToSession(getActivity(), ParseUtils.PREFS_CURRENT_PROJECT_NAME, projectList.get(position).getString(Project.KEY_PROJECT_NAME));
+            ParseUtils.saveStringToSession(getActivity(), ParseUtils.PREFS_CURRENT_PROJECT_YEAR_COVERAGE, projectList.get(position).getString(Project.KEY_PROJECT_YEAR_COVERAGE));
             startActivity(new Intent(getActivity(), ProjectDashboardActivity.class));
         }
     }
@@ -132,20 +132,19 @@ public class ProjectListFragment extends ListFragment{
         listView.setLongClickable(true);
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
                 AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
-                String title = getString(R.string.project_list_long_click_dialog_title);
                 String message = getString(R.string.project_list_long_click_dialog_message);
                 final String selectedProjectName = projectList.get(position).getString(Project.KEY_PROJECT_NAME);
-                message = message.replace("XXX", selectedProjectName);
-                dialogBuilder.setTitle(title);
+                message = message.replace("XXX", selectedProjectName.toUpperCase());
                 dialogBuilder.setMessage(message);
                 dialogBuilder.setPositiveButton(getString(R.string.confirmation_dialog_yes), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         Intent intent = new Intent(getActivity(), ProjectActivity.class);
                         intent.putExtra(ProjectActivity.EDIT_MODE_FLAG, true);
-                        intent.putExtra(ProjectActivity.EDIT_MODE_PROJECT_NAME, selectedProjectName);
+                        intent.putExtra(ProjectActivity.PROJECT_ARGS_NAME, selectedProjectName);
+                        intent.putExtra(ProjectActivity.PROJECT_ARGS_YEAR_COVERAGE, projectList.get(position).getString(Project.KEY_PROJECT_YEAR_COVERAGE));
                         startActivity(intent);
                     }
                 });

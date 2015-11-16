@@ -320,9 +320,8 @@ public class TestDetailsFragment extends Fragment {
     public static class DatePickerDialogFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener {
 
         public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-            //TODO Localization
-            testCoverageDate.setText(year + "/" + monthOfYear + "/" + dayOfMonth);
-            mListener.saveCoverageDate(year, monthOfYear, dayOfMonth);
+            testCoverageDate.setText(year + "/" + (monthOfYear+1) + "/" + dayOfMonth);
+            mListener.saveCoverageDate(year, monthOfYear+1, dayOfMonth);
         }
 
         public DatePickerDialogFragment() {

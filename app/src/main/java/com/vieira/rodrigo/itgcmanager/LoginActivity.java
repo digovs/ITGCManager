@@ -97,6 +97,9 @@ public class LoginActivity extends Activity {
         String userName = userNameView.getText().toString();
         String password = passwordView.getText().toString();
 
+        userName = "dunga";
+        password = "123456";
+
         boolean cancel = false;
         View focusView = null;
 
@@ -169,6 +172,12 @@ public class LoginActivity extends Activity {
                 break;
 
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        this.finishAffinity();
     }
 
     /**
